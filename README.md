@@ -64,14 +64,14 @@ Copy `adapters/codex/skill.md` to your agent configuration.
 
 | Pattern | Description |
 |---------|-------------|
-| [API Error Model](/.shared/production-backend-kit/patterns/api.error-model.md) | Standardized error response structure |
-| [Pagination, Filter & Sort](/.shared/production-backend-kit/patterns/api.pagination-filter-sort.md) | RESTful pagination best practices |
+| [API Error Model](.shared/production-backend-kit/patterns/api.error-model.md) | Standardized error response structure |
+| [Pagination, Filter & Sort](.shared/production-backend-kit/patterns/api.pagination-filter-sort.md) | RESTful pagination best practices |
 
 ### ✅ Checklists
 
 | Checklist | Description |
 |-----------|-------------|
-| [API Review](/.shared/production-backend-kit/checklists/checklist.api-review.md) | Comprehensive API review checklist |
+| [API Review](.shared/production-backend-kit/checklists/checklist.api-review.md) | Comprehensive API review checklist |
 
 ## 📚 Documentation
 
