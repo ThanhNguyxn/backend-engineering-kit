@@ -111,5 +111,5 @@ Add pagination support to the current endpoint.
 
 ## References
 
-- [Patterns](/.shared/production-backend-kit/patterns/)
-- [Checklists](/.shared/production-backend-kit/checklists/)
+- [Patterns](.shared/production-backend-kit/patterns/)
+- [Checklists](.shared/production-backend-kit/checklists/)
