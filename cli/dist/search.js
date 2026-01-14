@@ -1,167 +1,115 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import MiniSearch, { SearchResult } from 'minisearch';
+import MiniSearch from 'minisearch';
 import chalk from 'chalk';
-import { buildDatabase, SearchableDoc } from './buildDb.js';
-
+import { buildDatabase } from './buildDb.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-export interface SearchOptions {
-    tag?: string;
-    stack?: string;
-    level?: string;
-    scope?: string;
-    maturity?: string;
-    works_with?: string;
-    limit?: number;
-}
-
-export interface SearchResultItem {
-    id: string;
-    title: string;
-    type: string;
-    path: string;
-    level: string;
-    scope: string;
-    maturity: string;
-    tags: string;
-    stacks: string;
-    works_with: string;
-    score: number;
-    snippet: string;
-}
-
 // Load or build the search index
-async function loadIndex(baseDir?: string): Promise<{
-    miniSearch: MiniSearch<SearchableDoc>;
-    docs: SearchableDoc[];
-}> {
+async function loadIndex(baseDir) {
     const root = baseDir || path.resolve(__dirname, '../../.shared/production-backend-kit');
     const indexPath = path.join(root, 'db', 'index.json');
     const docsPath = path.join(root, 'db', 'docs.json');
-
     // Check if index exists
     if (!fs.existsSync(indexPath) || !fs.existsSync(docsPath)) {
         console.log(chalk.yellow('⚠️  Index not found, building database...\n'));
         await buildDatabase(root);
     }
-
     // Load index and docs
     const indexData = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
-    const docs: SearchableDoc[] = JSON.parse(fs.readFileSync(docsPath, 'utf-8'));
-
-    const miniSearch = MiniSearch.loadJSON<SearchableDoc>(JSON.stringify(indexData), {
+    const docs = JSON.parse(fs.readFileSync(docsPath, 'utf-8'));
+    const miniSearch = MiniSearch.loadJSON(JSON.stringify(indexData), {
         fields: ['title', 'tags', 'stacks', 'sectionsText', 'checklistText', 'sourcesText'],
         storeFields: ['id', 'title', 'type', 'path', 'level', 'tags', 'stacks']
     });
-
     return { miniSearch, docs };
 }
-
 // Get snippet from document
-function getSnippet(doc: SearchableDoc, maxLength: number = 200): string {
+function getSnippet(doc, maxLength = 200) {
     const text = doc.sectionsText || '';
-    if (text.length <= maxLength) return text;
+    if (text.length <= maxLength)
+        return text;
     return text.substring(0, maxLength).trim() + '...';
 }
-
-function applyFilters(
-    results: SearchResult[],
-    docs: SearchableDoc[],
-    options: SearchOptions
-): SearchResultItem[] {
+function applyFilters(results, docs, options) {
     const docsMap = new Map(docs.map(d => [d.id, d]));
-
     return results
         .map(result => {
-            const doc = docsMap.get(result.id);
-            if (!doc) return null;
-
-            // Apply filters
-            if (options.tag) {
-                const tags = doc.tags.toLowerCase();
-                if (!tags.includes(options.tag.toLowerCase())) return null;
+        const doc = docsMap.get(result.id);
+        if (!doc)
+            return null;
+        // Apply filters
+        if (options.tag) {
+            const tags = doc.tags.toLowerCase();
+            if (!tags.includes(options.tag.toLowerCase()))
+                return null;
+        }
+        if (options.stack) {
+            const stacks = doc.stacks.toLowerCase();
+            if (!stacks.includes(options.stack.toLowerCase()) && !stacks.includes('all')) {
+                return null;
             }
-
-            if (options.stack) {
-                const stacks = doc.stacks.toLowerCase();
-                if (!stacks.includes(options.stack.toLowerCase()) && !stacks.includes('all')) {
-                    return null;
-                }
+        }
+        if (options.level) {
+            if (doc.level.toLowerCase() !== options.level.toLowerCase())
+                return null;
+        }
+        if (options.scope) {
+            if (doc.scope.toLowerCase() !== options.scope.toLowerCase())
+                return null;
+        }
+        if (options.maturity) {
+            if (doc.maturity.toLowerCase() !== options.maturity.toLowerCase())
+                return null;
+        }
+        if (options.works_with) {
+            const works = doc.works_with.toLowerCase();
+            if (!works.includes(options.works_with.toLowerCase()) && !works.includes('all')) {
+                return null;
             }
-
-            if (options.level) {
-                if (doc.level.toLowerCase() !== options.level.toLowerCase()) return null;
-            }
-
-            if (options.scope) {
-                if (doc.scope.toLowerCase() !== options.scope.toLowerCase()) return null;
-            }
-
-            if (options.maturity) {
-                if (doc.maturity.toLowerCase() !== options.maturity.toLowerCase()) return null;
-            }
-
-            if (options.works_with) {
-                const works = doc.works_with.toLowerCase();
-                if (!works.includes(options.works_with.toLowerCase()) && !works.includes('all')) {
-                    return null;
-                }
-            }
-
-            return {
-                id: doc.id,
-                title: doc.title,
-                type: doc.type,
-                path: doc.path,
-                level: doc.level,
-                scope: doc.scope,
-                maturity: doc.maturity,
-                tags: doc.tags,
-                stacks: doc.stacks,
-                works_with: doc.works_with,
-                score: result.score,
-                snippet: getSnippet(doc)
-            };
-        })
-        .filter((r): r is SearchResultItem => r !== null);
+        }
+        return {
+            id: doc.id,
+            title: doc.title,
+            type: doc.type,
+            path: doc.path,
+            level: doc.level,
+            scope: doc.scope,
+            maturity: doc.maturity,
+            tags: doc.tags,
+            stacks: doc.stacks,
+            works_with: doc.works_with,
+            score: result.score,
+            snippet: getSnippet(doc)
+        };
+    })
+        .filter((r) => r !== null);
 }
-
 // Search function
-export async function search(
-    query: string,
-    options: SearchOptions = {}
-): Promise<SearchResultItem[]> {
+export async function search(query, options = {}) {
     const { miniSearch, docs } = await loadIndex();
     const limit = options.limit || 10;
-
     // Perform search
     const results = miniSearch.search(query, {
         boost: { title: 2, tags: 1.5 },
         fuzzy: 0.2,
         prefix: true
     });
-
     // Apply filters and limit
     const filtered = applyFilters(results, docs, options);
     return filtered.slice(0, limit);
 }
-
 // Format and display results
-function displayResults(results: SearchResultItem[], query: string): void {
+function displayResults(results, query) {
     if (results.length === 0) {
         console.log(chalk.yellow(`\nNo results found for "${query}"`));
         return;
     }
-
     console.log(chalk.bold(`\n🔍 Found ${results.length} results for "${query}":\n`));
-
     results.forEach((result, index) => {
         const typeIcon = result.type === 'pattern' ? '📘' : '✅';
         const levelBadge = getLevelBadge(result.level);
-
         console.log(chalk.bold(`${index + 1}. ${typeIcon} ${result.title}`));
         console.log(chalk.dim(`   ID: ${result.id}`));
         console.log(chalk.dim(`   Level: ${levelBadge} | Score: ${result.score.toFixed(2)}`));
@@ -171,8 +119,7 @@ function displayResults(results: SearchResultItem[], query: string): void {
         console.log();
     });
 }
-
-function getLevelBadge(level: string): string {
+function getLevelBadge(level) {
     switch (level.toLowerCase()) {
         case 'beginner':
             return chalk.green('🟢 beginner');
@@ -184,71 +131,48 @@ function getLevelBadge(level: string): string {
             return level;
     }
 }
-
 // CLI command
-export async function searchCommand(
-    query: string,
-    options: SearchOptions
-): Promise<void> {
+export async function searchCommand(query, options) {
     if (!query) {
         console.log(chalk.red('Please provide a search query'));
         console.log(chalk.dim('Usage: pbk search <query> [options]'));
         return;
     }
-
     try {
         const results = await search(query, options);
         displayResults(results, query);
-    } catch (error) {
+    }
+    catch (error) {
         console.error(chalk.red('Search failed:'), error);
     }
 }
-
 // List all available items
-export async function listCommand(options: SearchOptions): Promise<void> {
+export async function listCommand(options) {
     const root = path.resolve(__dirname, '../../.shared/production-backend-kit');
     const docsPath = path.join(root, 'db', 'docs.json');
-
     if (!fs.existsSync(docsPath)) {
         console.log(chalk.yellow('⚠️  Index not found, building database...\n'));
         await buildDatabase(root);
     }
-
-    const docs: SearchableDoc[] = JSON.parse(fs.readFileSync(docsPath, 'utf-8'));
-
+    const docs = JSON.parse(fs.readFileSync(docsPath, 'utf-8'));
     // Apply filters
     let filtered = docs;
-
     if (options.tag) {
-        filtered = filtered.filter(d =>
-            d.tags.toLowerCase().includes(options.tag!.toLowerCase())
-        );
+        filtered = filtered.filter(d => d.tags.toLowerCase().includes(options.tag.toLowerCase()));
     }
-
     if (options.level) {
-        filtered = filtered.filter(d =>
-            d.level.toLowerCase() === options.level!.toLowerCase()
-        );
+        filtered = filtered.filter(d => d.level.toLowerCase() === options.level.toLowerCase());
     }
-
     if (options.scope) {
-        filtered = filtered.filter(d =>
-            d.scope.toLowerCase() === options.scope!.toLowerCase()
-        );
+        filtered = filtered.filter(d => d.scope.toLowerCase() === options.scope.toLowerCase());
     }
-
     if (options.stack) {
-        filtered = filtered.filter(d =>
-            d.stacks.toLowerCase().includes(options.stack!.toLowerCase()) ||
-            d.stacks.toLowerCase().includes('all')
-        );
+        filtered = filtered.filter(d => d.stacks.toLowerCase().includes(options.stack.toLowerCase()) ||
+            d.stacks.toLowerCase().includes('all'));
     }
-
     console.log(chalk.bold(`\n📚 Available items (${filtered.length}):\n`));
-
     const patterns = filtered.filter(d => d.type === 'pattern');
     const checklists = filtered.filter(d => d.type === 'checklist');
-
     if (patterns.length > 0) {
         console.log(chalk.bold('📘 Patterns:'));
         patterns.forEach(p => {
@@ -256,7 +180,6 @@ export async function listCommand(options: SearchOptions): Promise<void> {
         });
         console.log();
     }
-
     if (checklists.length > 0) {
         console.log(chalk.bold('✅ Checklists:'));
         checklists.forEach(c => {
@@ -265,3 +188,4 @@ export async function listCommand(options: SearchOptions): Promise<void> {
         console.log();
     }
 }
+//# sourceMappingURL=search.js.map

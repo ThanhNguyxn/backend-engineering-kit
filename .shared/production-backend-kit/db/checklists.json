@@ -12,6 +12,11 @@
     "stacks": [
       "all"
     ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
     "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/checklists/checklist.api-review.md",
     "type": "checklist",
     "sections": [],
@@ -30,6 +35,11 @@
     ],
     "level": "intermediate",
     "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
       "all"
     ],
     "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/checklists/checklist.db-review.md",
@@ -52,6 +62,11 @@
     "stacks": [
       "all"
     ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
     "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/checklists/checklist.prod-readiness.md",
     "type": "checklist",
     "sections": [],
@@ -72,6 +87,11 @@
     "stacks": [
       "all"
     ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
     "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/checklists/checklist.reliability-review.md",
     "type": "checklist",
     "sections": [],
@@ -90,6 +110,11 @@
     ],
     "level": "intermediate",
     "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
       "all"
     ],
     "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/checklists/checklist.security-review.md",

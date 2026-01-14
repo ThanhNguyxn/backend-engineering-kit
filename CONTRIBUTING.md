@@ -21,53 +21,121 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
 - **Provide a detailed description of the suggested enhancement**
 - **Explain why this enhancement would be useful**
 
-### 📝 Adding New Patterns
+---
 
-1. Create a new file in `.shared/production-backend-kit/patterns/`
-2. Use the YAML frontmatter format:
-   ```yaml
-   ---
-   title: Your Pattern Title
-   description: Brief description
-   category: patterns
-   tags:
-     - relevant
-     - tags
-   version: 1.0.0
-   ---
-   ```
-3. Include examples in multiple languages where applicable
-4. Add best practices and anti-patterns sections
+## 📝 Content Schema
 
-### ✅ Adding New Checklists
+### Pattern Files
 
-1. Create a new file in `.shared/production-backend-kit/checklists/`
-2. Use checkbox format: `- [ ] Item`
-3. Group items by category
-4. Include quick reference sections
+Location: `.shared/production-backend-kit/patterns/`
 
-### 🔌 Adding Adapter Support
+**Required YAML Frontmatter:**
+```yaml
+---
+id: unique-pattern-id
+title: Pattern Title
+tags: [tag1, tag2]
+scope: api | database | security | reliability | observability
+maturity: stable | beta | alpha
+works_with: [all] | [nodejs, python, go, java, etc.]
+---
+```
+
+**Required Headings (in order):**
+1. `## Problem` - What issue does this solve?
+2. `## When to use` - Scenarios where this applies
+3. `## Solution` - How to implement
+4. `## Pitfalls` - Common mistakes to avoid
+5. `## Checklist` - Items to verify (use `- [ ]` format)
+6. `## Snippets` - Code examples (generic, not language-specific)
+7. `## Sources` - References (format: `- Name — URL`)
+
+### Checklist Files
+
+Location: `.shared/production-backend-kit/checklists/`
+
+**Required YAML Frontmatter:**
+```yaml
+---
+id: checklist-unique-id
+title: Checklist Title
+tags: [tag1, tag2]
+scope: api | database | security | reliability | deployment
+maturity: stable
+works_with: [all]
+---
+```
+
+**Format:**
+- Use `- [ ]` for checkbox items
+- Group items by section with `##` headings
+- Include `## Sources` at the end
+
+---
+
+## 🔧 Development Workflow
+
+### Setup
+```bash
+cd cli
+npm install
+npm run build
+```
+
+### Validate Content
+```bash
+# Check for errors
+node dist/index.js validate
+
+# Auto-fix format issues
+node dist/index.js normalize
+```
+
+### Build Database
+```bash
+npm run build:db
+```
+
+### Test Search
+```bash
+node dist/index.js search "your query"
+```
+
+---
+
+## 🔌 Adding Adapter Support
 
 When adding support for a new AI tool:
 
-1. Create a new directory in `adapters/`
-2. Follow the format of existing adapters
-3. Include references to shared patterns
+1. Create template in `adapters/templates/<tool>.md`
+2. Run `kit render-adapters` to generate output
+3. Add tool to `cli/src/index.ts` init command
 4. Update the main README.md
+
+---
 
 ## Pull Request Process
 
 1. Fork the repo and create your branch from `main`
 2. Make your changes
-3. Update documentation as needed
-4. Submit a Pull Request
+3. Run `npm run validate` to check content
+4. Update documentation as needed
+5. Submit a Pull Request
+
+**CI will automatically:**
+- Type check the CLI
+- Validate all content (missing fields, duplicate IDs, missing headings)
+- Build the search database
+
+---
 
 ## Style Guide
 
 - Use Markdown for all documentation
 - Include YAML frontmatter for patterns and checklists
 - Use consistent heading levels
-- Include code examples where applicable
+- Sources format: `- Name — URL`
+- Checklist format: `- [ ] Item description`
 
 ## Questions?
 

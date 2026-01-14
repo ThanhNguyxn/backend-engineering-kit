@@ -9,9 +9,13 @@ __pycache__/
 
 # Build outputs
 dist/
+!cli/dist/
 build/
 *.egg-info/
 target/
+
+# Generated DB (optional - can commit for better search UX)
+# .shared/**/db/
 
 # IDE
 .idea/
