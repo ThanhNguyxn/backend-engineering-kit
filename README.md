@@ -9,6 +9,8 @@
 [![Cursor Compatible](https://img.shields.io/badge/Cursor-Compatible-00C4B4?logo=cursor)](https://cursor.sh)
 [![Copilot Compatible](https://img.shields.io/badge/Copilot-Compatible-blue?logo=github)](https://github.com/features/copilot)
 [![Codex Compatible](https://img.shields.io/badge/Codex-Compatible-412991?logo=openai)](https://openai.com/codex)
+[![GitHub Sponsors](https://img.shields.io/badge/Sponsor-❤️-ea4aaa?logo=github)](https://github.com/sponsors/ThanhNguyxn)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-☕-FFDD00?logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/thanhnguyxn)
 
 **A comprehensive knowledge base + CLI + adapters for AI-powered backend development**
 
@@ -136,6 +138,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 <div align="center">
 
 **Built with ❤️ by [ThanhNguyxn](https://github.com/ThanhNguyxn)**
+
+### 💖 Support This Project
+
+If you find this project helpful, consider supporting it!
+
+[![Sponsor on GitHub](https://img.shields.io/badge/Sponsor_on_GitHub-❤️-ea4aaa?style=for-the-badge&logo=github)](https://github.com/sponsors/ThanhNguyxn)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy_Me_A_Coffee-☕-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/thanhnguyxn)
 
 ⭐ Star this repo if you find it helpful!
 
