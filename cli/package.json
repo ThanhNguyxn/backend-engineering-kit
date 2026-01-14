@@ -1,0 +1,51 @@
+{
+    "name": "production-backend-kit",
+    "version": "1.0.0",
+    "description": "Production-grade backend engineering patterns, checklists & AI adapters",
+    "type": "module",
+    "bin": {
+        "pbk": "./dist/index.js"
+    },
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "build:db": "node dist/index.js build-db",
+        "dev:db": "nodemon --watch '.shared/**/*.md' --ext md --exec 'npm run build:db'",
+        "start": "node dist/index.js",
+        "lint": "eslint src/**/*.ts",
+        "prepare": "npm run build"
+    },
+    "keywords": [
+        "backend",
+        "patterns",
+        "checklists",
+        "api-design",
+        "production",
+        "engineering"
+    ],
+    "author": "ThanhNguyxn",
+    "license": "MIT",
+    "dependencies": {
+        "chalk": "^5.3.0",
+        "commander": "^12.1.0",
+        "fast-glob": "^3.3.2",
+        "gray-matter": "^4.0.3",
+        "minisearch": "^7.1.0"
+    },
+    "devDependencies": {
+        "@types/node": "^20.11.0",
+        "nodemon": "^3.0.2",
+        "typescript": "^5.3.3"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    },
+    "files": [
+        "dist",
+        ".shared"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ThanhNguyxn/backend-engineering-kit.git"
+    }
+}
