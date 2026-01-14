@@ -7,65 +7,115 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { buildDbCommand, buildDatabase } from './buildDb.js';
 import { searchCommand, listCommand } from './search.js';
-import { validateCommand } from './validate-content.js';
+import { validateCommand, validateContent } from './validate-content.js';
 import { normalizeCommand } from './normalize-content.js';
+import { doctorCommand } from './commands/doctor.js';
+import { initCommand } from './commands/init.js';
+import { lintCommand } from './commands/lint.js';
+import { setLogLevel, LogLevel } from './lib/logger.js';
+import { wrapCommand, handleError, CLIError } from './lib/errors.js';
+import logger from './lib/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const program = new Command();
 
+// Global options
 program
-    .name('kit')
-    .description('Production Backend Kit CLI - Patterns, Checklists & Search')
-    .version('1.0.0');
+    .name('bek')
+    .description('Backend Engineering Kit CLI - Patterns, Checklists & AI Adapters')
+    .version('1.0.0')
+    .option('--debug', 'Enable debug mode (show stack traces)')
+    .option('--silent', 'Suppress all output except errors')
+    .option('--verbose', 'Show verbose output')
+    .hook('preAction', (thisCommand) => {
+        const opts = thisCommand.opts();
+        if (opts.debug) setLogLevel('debug');
+        else if (opts.silent) setLogLevel('silent');
+        else if (opts.verbose) setLogLevel('verbose');
+    });
+
+// Doctor command
+program
+    .command('doctor')
+    .description('Check environment and dependencies')
+    .option('--json', 'Output as JSON')
+    .action(wrapCommand(async (options) => {
+        await doctorCommand(options);
+    }));
+
+// Init command
+program
+    .command('init')
+    .description('Initialize a new Backend Kit project')
+    .option('-t, --template <name>', 'Template to use (minimal|standard|advanced)')
+    .option('--target <path>', 'Target directory', '.')
+    .option('--ai <tools>', 'AI adapters to include (claude,cursor,copilot,codex,all)')
+    .option('--force', 'Overwrite existing files')
+    .option('--dry-run', 'Show what would be created without making changes')
+    .option('-y, --yes', 'Skip prompts, use defaults')
+    .action(wrapCommand(async (options) => {
+        await initCommand(options);
+    }));
+
+// Lint command
+program
+    .command('lint')
+    .description('Lint content files for issues')
+    .option('--fix', 'Auto-fix issues where possible')
+    .option('--json', 'Output as JSON')
+    .action(wrapCommand(async (options) => {
+        await lintCommand(options);
+    }));
 
 // Build database command
 program
     .command('build-db')
     .description('Build the search database from markdown files')
-    .action(async () => {
-        try {
-            await buildDbCommand();
-        } catch (error) {
-            console.error(chalk.red('Build failed:'), error);
-            process.exit(1);
-        }
-    });
+    .action(wrapCommand(async () => {
+        await buildDbCommand();
+    }));
 
 // Validate command
 program
     .command('validate')
     .description('Validate content and build database')
     .option('--fix', 'Auto-fix format issues')
-    .action(async (options) => {
-        try {
-            console.log(chalk.bold('\n🔍 Running content validation...\n'));
+    .option('--json', 'Output validation results as JSON')
+    .action(wrapCommand(async (options) => {
+        logger.header('🔍 Running content validation...');
 
-            if (options.fix) {
-                console.log(chalk.blue('Running normalize-content...\n'));
-                await normalizeCommand(false);
-                console.log();
-            }
+        if (options.fix) {
+            logger.info('Running normalize-content...');
+            await normalizeCommand(false);
+            logger.newline();
+        }
 
-            await validateCommand();
+        const result = await validateContent();
 
-            console.log(chalk.blue('\nRebuilding database...\n'));
+        if (options.json) {
+            console.log(JSON.stringify(result, null, 2));
+            if (result.errors.length > 0) process.exit(1);
+            return;
+        }
+
+        if (result.errors.length === 0) {
+            logger.info('Rebuilding database...');
             await buildDbCommand();
-        } catch (error) {
-            console.error(chalk.red('Validation failed:'), error);
+        } else {
             process.exit(1);
         }
-    });
+    }));
 
 // Normalize command
 program
     .command('normalize')
     .description('Auto-fix content format issues')
     .option('--dry-run', 'Show changes without applying')
-    .action(async (options) => {
+    .action(wrapCommand(async (options) => {
         await normalizeCommand(options.dryRun ?? false);
-    });
+    }));
 
 // Search command
 program
@@ -78,7 +128,8 @@ program
     .option('--works-with <stack>', 'Filter by works_with (nodejs|python|go|all)')
     .option('--maturity <maturity>', 'Filter by maturity (stable|beta|alpha)')
     .option('-n, --limit <number>', 'Limit results (default: 10)', '10')
-    .action(async (query, options) => {
+    .option('--json', 'Output as JSON')
+    .action(wrapCommand(async (query, options) => {
         await searchCommand(query, {
             tag: options.tag,
             stack: options.stack,
@@ -88,7 +139,7 @@ program
             maturity: options.maturity,
             limit: parseInt(options.limit, 10)
         });
-    });
+    }));
 
 // List command
 program
@@ -98,25 +149,27 @@ program
     .option('-s, --stack <stack>', 'Filter by stack')
     .option('-l, --level <level>', 'Filter by level')
     .option('--scope <scope>', 'Filter by scope')
-    .action(async (options) => {
+    .option('--json', 'Output as JSON')
+    .action(wrapCommand(async (options) => {
         await listCommand({
             tag: options.tag,
             stack: options.stack,
             level: options.level,
             scope: options.scope
         });
-    });
+    }));
 
 // Show card/checklist details
 program
     .command('show <id>')
     .description('Show details of a specific pattern or checklist')
-    .action(async (id) => {
+    .option('--json', 'Output as JSON')
+    .action(wrapCommand(async (id, options) => {
         const root = path.resolve(__dirname, '../../.shared/production-backend-kit');
         const docsPath = path.join(root, 'db', 'docs.json');
 
         if (!fs.existsSync(docsPath)) {
-            console.log(chalk.yellow('Database not found, building...'));
+            logger.warn('Database not found, building...');
             await buildDatabase();
         }
 
@@ -124,99 +177,36 @@ program
         const doc = docs.find((d: any) => d.id === id);
 
         if (!doc) {
-            console.log(chalk.red(`Card not found: ${id}`));
-            console.log(chalk.dim('Use "kit list" to see available items'));
+            throw new CLIError(
+                `Card not found: ${id}`,
+                'NOT_FOUND',
+                1,
+                'Use "bek list" to see available items'
+            );
+        }
+
+        if (options.json) {
+            console.log(JSON.stringify(doc, null, 2));
             return;
         }
 
-        console.log(chalk.bold(`\n📄 ${doc.title}\n`));
-        console.log(chalk.dim(`ID: ${doc.id}`));
-        console.log(chalk.dim(`Type: ${doc.type}`));
-        console.log(chalk.dim(`Level: ${doc.level}`));
-        console.log(chalk.dim(`Scope: ${doc.scope}`));
-        console.log(chalk.dim(`Maturity: ${doc.maturity}`));
-        console.log(chalk.dim(`Tags: ${doc.tags}`));
-        console.log(chalk.dim(`Works with: ${doc.works_with}`));
-        console.log(chalk.dim(`Path: ${doc.path}`));
-        console.log();
+        logger.header(`📄 ${doc.title}`);
+        logger.item('ID', doc.id);
+        logger.item('Type', doc.type);
+        logger.item('Level', doc.level);
+        logger.item('Scope', doc.scope);
+        logger.item('Maturity', doc.maturity);
+        logger.item('Tags', doc.tags);
+        logger.item('Works with', doc.works_with);
+        logger.item('Path', doc.path);
+        logger.newline();
 
         // Read and display file content
         if (fs.existsSync(doc.path)) {
             const content = fs.readFileSync(doc.path, 'utf-8');
             console.log(content);
         }
-    });
-
-// Init command - copy adapters to target project
-program
-    .command('init')
-    .description('Initialize adapters in your project')
-    .option('--ai <tool>', 'AI tool to init (claude|cursor|copilot|codex|all)')
-    .option('--target <path>', 'Target directory (default: current)', '.')
-    .option('--force', 'Overwrite existing files')
-    .action(async (options) => {
-        const tool = options.ai;
-        const target = path.resolve(options.target);
-        const force = options.force ?? false;
-
-        if (!tool) {
-            console.log(chalk.red('Please specify --ai <tool>'));
-            console.log(chalk.dim('Options: claude, cursor, copilot, codex, all'));
-            return;
-        }
-
-        const adaptersDir = path.resolve(__dirname, '../../adapters');
-        const tools = tool === 'all' ? ['claude', 'cursor', 'copilot', 'codex'] : [tool];
-
-        console.log(chalk.bold('\n🚀 Initializing adapters...\n'));
-
-        for (const t of tools) {
-            const sourceDir = path.join(adaptersDir, t);
-            if (!fs.existsSync(sourceDir)) {
-                console.log(chalk.yellow(`  ⚠️  Adapter not found: ${t}`));
-                continue;
-            }
-
-            // Determine target path based on tool
-            let targetPath: string;
-            switch (t) {
-                case 'claude':
-                    targetPath = path.join(target, '.claude', 'skills');
-                    break;
-                case 'cursor':
-                    targetPath = path.join(target, '.cursor', 'rules');
-                    break;
-                case 'copilot':
-                    targetPath = path.join(target, '.github');
-                    break;
-                case 'codex':
-                    targetPath = path.join(target, '.codex');
-                    break;
-                default:
-                    targetPath = path.join(target, '.ai', t);
-            }
-
-            // Create target directory
-            fs.mkdirSync(targetPath, { recursive: true });
-
-            // Copy files
-            const files = fs.readdirSync(sourceDir);
-            for (const file of files) {
-                const srcFile = path.join(sourceDir, file);
-                const destFile = path.join(targetPath, file);
-
-                if (fs.existsSync(destFile) && !force) {
-                    console.log(chalk.yellow(`  ⏭️  Skipped (exists): ${destFile}`));
-                    continue;
-                }
-
-                fs.copyFileSync(srcFile, destFile);
-                console.log(chalk.green(`  ✓ ${t}/${file} → ${destFile}`));
-            }
-        }
-
-        console.log(chalk.bold('\n✅ Adapters initialized!\n'));
-    });
+    }));
 
 // Gate command - print checklist for quality gate
 program
@@ -224,20 +214,23 @@ program
     .description('Run quality gate checklist')
     .option('--checklist <id>', 'Checklist ID to run')
     .option('--json', 'Output as JSON')
-    .action(async (options) => {
+    .action(wrapCommand(async (options) => {
         const checklistId = options.checklist;
 
         if (!checklistId) {
-            console.log(chalk.red('Please specify --checklist <id>'));
-            console.log(chalk.dim('Use "kit list" to see available checklists'));
-            return;
+            throw new CLIError(
+                'Please specify --checklist <id>',
+                'MISSING_ARG',
+                1,
+                'Use "bek list" to see available checklists'
+            );
         }
 
         const root = path.resolve(__dirname, '../../.shared/production-backend-kit');
         const checklistsPath = path.join(root, 'db', 'checklists.json');
 
         if (!fs.existsSync(checklistsPath)) {
-            console.log(chalk.yellow('Database not found, building...'));
+            logger.warn('Database not found, building...');
             await buildDatabase();
         }
 
@@ -245,19 +238,24 @@ program
         const checklist = checklists.find((c: any) => c.id === checklistId);
 
         if (!checklist) {
-            console.log(chalk.red(`Checklist not found: ${checklistId}`));
-            return;
+            throw new CLIError(
+                `Checklist not found: ${checklistId}`,
+                'NOT_FOUND',
+                1,
+                'Use "bek list" to see available checklists'
+            );
         }
 
         if (options.json) {
             console.log(JSON.stringify(checklist, null, 2));
+            process.exit(0);
             return;
         }
 
-        console.log(chalk.bold(`\n✅ ${checklist.title}\n`));
-        console.log(chalk.dim(`ID: ${checklist.id}`));
-        console.log(chalk.dim(`Scope: ${checklist.scope}`));
-        console.log();
+        logger.header(`✅ ${checklist.title}`);
+        logger.item('ID', checklist.id);
+        logger.item('Scope', checklist.scope);
+        logger.newline();
 
         // Print checklist items
         for (const item of checklist.checklist) {
@@ -265,31 +263,36 @@ program
             console.log(`  ${checkbox} ${item.text}`);
         }
 
-        console.log();
+        logger.newline();
         process.exit(0); // Exit with success for CI usage
-    });
+    }));
 
 // Parse arguments
 program.parse();
 
 // Show help if no command provided
 if (!process.argv.slice(2).length) {
-    console.log(chalk.bold('\n🚀 Production Backend Kit CLI\n'));
-    console.log('Usage: kit <command> [options]\n');
+    console.log(chalk.bold('\n🚀 Backend Engineering Kit CLI\n'));
+    console.log('Usage: bek <command> [options]\n');
     console.log('Commands:');
+    console.log('  doctor             Check environment and dependencies');
+    console.log('  init               Initialize a new project');
     console.log('  build-db           Build the search database');
     console.log('  validate           Validate content and rebuild database');
     console.log('  normalize          Auto-fix content format issues');
     console.log('  search <query>     Search patterns and checklists');
     console.log('  list               List all available items');
     console.log('  show <id>          Show details of a specific item');
-    console.log('  init               Initialize adapters in your project');
     console.log('  gate               Run quality gate checklist');
+    console.log('\nGlobal Options:');
+    console.log('  --debug            Show debug output and stack traces');
+    console.log('  --silent           Suppress all output except errors');
+    console.log('  --verbose          Show verbose output');
     console.log('\nExamples:');
-    console.log(chalk.dim('  kit search "error handling"'));
-    console.log(chalk.dim('  kit search "pagination" --scope api'));
-    console.log(chalk.dim('  kit list --scope security'));
-    console.log(chalk.dim('  kit init --ai claude --target ./my-project'));
-    console.log(chalk.dim('  kit gate --checklist checklist-api-review'));
+    console.log(chalk.dim('  bek doctor'));
+    console.log(chalk.dim('  bek init --template standard'));
+    console.log(chalk.dim('  bek search "error handling"'));
+    console.log(chalk.dim('  bek validate --json'));
+    console.log(chalk.dim('  bek gate --checklist checklist-api-review'));
     console.log();
 }

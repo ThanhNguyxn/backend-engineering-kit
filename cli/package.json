@@ -4,19 +4,26 @@
     "description": "Production-grade backend engineering patterns, checklists & AI adapters",
     "type": "module",
     "bin": {
-        "kit": "./dist/index.js"
+        "bek": "./dist/index.js"
     },
     "scripts": {
         "build": "tsc",
         "dev": "tsc --watch",
+        "start": "node dist/index.js",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage",
+        "lint": "eslint src --ext .ts",
+        "lint:fix": "eslint src --ext .ts --fix",
+        "typecheck": "tsc --noEmit",
+        "format": "prettier --write src/**/*.ts",
         "build:db": "node dist/index.js build-db",
         "validate": "node dist/index.js validate",
-        "normalize": "node dist/index.js normalize",
-        "render-adapters": "node dist/index.js render-adapters",
-        "dev:db": "nodemon --watch '../.shared/**/*.md' --ext md --exec 'npm run build:db'",
-        "start": "node dist/index.js",
-        "typecheck": "tsc --noEmit",
-        "prepare": "npm run build"
+        "doctor": "node dist/index.js doctor",
+        "audit": "npm audit",
+        "audit:fix": "npm audit fix",
+        "prepare": "npm run build",
+        "prepublishOnly": "npm run build && npm run test"
     },
     "keywords": [
         "backend",
@@ -24,7 +31,8 @@
         "checklists",
         "api-design",
         "production",
-        "engineering"
+        "engineering",
+        "cli"
     ],
     "author": "ThanhNguyxn",
     "license": "MIT",
@@ -37,8 +45,13 @@
     },
     "devDependencies": {
         "@types/node": "^20.11.0",
-        "nodemon": "^3.0.2",
-        "typescript": "^5.3.3"
+        "@typescript-eslint/eslint-plugin": "^6.21.0",
+        "@typescript-eslint/parser": "^6.21.0",
+        "eslint": "^8.57.0",
+        "execa": "^8.0.1",
+        "prettier": "^3.2.5",
+        "typescript": "^5.3.3",
+        "vitest": "^1.2.2"
     },
     "engines": {
         "node": ">=18.0.0"
