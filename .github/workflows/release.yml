@@ -6,6 +6,17 @@ on:
     paths:
       - "cli/**"
       - ".github/workflows/release.yml"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (skip actual publish)"
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -14,7 +25,7 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    if: "!contains(github.event.head_commit.message, 'skip ci') && !contains(github.event.head_commit.message, 'skip release')"
 
     steps:
       - name: Checkout
@@ -42,6 +53,12 @@ jobs:
         working-directory: cli
         run: npm test
 
+      - name: Package sanity check
+        working-directory: cli
+        run: |
+          npm pack
+          tar -tzf production-backend-kit-*.tgz | head -20
+
       - name: Check for version change
         id: version
         working-directory: cli
@@ -52,23 +69,34 @@ jobs:
           # Check if tag exists
           if git rev-parse "v$CURRENT_VERSION" >/dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
+            echo "::notice::Tag v$CURRENT_VERSION already exists, skipping release"
           else
             echo "exists=false" >> $GITHUB_OUTPUT
+            echo "::notice::Will create release v$CURRENT_VERSION"
           fi
 
       - name: Create Release
-        if: steps.version.outputs.exists == 'false'
-        uses: softprops/action-gh-release@v1
+        if: steps.version.outputs.exists == 'false' && github.event.inputs.dry_run != 'true'
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.version.outputs.version }}
           name: Release v${{ steps.version.outputs.version }}
           generate_release_notes: true
+          files: cli/production-backend-kit-*.tgz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to npm
-        if: steps.version.outputs.exists == 'false'
+        if: steps.version.outputs.exists == 'false' && github.event.inputs.dry_run != 'true'
         working-directory: cli
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Dry run summary
+        if: github.event.inputs.dry_run == 'true'
+        run: |
+          echo "## 🧪 Dry Run Summary" >> $GITHUB_STEP_SUMMARY
+          echo "Version: v${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "Tag exists: ${{ steps.version.outputs.exists }}" >> $GITHUB_STEP_SUMMARY
+          echo "Would publish: ${{ steps.version.outputs.exists == 'false' }}" >> $GITHUB_STEP_SUMMARY
