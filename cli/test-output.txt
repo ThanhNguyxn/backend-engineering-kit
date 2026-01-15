@@ -1,0 +1,28 @@
+
+[7m[1m[36m RUN [39m[22m[27m [36mv1.6.1[39m [90mD:/Code/backend-engineering-kit/cli[39m
+
+ [33mΓ¥»[39m src/__tests__/config.test.ts [2m ([22m[2m11 tests[22m [2m|[22m [31m1 failed[39m[2m)[22m[90m 60[2mms[22m[39m
+[31m   [33mΓ¥»[31m src/__tests__/config.test.ts[2m > [22mConfig[2m > [22mloadConfig[2m > [22mshould return defaults when no config exists[39m
+[31m     ΓåÆ process.chdir() is not supported in workers[39m
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ» Failed Tests 1 ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+
+ FAIL  src/__tests__/config.test.ts > Config > loadConfig > should return defaults when no config exists
+TypeError: process.chdir() is not supported in workers
+ Γ¥» src/__tests__/config.test.ts:93:21
+     91|         it('should return defaults when no config exists', async () =>ΓÇª
+     92|             const originalCwd = process.cwd();
+     93|             process.chdir(tempDir);
+       |                     ^
+     94| 
+     95|             try {
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+Serialized Error: { code: 'ERR_WORKER_UNSUPPORTED_OPERATION' }
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[1/1]ΓÄ»
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m10 passed[39m[22m[90m (11)[39m
+[2m   Start at [22m 12:08:48
+[2m   Duration [22m 565ms[2m (transform 59ms, setup 0ms, collect 36ms, tests 60ms, environment 0ms, prepare 153ms)[22m
+
