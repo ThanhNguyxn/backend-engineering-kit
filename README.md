@@ -4,16 +4,13 @@
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
-[![Made with ❤️](https://img.shields.io/badge/Made%20with-❤️-red.svg)](https://github.com/ThanhNguyxn)
-[![Claude Compatible](https://img.shields.io/badge/Claude-Compatible-blueviolet?logo=anthropic)](https://claude.ai)
-[![Cursor Compatible](https://img.shields.io/badge/Cursor-Compatible-00C4B4?logo=cursor)](https://cursor.sh)
-[![Copilot Compatible](https://img.shields.io/badge/Copilot-Compatible-blue?logo=github)](https://github.com/features/copilot)
-[![Codex Compatible](https://img.shields.io/badge/Codex-Compatible-412991?logo=openai)](https://openai.com/codex)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?logo=node.js)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 
 **A comprehensive knowledge base + CLI + adapters for AI-powered backend development**
 
-[📦 Quickstart](#-quickstart) •
-[🔧 CLI](#-cli) •
+[⚡ Quickstart](#-quickstart) •
+[🔧 CLI Reference](#-cli-reference) •
 [🔌 Adapters](#-adapters) •
 [📋 Patterns](#-patterns--checklists) •
 [🤝 Contributing](#-contributing)
@@ -22,90 +19,230 @@
 
 ---
 
-## ⚡ Quickstart (60 seconds)
+## ⚡ Quickstart
+
+### Prerequisites
+
+- Node.js 18 or higher
+- npm, yarn, or pnpm
+
+### Installation
 
 ```bash
-# Install globally
+# Install globally (recommended)
 npm install -g production-backend-kit
 
-# Check your environment
+# Verify installation
+bek --version
+# Output: 1.0.0
+
+# Check environment
 bek doctor
+```
 
-# Initialize in your project
+**Expected output from `bek doctor`:**
+```
+🩺 Environment Check
+
+  ✔ Operating System: win32 10.0.22631 (x64)
+  ✔ Node.js: v20.10.0 (>= 18 required)
+  ✔ Package Manager: npm@10.2.3
+  ✔ Git: 2.43.0
+  ✔ Disk Access: Writable
+  ⚠ Config File: Not found (using defaults)
+  ✔ Project: package.json found
+
+⚠ Some checks have warnings. Consider addressing them.
+```
+
+### Quick Start in Your Project
+
+```bash
+# Navigate to your project
 cd your-project
-bek init --template standard
 
-# Search patterns
+# Initialize with standard template
+bek init --template standard -y
+
+# Search for patterns
 bek search "error handling"
 
 # Run quality gate
 bek gate --checklist checklist-api-review
 ```
 
-## 🔧 CLI
+---
 
-The Backend Engineering Kit includes a powerful CLI for managing patterns, checklists, and AI adapters.
-
-### Installation
-
-```bash
-# Global install (recommended)
-npm install -g production-backend-kit
-
-# Or use npx
-npx production-backend-kit <command>
-```
-
-### Commands
-
-| Command | Description |
-|---------|-------------|
-| `bek doctor` | Check environment and dependencies |
-| `bek init` | Initialize a new project with templates |
-| `bek lint` | Lint content files for issues |
-| `bek build-db` | Build the search database |
-| `bek validate` | Validate content and rebuild database |
-| `bek search <query>` | Search patterns and checklists |
-| `bek list` | List all available patterns/checklists |
-| `bek show <id>` | Show details of a specific item |
-| `bek gate` | Run quality gate checklist |
+## 🔧 CLI Reference
 
 ### Global Options
 
+All commands support these global options:
+
+| Option | Description |
+|--------|-------------|
+| `--debug` | Show debug output and full stack traces |
+| `--silent` | Suppress all output except errors |
+| `--verbose` | Show detailed verbose output |
+| `--json` | Output machine-readable JSON (where supported) |
+
+### Commands
+
+#### `bek doctor`
+
+Check your environment and dependencies.
+
 ```bash
---debug     # Show debug output and stack traces
---silent    # Suppress all output except errors
---verbose   # Show verbose output
+bek doctor           # Human-readable output
+bek doctor --json    # JSON output for CI/CD
 ```
 
-### Examples
+**Exit codes:**
+- `0` - All checks passed
+- `1` - Some warnings
+- `2` - Critical errors
+
+---
+
+#### `bek init`
+
+Initialize a new Backend Kit project.
 
 ```bash
-# Initialize with advanced template
-bek init --template advanced
+# Interactive mode
+bek init
 
-# Search with filters
+# Non-interactive with template
+bek init --template standard -y
+
+# Dry run (preview without creating files)
+bek init --template advanced --dry-run
+
+# Initialize with specific AI adapter
+bek init --ai claude --target ./my-project
+```
+
+**Options:**
+| Option | Description |
+|--------|-------------|
+| `-t, --template <name>` | Template: `minimal`, `standard`, `advanced` |
+| `--target <path>` | Target directory (default: current) |
+| `--ai <tools>` | AI adapters: `claude,cursor,copilot,codex,all` |
+| `--force` | Overwrite existing files |
+| `--dry-run` | Preview changes without creating files |
+| `-y, --yes` | Skip prompts, use defaults |
+
+**Templates:**
+- `minimal` - Basic patterns + search
+- `standard` - Patterns + checklists + validation (default)
+- `advanced` - Full setup with adapters + CI/CD
+
+---
+
+#### `bek lint`
+
+Lint content files for issues.
+
+```bash
+bek lint             # Human-readable output
+bek lint --json      # JSON output for CI/CD
+```
+
+**Example output:**
+```
+🔍 Linting content...
+
+ℹ Checked 30 files
+
+.shared/production-backend-kit/patterns/api.error-model.md
+  ⚠ Missing recommended field: scope [frontmatter-recommended]
+  ⚠ Missing recommended field: maturity [frontmatter-recommended]
+
+Found 0 errors and 90 warnings
+```
+
+---
+
+#### `bek search <query>`
+
+Search patterns and checklists.
+
+```bash
+# Basic search
+bek search "pagination"
+
+# With filters
 bek search "authentication" --scope security
-bek search "pagination" --level intermediate
-
-# List by scope
-bek list --scope database
-
-# Lint content
-bek lint --json
-
-# Run quality gate
-bek gate --checklist checklist-prod-readiness
+bek search "database" --level intermediate
+bek search "error" --limit 5
 ```
 
-## ✨ Features
+**Options:**
+| Option | Description |
+|--------|-------------|
+| `-t, --tag <tag>` | Filter by tag |
+| `-s, --stack <stack>` | Filter by stack (postgresql, nodejs, etc.) |
+| `-l, --level <level>` | Filter by level: beginner, intermediate, advanced |
+| `--scope <scope>` | Filter by scope: api, database, security, reliability, observability |
+| `-n, --limit <n>` | Limit results (default: 10) |
 
-- 🎯 **Battle-tested patterns** for API design, error handling, pagination, and more
-- 🔧 **Multi-AI adapters** - Works with Claude, Cursor, Copilot, and Codex
-- 📋 **Ready-to-use checklists** for code reviews, API reviews, and deployments
-- 🔍 **Full-text search** with MiniSearch indexing
-- 🩺 **Doctor command** for environment checks
-- 📊 **JSON output** for CI/CD integration
+---
+
+#### `bek list`
+
+List all available patterns and checklists.
+
+```bash
+bek list                    # List all
+bek list --scope security   # Filter by scope
+bek list --tag api          # Filter by tag
+```
+
+---
+
+#### `bek show <id>`
+
+Show details of a specific pattern or checklist.
+
+```bash
+bek show api-error-model
+bek show checklist-api-review --json
+```
+
+---
+
+#### `bek gate`
+
+Run quality gate checklist.
+
+```bash
+bek gate --checklist checklist-api-review
+bek gate --checklist checklist-prod-readiness --json
+```
+
+---
+
+#### `bek validate`
+
+Validate content and rebuild database.
+
+```bash
+bek validate           # Validate and rebuild
+bek validate --fix     # Auto-fix issues first
+bek validate --json    # JSON output
+```
+
+---
+
+#### `bek build-db`
+
+Build/rebuild the search database.
+
+```bash
+bek build-db
+```
+
+---
 
 ## 🔌 Adapters
 
@@ -116,84 +253,126 @@ bek gate --checklist checklist-prod-readiness
 | ⚫ **Copilot** | `adapters/copilot/` | Custom instructions for GitHub Copilot |
 | 🟢 **Codex** | `adapters/codex/` | Skill guide for OpenAI Codex |
 
-### Quick Setup
+### Manual Setup
+
+```bash
+# Claude
+cp -r adapters/claude/* your-project/.claude/skills/
+
+# Cursor
+cp adapters/cursor/*.md your-project/.cursor/rules/
+
+# Copilot
+cp adapters/copilot/*.md your-project/.github/
+
+# Codex
+cp adapters/codex/*.md your-project/.codex/
+```
+
+### Using CLI
 
 ```bash
 # Initialize all adapters
 bek init --ai all
 
-# Or specific adapter
+# Initialize specific adapter
 bek init --ai claude --target ./my-project
 ```
+
+---
 
 ## 📋 Patterns & Checklists
 
 ### Patterns (25+)
 
-| Category | Examples |
+| Category | Patterns |
 |----------|----------|
-| **API** | Error Model, Pagination, Versioning, Webhooks |
-| **Database** | Indexing, Migrations, Transactions, N+1 Avoid |
-| **Security** | Auth Boundaries, Rate Limiting, Password Storage |
-| **Reliability** | Timeouts, Retries, Circuit Breaker, Outbox |
-| **Observability** | Correlation ID, Structured Logging, Metrics |
+| **API** | Error Model, Pagination, Versioning, Webhooks, Idempotency |
+| **Database** | Indexing, Migrations, Transactions, N+1 Avoid, Schema Constraints |
+| **Security** | Auth Boundaries, Rate Limiting, Password Storage, Secrets Management |
+| **Reliability** | Timeouts, Retries, Circuit Breaker, Outbox Pattern, DLQ |
+| **Observability** | Correlation ID, Structured Logging, RED/USE Metrics |
 
-### Checklists (5)
+### Checklists
 
-| Checklist | Description |
-|-----------|-------------|
+| ID | Description |
+|----|-------------|
 | `checklist-api-review` | Comprehensive API review |
 | `checklist-db-review` | Database schema and query review |
 | `checklist-security-review` | Security controls audit |
 | `checklist-reliability-review` | Resilience patterns check |
 | `checklist-prod-readiness` | Pre-deployment checklist |
 
+---
+
 ## 📁 Directory Structure
 
 ```
 production-backend-kit/
-├── cli/                    # CLI source code
-│   └── src/
-│       ├── commands/       # CLI commands
-│       ├── lib/            # Shared utilities
-│       └── __tests__/      # Test files
-├── adapters/               # AI tool adapters
+├── cli/                         # CLI source (TypeScript)
+│   ├── src/
+│   │   ├── commands/            # doctor, init, lint
+│   │   ├── lib/                 # logger, errors, config
+│   │   └── __tests__/           # Unit & integration tests
+│   ├── dist/                    # Compiled JavaScript
+│   └── package.json
+├── adapters/                    # AI tool adapters
 │   ├── claude/
 │   ├── cursor/
 │   ├── copilot/
 │   └── codex/
-├── .shared/
-│   └── production-backend-kit/
-│       ├── patterns/       # Pattern files (*.md)
-│       ├── checklists/     # Checklist files (*.md)
-│       └── db/             # Generated search index
-└── docs/                   # Documentation
+├── .shared/production-backend-kit/
+│   ├── patterns/                # Pattern markdown files
+│   ├── checklists/              # Checklist markdown files
+│   └── db/                      # Generated search index
+├── docs/
+│   ├── architecture.md          # CLI architecture
+│   └── templates.md             # Template system
+├── CONTRIBUTING.md
+├── CHANGELOG.md
+└── SECURITY.md
 ```
+
+---
+
+## 🛠️ Development
+
+```bash
+# Clone repository
+git clone https://github.com/ThanhNguyxn/backend-engineering-kit.git
+cd backend-engineering-kit
+
+# Install dependencies
+cd cli
+npm install
+
+# Build
+npm run build
+
+# Run tests
+npm test
+
+# Development mode (watch)
+npm run dev
+```
+
+---
 
 ## 🤝 Contributing
 
-Contributions are always welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-```bash
-# Development setup
-cd cli
-npm install
-npm run build
-npm test
-```
+---
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
 <div align="center">
 
 **Built with ❤️ by [ThanhNguyxn](https://github.com/ThanhNguyxn)**
-
-[![Sponsor on GitHub](https://img.shields.io/badge/Sponsor_on_GitHub-❤️-ea4aaa?style=for-the-badge&logo=github)](https://github.com/sponsors/ThanhNguyxn)
-[![Buy Me A Coffee](https://img.shields.io/badge/Buy_Me_A_Coffee-☕-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/thanhnguyxn)
 
 ⭐ Star this repo if you find it helpful!
 

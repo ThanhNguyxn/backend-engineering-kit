@@ -14,7 +14,7 @@ build/
 *.egg-info/
 target/
 
-# Generated DB (optional - can commit for better search UX)
+# Generated DB (can commit for better search UX)
 # .shared/**/db/
 
 # IDE
@@ -23,6 +23,8 @@ target/
 *.swp
 *.swo
 *~
+
+# OS
 .DS_Store
 Thumbs.db
 
@@ -36,7 +38,7 @@ coverage/
 htmlcov/
 .pytest_cache/
 .nyc_output/
+test-output.txt
 
-# OS
-.DS_Store
-Thumbs.db
+# Lock files (optional - uncomment if needed)
+# package-lock.json
