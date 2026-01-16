@@ -35,7 +35,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: cli
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Type check
         working-directory: cli
@@ -75,7 +75,7 @@ jobs:
       - name: Install and build
         working-directory: cli
         run: |
-          npm ci
+          npm ci --legacy-peer-deps
           npm run build
 
       - name: Package tarball
