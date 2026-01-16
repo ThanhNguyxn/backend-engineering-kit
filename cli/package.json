@@ -1,6 +1,6 @@
 {
     "name": "production-backend-kit",
-    "version": "1.0.9",
+    "version": "1.0.10",
     "description": "Production-grade backend engineering patterns, checklists & AI adapters",
     "type": "module",
     "bin": {
