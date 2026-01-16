@@ -80,7 +80,9 @@ jobs:
 
       - name: Package tarball
         working-directory: cli
-        run: npm pack
+        run: |
+          rm -f *.tgz
+          npm pack
 
       - name: Test CLI from tarball
         working-directory: cli
