@@ -5,6 +5,7 @@ import { createInterface } from 'readline';
 import logger from '../lib/logger.js';
 import { createConfigFile } from '../lib/config.js';
 import { CLIError } from '../lib/errors.js';
+import { getPreset, getPresetNames, copyPresetFiles } from '../lib/presets.js';
 const TEMPLATES = {
     minimal: {
         name: 'Minimal',
@@ -206,6 +207,58 @@ export async function initCommand(options = {}) {
         fs.existsSync(path.join(target, '.bekrc'));
     if (configExists && !force) {
         throw new CLIError('Project already initialized (config file exists)', 'ALREADY_INIT', 1, 'Use --force to reinitialize');
+    }
+    // Handle preset mode
+    if (options.preset) {
+        const preset = getPreset(options.preset);
+        if (!preset) {
+            throw new CLIError(`Unknown preset: ${options.preset}`, 'INVALID_PRESET', 1, `Available: ${getPresetNames().join(', ')}`);
+        }
+        logger.info(`Using preset: ${chalk.bold(preset.name)}`);
+        logger.info(chalk.dim(preset.description));
+        if (dryRun) {
+            logger.newline();
+            logger.info(chalk.yellow('DRY RUN - no changes will be made'));
+        }
+        logger.newline();
+        logger.info('Copying preset files...');
+        const { copied, missing } = copyPresetFiles(preset, target, dryRun);
+        for (const file of copied) {
+            logger.log(`  ${chalk.green('+')} ${file}`);
+        }
+        if (missing.length > 0) {
+            logger.warn(`Missing source files: ${missing.join(', ')}`);
+        }
+        // Create config
+        const config = {
+            name: path.basename(target),
+            preset: options.preset,
+            features: {
+                search: true,
+                validation: true,
+                adapters: preset.adapters || []
+            }
+        };
+        if (!dryRun) {
+            const configPath = createConfigFile(target, config, 'json');
+            logger.log(`  ${chalk.green('+')} ${path.relative(target, configPath)}`);
+        }
+        else {
+            logger.log(`  ${chalk.green('+')} bek.config.json`);
+        }
+        logger.newline();
+        if (dryRun) {
+            logger.success('Dry run complete. Run without --dry-run to apply changes.');
+        }
+        else {
+            logger.success(`Preset "${preset.name}" initialized!`);
+            logger.newline();
+            logger.log(chalk.bold('Next steps:'));
+            logger.log(chalk.dim('  1. Review patterns in .backend-kit/patterns/'));
+            logger.log(chalk.dim('  2. Run: bek validate'));
+            logger.log(chalk.dim('  3. Run: bek gate --checklist checklist.api-review'));
+        }
+        return;
     }
     // Select template
     let templateKey = options.template || 'standard';

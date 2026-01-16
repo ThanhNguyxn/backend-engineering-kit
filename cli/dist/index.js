@@ -47,12 +47,16 @@ program
     .command('init')
     .description('Initialize a new Backend Kit project')
     .option('-t, --template <name>', 'Template to use (minimal|standard|advanced)')
+    .option('-p, --preset <name>', 'Use a preset (node-express|node-fastify|node-minimal)')
     .option('--target <path>', 'Target directory', '.')
+    .option('--out <path>', 'Alias for --target')
     .option('--ai <tools>', 'AI adapters to include (claude,cursor,copilot,codex,all)')
     .option('--force', 'Overwrite existing files')
     .option('--dry-run', 'Show what would be created without making changes')
     .option('-y, --yes', 'Skip prompts, use defaults')
     .action(wrapCommand(async (options) => {
+    if (options.out)
+        options.target = options.out;
     await initCommand(options);
 }));
 // Lint command

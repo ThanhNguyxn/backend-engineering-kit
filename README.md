@@ -131,8 +131,13 @@ bek init
 # Non-interactive with template
 bek init --template standard -y
 
+# Use a preset (copies real patterns/checklists from source)
+bek init --preset node-express
+bek init --preset node-fastify
+bek init --preset node-minimal
+
 # Dry run (preview without creating files)
-bek init --template advanced --dry-run
+bek init --preset node-express --dry-run
 
 # Initialize with specific AI adapter
 bek init --ai claude --target ./my-project
@@ -142,16 +147,37 @@ bek init --ai claude --target ./my-project
 | Option | Description |
 |--------|-------------|
 | `-t, --template <name>` | Template: `minimal`, `standard`, `advanced` |
+| `-p, --preset <name>` | Preset: `node-express`, `node-fastify`, `node-minimal` |
 | `--target <path>` | Target directory (default: current) |
+| `--out <path>` | Alias for --target |
 | `--ai <tools>` | AI adapters: `claude,cursor,copilot,codex,all` |
 | `--force` | Overwrite existing files |
 | `--dry-run` | Preview changes without creating files |
 | `-y, --yes` | Skip prompts, use defaults |
 
-**Templates:**
-- `minimal` - Basic patterns + search
-- `standard` - Patterns + checklists + validation (default)
-- `advanced` - Full setup with adapters + CI/CD
+**Templates vs Presets:**
+- **Templates** create sample files for you to customize
+- **Presets** copy real patterns and checklists from the kit's knowledge base
+
+**Presets:**
+| Preset | Patterns | Checklists |
+|--------|----------|------------|
+| `node-express` | error-model, validation, logging, correlation-id, rate-limiting | api-review, prod-readiness |
+| `node-fastify` | error-model, validation, logging, timeouts, rate-limiting | api-review, reliability-review |
+| `node-minimal` | error-model, logging | api-review |
+
+**Output structure (preset):**
+```
+.backend-kit/
+├── patterns/
+│   ├── api.error-model.md
+│   ├── api.request-validation.md
+│   └── ...
+├── checklists/
+│   ├── checklist.api-review.md
+│   └── checklist.prod-readiness.md
+└── bek.config.json
+```
 
 ---
 

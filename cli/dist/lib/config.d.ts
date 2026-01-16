@@ -1,6 +1,7 @@
 export interface BekConfig {
     name?: string;
     version?: string;
+    preset?: string;
     patternsDir?: string;
     checklistsDir?: string;
     outputDir?: string;

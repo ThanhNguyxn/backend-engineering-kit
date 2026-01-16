@@ -7,6 +7,7 @@ export interface BekConfig {
     // Project settings
     name?: string;
     version?: string;
+    preset?: string;
 
     // Paths
     patternsDir?: string;
