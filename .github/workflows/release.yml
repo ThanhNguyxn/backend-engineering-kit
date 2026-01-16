@@ -53,6 +53,9 @@ jobs:
         working-directory: cli
         run: npm test
 
+      - name: Copy README to cli for npm
+        run: cp README.md cli/README.md
+
       - name: Package sanity check
         working-directory: cli
         run: |
