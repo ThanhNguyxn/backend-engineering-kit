@@ -60,6 +60,7 @@ jobs:
       - name: Package sanity check
         working-directory: cli
         run: |
+          rm -f *.tgz
           npm pack
           tar -tzf production-backend-kit-*.tgz | head -20
           # Create stable-named asset for /releases/latest/download/
