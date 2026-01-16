@@ -28,11 +28,10 @@
 
 ### Installation
 
-#### Option 1: Install from GitHub Release (recommended)
+#### Option 1: Install from npm (recommended)
 
 ```bash
-# Download and install the latest release
-npm install -g https://github.com/ThanhNguyxn/backend-engineering-kit/releases/latest/download/production-backend-kit.tgz
+npm install -g production-backend-kit
 
 # Verify installation
 bek --version
@@ -41,28 +40,21 @@ bek --version
 bek doctor
 ```
 
-#### Option 2: Install from source (for development)
+#### Option 2: Install from GitHub Release
 
 ```bash
-# Clone the repository
-git clone https://github.com/ThanhNguyxn/backend-engineering-kit.git
-cd backend-engineering-kit/cli
-
-# Install dependencies and build
-npm install
-npm run build
-
-# Link globally for development
-npm link
-
-# Verify
-bek --version
+# Download and install the latest release
+npm install -g https://github.com/ThanhNguyxn/backend-engineering-kit/releases/latest/download/production-backend-kit.tgz
 ```
 
-> **Note**: Once published to npm, you'll be able to install directly via:
-> ```bash
-> npm install -g production-backend-kit
-> ```
+#### Option 3: Install from source (for development)
+
+```bash
+git clone https://github.com/ThanhNguyxn/backend-engineering-kit.git
+cd backend-engineering-kit/cli
+npm install && npm run build
+npm link
+```
 
 **Expected output from `bek doctor`:**
 ```
