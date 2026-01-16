@@ -2,14 +2,16 @@
 
 <div align="center">
 
+[![CI](https://github.com/ThanhNguyxn/backend-engineering-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/ThanhNguyxn/backend-engineering-kit/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/ThanhNguyxn/backend-engineering-kit/actions/workflows/codeql.yml/badge.svg)](https://github.com/ThanhNguyxn/backend-engineering-kit/actions/workflows/codeql.yml)
+[![npm version](https://img.shields.io/npm/v/production-backend-kit.svg)](https://www.npmjs.com/package/production-backend-kit)
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-339933?logo=node.js)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 
 **A comprehensive knowledge base + CLI + adapters for AI-powered backend development**
 
-[⚡ Quickstart](#-quickstart) •
+[⚡ 60s Quickstart](#-60-seconds-quickstart) •
 [🔧 CLI Reference](#-cli-reference) •
 [🔌 Adapters](#-adapters) •
 [📋 Patterns](#-patterns--checklists) •
@@ -19,7 +21,24 @@
 
 ---
 
-## ⚡ Quickstart
+## ⚡ 60 Seconds Quickstart
+
+```bash
+# 1. Install
+npm install -g production-backend-kit
+
+# 2. Check your environment
+bek doctor
+
+# 3. Initialize your project with a preset
+bek init --preset node-express
+```
+
+**That's it!** You now have production-grade patterns and checklists in your project.
+
+---
+
+## 📦 Installation
 
 ### Prerequisites
 

@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-01-16
+
+### Added
+- **Preset system**: `bek init --preset <name>` copies real patterns/checklists from knowledge base
+- **Available presets**: `node-express`, `node-fastify`, `node-minimal`
+- **60 Seconds Quickstart**: New README section with 3 copy-paste commands
+- **Trust signals**: CI, CodeQL, npm version badges
+- **New flags**: `--preset`, `--out` for init command
+
+### Changed
+- README restructured for faster onboarding
+- npm install now primary installation method
+
+### Fixed
+- ESM path resolution in presets using `import.meta.url`
+
 ## [0.2.0] - 2026-01-16
 
 ### Changed

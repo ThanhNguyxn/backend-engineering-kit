@@ -21,7 +21,7 @@ const program = new Command();
 program
     .name('bek')
     .description('Backend Engineering Kit CLI - Patterns, Checklists & AI Adapters')
-    .version('0.2.0')
+    .version('0.3.0')
     .option('--debug', 'Enable debug mode (show stack traces)')
     .option('--silent', 'Suppress all output except errors')
     .option('--verbose', 'Show verbose output')
