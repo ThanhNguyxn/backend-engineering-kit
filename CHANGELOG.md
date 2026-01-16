@@ -100,5 +100,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/ThanhNguyxn/backend-engineering-kit/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/ThanhNguyxn/backend-engineering-kit/compare/v1.0.10...HEAD
 [1.0.0]: https://github.com/ThanhNguyxn/backend-engineering-kit/releases/tag/v1.0.0

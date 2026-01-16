@@ -91,9 +91,13 @@ jobs:
           mkdir -p /tmp/pkg-test
           tar -xzf production-backend-kit-*.tgz -C /tmp/pkg-test
 
-          # Verify bin exists and is executable
-          test -f /tmp/pkg-test/package/dist/index.js
+          # Install production dependencies
+          cd /tmp/pkg-test/package
+          npm install --omit=dev --legacy-peer-deps
+
+          # Verify bin exists
+          test -f dist/index.js
 
           # Run smoke test
-          node /tmp/pkg-test/package/dist/index.js --help
-          node /tmp/pkg-test/package/dist/index.js --version
+          node dist/index.js --help
+          node dist/index.js --version
