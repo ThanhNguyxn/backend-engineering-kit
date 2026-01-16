@@ -398,6 +398,10 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 **Built with ❤️ by [ThanhNguyxn](https://github.com/ThanhNguyxn)**
 
+[![Sponsor on GitHub](https://img.shields.io/badge/Sponsor_on_GitHub-❤️-ea4aaa?style=for-the-badge&logo=github)](https://github.com/sponsors/ThanhNguyxn)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy_Me_A_Coffee-☕-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/thanhnguyxn)
+
 ⭐ Star this repo if you find it helpful!
 
 </div>
+
