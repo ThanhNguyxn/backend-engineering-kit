@@ -28,17 +28,42 @@
 
 ### Installation
 
+#### Option 1: Install from GitHub Release (recommended)
+
 ```bash
-# Install globally (recommended)
-npm install -g production-backend-kit
+# Download and install the latest release
+npm install -g https://github.com/ThanhNguyxn/backend-engineering-kit/releases/download/v0.1.0/production-backend-kit-0.1.0.tgz
 
 # Verify installation
 bek --version
-# Output: 1.0.0
+# Output: 0.1.0
 
 # Check environment
 bek doctor
 ```
+
+#### Option 2: Install from source (for development)
+
+```bash
+# Clone the repository
+git clone https://github.com/ThanhNguyxn/backend-engineering-kit.git
+cd backend-engineering-kit/cli
+
+# Install dependencies and build
+npm install
+npm run build
+
+# Link globally for development
+npm link
+
+# Verify
+bek --version
+```
+
+> **Note**: Once published to npm, you'll be able to install directly via:
+> ```bash
+> npm install -g production-backend-kit
+> ```
 
 **Expected output from `bek doctor`:**
 ```
