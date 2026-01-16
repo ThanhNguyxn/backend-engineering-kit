@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-01-16
+
+### Changed
+- **Install story**: README now uses stable `/releases/latest/download/` URL (no version hardcoding)
+- **Release workflow**: Uploads both versioned and stable-named assets (`production-backend-kit.tgz`)
+- **Dependencies**: Updated commander, @types/node, prettier, execa, vitest, actions/*
+
+### Fixed
+- Synced package-lock.json with Dependabot merges
+- CI workflow now passes on all platforms
+
+### Housekeeping
+- Closed 11 Dependabot PRs (6 merged, 5 closed with conflicts)
+- Deferred eslint 9 migration to separate PR
+
 ## [1.0.0] - 2026-01-14
 
 ### Added
