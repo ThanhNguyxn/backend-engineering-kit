@@ -32,11 +32,10 @@
 
 ```bash
 # Download and install the latest release
-npm install -g https://github.com/ThanhNguyxn/backend-engineering-kit/releases/download/v0.1.0/production-backend-kit-0.1.0.tgz
+npm install -g https://github.com/ThanhNguyxn/backend-engineering-kit/releases/latest/download/production-backend-kit.tgz
 
 # Verify installation
 bek --version
-# Output: 0.1.0
 
 # Check environment
 bek doctor

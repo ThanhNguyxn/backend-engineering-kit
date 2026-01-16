@@ -58,6 +58,8 @@ jobs:
         run: |
           npm pack
           tar -tzf production-backend-kit-*.tgz | head -20
+          # Create stable-named asset for /releases/latest/download/
+          cp production-backend-kit-*.tgz production-backend-kit.tgz
 
       - name: Check for version change
         id: version
@@ -82,7 +84,9 @@ jobs:
           tag_name: v${{ steps.version.outputs.version }}
           name: Release v${{ steps.version.outputs.version }}
           generate_release_notes: true
-          files: cli/production-backend-kit-*.tgz
+          files: |
+            cli/production-backend-kit-*.tgz
+            cli/production-backend-kit.tgz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
