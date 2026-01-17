@@ -1,9 +1,16 @@
 ---
 id: rel-circuit-breaker
 title: Circuit Breaker
-tags: [reliability, circuit-breaker, resilience, fault-tolerance]
+tags:
+  - reliability
+  - circuit-breaker
+  - resilience
+  - fault-tolerance
 level: advanced
-stacks: [all]
+stacks:
+  - all
+scope: reliability
+maturity: stable
 ---
 
 # Circuit Breaker

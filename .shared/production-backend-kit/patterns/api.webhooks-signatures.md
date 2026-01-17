@@ -1,9 +1,16 @@
 ---
 id: api-webhooks-signatures
 title: Webhook Signatures
-tags: [api, webhooks, security, signatures]
+tags:
+  - api
+  - webhooks
+  - security
+  - signatures
 level: intermediate
-stacks: [all]
+stacks:
+  - all
+scope: api
+maturity: stable
 ---
 
 # Webhook Signatures

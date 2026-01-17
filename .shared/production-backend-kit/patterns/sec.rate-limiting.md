@@ -1,9 +1,16 @@
 ---
 id: sec-rate-limiting
 title: Rate Limiting
-tags: [security, rate-limiting, ddos, availability]
+tags:
+  - security
+  - rate-limiting
+  - ddos
+  - availability
 level: intermediate
-stacks: [all]
+stacks:
+  - all
+scope: security
+maturity: stable
 ---
 
 # Rate Limiting

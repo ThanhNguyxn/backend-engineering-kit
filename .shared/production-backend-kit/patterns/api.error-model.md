@@ -1,9 +1,16 @@
 ---
 id: api-error-model
 title: API Error Model
-tags: [api, error-handling, rest, http]
+tags:
+  - api
+  - error-handling
+  - rest
+  - http
 level: beginner
-stacks: [all]
+stacks:
+  - all
+scope: api
+maturity: stable
 ---
 
 # API Error Model

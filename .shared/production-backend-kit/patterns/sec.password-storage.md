@@ -1,9 +1,16 @@
 ---
 id: sec-password-storage
 title: Password Storage
-tags: [security, passwords, hashing, authentication]
+tags:
+  - security
+  - passwords
+  - hashing
+  - authentication
 level: intermediate
-stacks: [all]
+stacks:
+  - all
+scope: security
+maturity: stable
 ---
 
 # Password Storage

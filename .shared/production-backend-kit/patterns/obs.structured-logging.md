@@ -1,9 +1,16 @@
 ---
 id: obs-structured-logging
 title: Structured Logging
-tags: [observability, logging, json, debugging]
+tags:
+  - observability
+  - logging
+  - json
+  - debugging
 level: beginner
-stacks: [all]
+stacks:
+  - all
+scope: observability
+maturity: stable
 ---
 
 # Structured Logging

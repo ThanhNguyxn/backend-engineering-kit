@@ -1,9 +1,16 @@
 ---
 id: rel-timeouts
 title: Timeouts
-tags: [reliability, timeouts, resilience, latency]
+tags:
+  - reliability
+  - timeouts
+  - resilience
+  - latency
 level: intermediate
-stacks: [all]
+stacks:
+  - all
+scope: reliability
+maturity: stable
 ---
 
 # Timeouts

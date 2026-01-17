@@ -1,9 +1,16 @@
 ---
 id: obs-correlation-id
 title: Correlation ID
-tags: [observability, tracing, debugging, distributed-systems]
+tags:
+  - observability
+  - tracing
+  - debugging
+  - distributed-systems
 level: beginner
-stacks: [all]
+stacks:
+  - all
+scope: observability
+maturity: stable
 ---
 
 # Correlation ID

@@ -1,9 +1,16 @@
 ---
 id: rel-retries-backoff
 title: Retries with Backoff
-tags: [reliability, retries, backoff, resilience]
+tags:
+  - reliability
+  - retries
+  - backoff
+  - resilience
 level: intermediate
-stacks: [all]
+stacks:
+  - all
+scope: reliability
+maturity: stable
 ---
 
 # Retries with Backoff

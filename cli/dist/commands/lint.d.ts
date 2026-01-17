@@ -8,6 +8,7 @@ interface LintIssue {
     level: 'error' | 'warning';
     rule: string;
     message: string;
+    fixable?: boolean;
 }
 interface LintResult {
     issues: LintIssue[];
@@ -15,9 +16,10 @@ interface LintResult {
         files: number;
         errors: number;
         warnings: number;
+        fixed: number;
     };
 }
-export declare function lintContent(baseDir?: string): Promise<LintResult>;
+export declare function lintContent(baseDir?: string, fix?: boolean): Promise<LintResult>;
 export declare function lintCommand(options?: LintOptions): Promise<void>;
 export {};
 //# sourceMappingURL=lint.d.ts.map

@@ -1,9 +1,16 @@
 ---
 id: api-request-validation
 title: Request Validation
-tags: [api, validation, security, input]
+tags:
+  - api
+  - validation
+  - security
+  - input
 level: beginner
-stacks: [all]
+stacks:
+  - all
+scope: api
+maturity: stable
 ---
 
 # Request Validation

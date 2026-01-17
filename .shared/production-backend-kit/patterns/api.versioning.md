@@ -1,9 +1,16 @@
 ---
 id: api-versioning
 title: API Versioning
-tags: [api, versioning, rest, backward-compatibility]
+tags:
+  - api
+  - versioning
+  - rest
+  - backward-compatibility
 level: intermediate
-stacks: [all]
+stacks:
+  - all
+scope: api
+maturity: stable
 ---
 
 # API Versioning

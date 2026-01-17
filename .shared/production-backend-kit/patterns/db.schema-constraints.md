@@ -1,9 +1,18 @@
 ---
 id: db-schema-constraints
 title: Database Schema Constraints
-tags: [database, schema, constraints, integrity]
+tags:
+  - database
+  - schema
+  - constraints
+  - integrity
 level: beginner
-stacks: [postgresql, mysql, sqlserver]
+stacks:
+  - postgresql
+  - mysql
+  - sqlserver
+scope: database
+maturity: stable
 ---
 
 # Database Schema Constraints

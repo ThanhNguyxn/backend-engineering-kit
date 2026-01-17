@@ -1,9 +1,16 @@
 ---
 id: db-migrations-strategy
 title: Database Migrations Strategy
-tags: [database, migrations, schema, devops]
+tags:
+  - database
+  - migrations
+  - schema
+  - devops
 level: intermediate
-stacks: [all]
+stacks:
+  - all
+scope: database
+maturity: stable
 ---
 
 # Database Migrations Strategy

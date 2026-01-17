@@ -3,8 +3,17 @@ id: checklist-reliability-review
 title: Reliability Review Checklist
 description: Reliability and resilience review for distributed systems
 category: checklists
-tags: [reliability, resilience, sre, review]
+tags:
+  - reliability
+  - resilience
+  - sre
+  - review
 version: 1.0.0
+scope: reliability
+level: advanced
+maturity: stable
+stacks:
+  - all
 ---
 
 # Reliability Review Checklist

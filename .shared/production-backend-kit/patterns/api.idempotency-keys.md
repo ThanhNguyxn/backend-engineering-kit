@@ -1,9 +1,16 @@
 ---
 id: api-idempotency-keys
 title: Idempotency Keys
-tags: [api, idempotency, reliability, payments]
+tags:
+  - api
+  - idempotency
+  - reliability
+  - payments
 level: intermediate
-stacks: [all]
+stacks:
+  - all
+scope: api
+maturity: stable
 ---
 
 # Idempotency Keys

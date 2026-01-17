@@ -1,9 +1,17 @@
 ---
 id: sec-authn-authz-boundary
 title: Authentication vs Authorization Boundary
-tags: [security, authentication, authorization, rbac, access-control]
+tags:
+  - security
+  - authentication
+  - authorization
+  - rbac
+  - access-control
 level: intermediate
-stacks: [all]
+stacks:
+  - all
+scope: security
+maturity: stable
 ---
 
 # Authentication vs Authorization Boundary

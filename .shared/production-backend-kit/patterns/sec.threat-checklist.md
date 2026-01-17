@@ -1,9 +1,16 @@
 ---
 id: sec-threat-checklist
 title: Security Threat Checklist
-tags: [security, owasp, threats, assessment]
+tags:
+  - security
+  - owasp
+  - threats
+  - assessment
 level: advanced
-stacks: [all]
+stacks:
+  - all
+scope: security
+maturity: stable
 ---
 
 # Security Threat Checklist

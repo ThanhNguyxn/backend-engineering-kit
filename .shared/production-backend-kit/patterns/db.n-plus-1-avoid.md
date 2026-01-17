@@ -1,9 +1,16 @@
 ---
 id: db-n-plus-1-avoid
 title: Avoiding N+1 Query Problem
-tags: [database, performance, orm, optimization]
+tags:
+  - database
+  - performance
+  - orm
+  - optimization
 level: intermediate
-stacks: [all]
+stacks:
+  - all
+scope: database
+maturity: stable
 ---
 
 # Avoiding N+1 Query Problem

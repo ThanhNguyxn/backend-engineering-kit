@@ -1,9 +1,16 @@
 ---
 id: rel-outbox-pattern
 title: Outbox Pattern
-tags: [reliability, outbox, eventual-consistency, distributed]
+tags:
+  - reliability
+  - outbox
+  - eventual-consistency
+  - distributed
 level: advanced
-stacks: [all]
+stacks:
+  - all
+scope: reliability
+maturity: stable
 ---
 
 # Outbox Pattern

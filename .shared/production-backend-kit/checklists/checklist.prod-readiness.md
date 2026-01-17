@@ -3,8 +3,17 @@ id: checklist-prod-readiness
 title: Production Readiness Checklist
 description: Final checklist before deploying to production
 category: checklists
-tags: [production, deployment, readiness, launch]
+tags:
+  - production
+  - deployment
+  - readiness
+  - launch
 version: 1.0.0
+scope: deployment
+level: intermediate
+maturity: stable
+stacks:
+  - all
 ---
 
 # Production Readiness Checklist

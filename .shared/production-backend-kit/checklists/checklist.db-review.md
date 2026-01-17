@@ -3,8 +3,17 @@ id: checklist-db-review
 title: Database Review Checklist
 description: Production-grade database schema and query review checklist
 category: checklists
-tags: [database, schema, performance, review]
+tags:
+  - database
+  - schema
+  - performance
+  - review
 version: 1.0.0
+scope: database
+level: intermediate
+maturity: stable
+stacks:
+  - all
 ---
 
 # Database Review Checklist

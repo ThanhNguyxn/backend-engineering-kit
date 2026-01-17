@@ -1,9 +1,16 @@
 ---
 id: db-soft-delete-audit
 title: Soft Delete & Audit Trail
-tags: [database, soft-delete, auditing, compliance]
+tags:
+  - database
+  - soft-delete
+  - auditing
+  - compliance
 level: intermediate
-stacks: [all]
+stacks:
+  - all
+scope: database
+maturity: stable
 ---
 
 # Soft Delete & Audit Trail

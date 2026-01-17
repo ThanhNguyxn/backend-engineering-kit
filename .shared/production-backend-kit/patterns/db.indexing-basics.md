@@ -1,9 +1,19 @@
 ---
 id: db-indexing-basics
 title: Database Indexing Basics
-tags: [database, indexing, performance, query-optimization]
+tags:
+  - database
+  - indexing
+  - performance
+  - query-optimization
 level: intermediate
-stacks: [postgresql, mysql, sqlserver, mongodb]
+stacks:
+  - postgresql
+  - mysql
+  - sqlserver
+  - mongodb
+scope: database
+maturity: stable
 ---
 
 # Database Indexing Basics

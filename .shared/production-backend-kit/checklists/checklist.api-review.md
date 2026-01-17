@@ -3,8 +3,17 @@ id: checklist-api-review
 title: API Review Checklist
 description: Comprehensive checklist for reviewing REST API implementations
 category: checklists
-tags: [api, rest, review, quality]
+tags:
+  - api
+  - rest
+  - review
+  - quality
 version: 1.0.0
+scope: api
+level: intermediate
+maturity: stable
+stacks:
+  - all
 ---
 
 # API Review Checklist

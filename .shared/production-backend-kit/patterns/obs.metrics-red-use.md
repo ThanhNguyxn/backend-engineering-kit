@@ -1,9 +1,16 @@
 ---
 id: obs-metrics-red-use
 title: RED & USE Metrics
-tags: [observability, metrics, monitoring, sre]
+tags:
+  - observability
+  - metrics
+  - monitoring
+  - sre
 level: intermediate
-stacks: [all]
+stacks:
+  - all
+scope: observability
+maturity: stable
 ---
 
 # RED & USE Metrics

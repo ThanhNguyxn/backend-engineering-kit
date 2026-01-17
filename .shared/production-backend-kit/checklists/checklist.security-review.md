@@ -3,8 +3,17 @@ id: checklist-security-review
 title: Security Review Checklist
 description: Security assessment checklist for backend applications
 category: checklists
-tags: [security, owasp, review, vulnerabilities]
+tags:
+  - security
+  - owasp
+  - review
+  - vulnerabilities
 version: 1.0.0
+scope: security
+level: intermediate
+maturity: stable
+stacks:
+  - all
 ---
 
 # Security Review Checklist

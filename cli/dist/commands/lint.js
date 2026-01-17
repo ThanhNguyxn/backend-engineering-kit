@@ -7,6 +7,54 @@ import matter from 'gray-matter';
 import fg from 'fast-glob';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+// Scope inference from filename
+function inferScope(filePath) {
+    const basename = path.basename(filePath, '.md');
+    if (basename.startsWith('api') || basename.startsWith('api.'))
+        return 'api';
+    if (basename.startsWith('db') || basename.startsWith('db.'))
+        return 'database';
+    if (basename.startsWith('sec') || basename.startsWith('sec.'))
+        return 'security';
+    if (basename.startsWith('rel') || basename.startsWith('rel.'))
+        return 'reliability';
+    if (basename.startsWith('obs') || basename.startsWith('obs.'))
+        return 'observability';
+    if (basename.includes('checklist')) {
+        if (basename.includes('api'))
+            return 'api';
+        if (basename.includes('db'))
+            return 'database';
+        if (basename.includes('security'))
+            return 'security';
+        if (basename.includes('reliability'))
+            return 'reliability';
+        if (basename.includes('prod'))
+            return 'deployment';
+    }
+    return 'api'; // default
+}
+// Level inference from content complexity
+function inferLevel(content) {
+    const lower = content.toLowerCase();
+    // Advanced indicators
+    const advancedKeywords = ['circuit breaker', 'outbox', 'saga', 'cqrs', 'event sourcing', 'dlq', 'idempotency'];
+    if (advancedKeywords.some(k => lower.includes(k)))
+        return 'advanced';
+    // Beginner indicators
+    const beginnerKeywords = ['basic', 'simple', 'getting started', 'introduction', 'fundamentals'];
+    if (beginnerKeywords.some(k => lower.includes(k)))
+        return 'beginner';
+    return 'intermediate';
+}
+// Maturity - default to stable for existing content
+function inferMaturity() {
+    return 'stable';
+}
+// Stacks - default to all
+function inferStacks() {
+    return ['all'];
+}
 // Lint rules
 const RULES = {
     'frontmatter-required': (file, frontmatter) => {
@@ -18,7 +66,8 @@ const RULES = {
                     file,
                     level: 'error',
                     rule: 'frontmatter-required',
-                    message: `Missing required field: ${field}`
+                    message: `Missing required field: ${field}`,
+                    fixable: false,
                 });
             }
         }
@@ -26,14 +75,15 @@ const RULES = {
     },
     'frontmatter-recommended': (file, frontmatter) => {
         const issues = [];
-        const recommended = ['scope', 'maturity', 'works_with'];
+        const recommended = ['scope', 'level', 'maturity', 'stacks'];
         for (const field of recommended) {
             if (!frontmatter[field]) {
                 issues.push({
                     file,
                     level: 'warning',
                     rule: 'frontmatter-recommended',
-                    message: `Missing recommended field: ${field}`
+                    message: `Missing recommended field: ${field}`,
+                    fixable: true,
                 });
             }
         }
@@ -51,7 +101,8 @@ const RULES = {
                         file,
                         level: 'warning',
                         rule: 'heading-structure',
-                        message: `Missing recommended heading: ## ${req}`
+                        message: `Missing recommended heading: ## ${req}`,
+                        fixable: false,
                     });
                 }
             }
@@ -69,7 +120,8 @@ const RULES = {
                     file,
                     level: 'warning',
                     rule: 'sources-valid',
-                    message: 'Sources section has no URLs'
+                    message: 'Sources section has no URLs',
+                    fixable: false,
                 });
             }
         }
@@ -83,11 +135,12 @@ const RULES = {
                 file,
                 level: 'warning',
                 rule: 'id-format',
-                message: `ID should be lowercase with hyphens: ${id}`
+                message: `ID should be lowercase with hyphens: ${id}`,
+                fixable: false,
             });
         }
         return issues;
-    }
+    },
 };
 function lintFile(filePath, type) {
     const issues = [];
@@ -107,17 +160,62 @@ function lintFile(filePath, type) {
             file: relativePath,
             level: 'error',
             rule: 'parse-error',
-            message: `Failed to parse file: ${error}`
+            message: `Failed to parse file: ${error}`,
         });
     }
     return issues;
 }
-export async function lintContent(baseDir) {
+function fixFile(filePath) {
+    try {
+        const content = fs.readFileSync(filePath, 'utf-8');
+        const { data: frontmatter, content: body } = matter(content);
+        let modified = false;
+        // Fix scope
+        if (!frontmatter.scope) {
+            frontmatter.scope = inferScope(filePath);
+            modified = true;
+        }
+        // Fix level
+        if (!frontmatter.level) {
+            frontmatter.level = inferLevel(body);
+            modified = true;
+        }
+        // Fix maturity
+        if (!frontmatter.maturity) {
+            frontmatter.maturity = inferMaturity();
+            modified = true;
+        }
+        // Fix stacks
+        if (!frontmatter.stacks) {
+            frontmatter.stacks = inferStacks();
+            modified = true;
+        }
+        if (modified) {
+            const newContent = matter.stringify(body, frontmatter);
+            fs.writeFileSync(filePath, newContent, 'utf-8');
+        }
+        return modified;
+    }
+    catch {
+        return false;
+    }
+}
+export async function lintContent(baseDir, fix = false) {
     const root = baseDir || path.resolve(__dirname, '../../../.shared/production-backend-kit');
     const patternsDir = path.join(root, 'patterns');
     const checklistsDir = path.join(root, 'checklists');
     const patternFiles = await fg('*.md', { cwd: patternsDir, absolute: true });
     const checklistFiles = await fg('*.md', { cwd: checklistsDir, absolute: true });
+    let fixed = 0;
+    // Fix files first if requested
+    if (fix) {
+        for (const file of [...patternFiles, ...checklistFiles]) {
+            if (fixFile(file)) {
+                fixed++;
+            }
+        }
+    }
+    // Then lint
     const issues = [];
     for (const file of patternFiles) {
         issues.push(...lintFile(file, 'pattern'));
@@ -132,19 +230,31 @@ export async function lintContent(baseDir) {
         stats: {
             files: patternFiles.length + checklistFiles.length,
             errors,
-            warnings
-        }
+            warnings,
+            fixed,
+        },
     };
 }
 export async function lintCommand(options = {}) {
     logger.header('🔍 Linting content...');
-    const result = await lintContent();
+    if (options.fix) {
+        logger.info('Running with --fix: auto-fixing missing fields...');
+    }
+    const result = await lintContent(undefined, options.fix);
     if (options.json) {
         console.log(JSON.stringify(result, null, 2));
-        process.exit(result.stats.errors > 0 ? 1 : 0);
+        // Exit codes: 0 = ok, 1 = warnings only, 2 = errors
+        if (result.stats.errors > 0)
+            process.exit(2);
+        if (result.stats.warnings > 0)
+            process.exit(1);
+        process.exit(0);
         return;
     }
     logger.info(`Checked ${result.stats.files} files`);
+    if (options.fix && result.stats.fixed > 0) {
+        logger.success(`Fixed ${result.stats.fixed} files`);
+    }
     if (result.issues.length === 0) {
         logger.success('No issues found!');
         process.exit(0);
@@ -162,12 +272,20 @@ export async function lintCommand(options = {}) {
         console.log(chalk.bold(file));
         for (const issue of fileIssues) {
             const icon = issue.level === 'error' ? chalk.red('✖') : chalk.yellow('⚠');
-            const level = issue.level === 'error' ? chalk.red(issue.level) : chalk.yellow(issue.level);
-            console.log(`  ${icon} ${issue.message} ${chalk.dim(`[${issue.rule}]`)}`);
+            const fixBadge = issue.fixable ? chalk.dim(' (fixable)') : '';
+            console.log(`  ${icon} ${issue.message} ${chalk.dim(`[${issue.rule}]`)}${fixBadge}`);
         }
         console.log();
     }
     logger.log(`Found ${chalk.red(result.stats.errors + ' errors')} and ${chalk.yellow(result.stats.warnings + ' warnings')}`);
-    process.exit(result.stats.errors > 0 ? 1 : 0);
+    if (result.stats.warnings > 0 && !options.fix) {
+        logger.log(chalk.dim('  Run with --fix to auto-fix recommended fields'));
+    }
+    // Exit codes: 0 = ok, 1 = warnings only, 2 = errors
+    if (result.stats.errors > 0)
+        process.exit(2);
+    if (result.stats.warnings > 0)
+        process.exit(1);
+    process.exit(0);
 }
 //# sourceMappingURL=lint.js.map

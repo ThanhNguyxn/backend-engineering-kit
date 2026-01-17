@@ -1,9 +1,17 @@
 ---
 id: api-pagination-filter-sort
-title: API Pagination, Filter & Sort
-tags: [api, pagination, filtering, sorting, rest]
+title: 'API Pagination, Filter & Sort'
+tags:
+  - api
+  - pagination
+  - filtering
+  - sorting
+  - rest
 level: intermediate
-stacks: [all]
+stacks:
+  - all
+scope: api
+maturity: stable
 ---
 
 # API Pagination, Filter & Sort

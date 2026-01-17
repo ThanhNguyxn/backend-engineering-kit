@@ -1,9 +1,16 @@
 ---
 id: sec-secrets-management
 title: Secrets Management
-tags: [security, secrets, configuration, devops]
+tags:
+  - security
+  - secrets
+  - configuration
+  - devops
 level: intermediate
-stacks: [all]
+stacks:
+  - all
+scope: security
+maturity: stable
 ---
 
 # Secrets Management

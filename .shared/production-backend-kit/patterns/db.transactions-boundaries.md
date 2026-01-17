@@ -1,9 +1,16 @@
 ---
 id: db-transactions-boundaries
 title: Transaction Boundaries
-tags: [database, transactions, acid, consistency]
+tags:
+  - database
+  - transactions
+  - acid
+  - consistency
 level: intermediate
-stacks: [all]
+stacks:
+  - all
+scope: database
+maturity: stable
 ---
 
 # Transaction Boundaries

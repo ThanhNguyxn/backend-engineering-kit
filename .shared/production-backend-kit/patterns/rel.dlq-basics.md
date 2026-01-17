@@ -1,9 +1,16 @@
 ---
 id: rel-dlq-basics
 title: Dead Letter Queue Basics
-tags: [reliability, dlq, messaging, error-handling]
+tags:
+  - reliability
+  - dlq
+  - messaging
+  - error-handling
 level: intermediate
-stacks: [all]
+stacks:
+  - all
+scope: reliability
+maturity: stable
 ---
 
 # Dead Letter Queue Basics
