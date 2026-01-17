@@ -1,6 +1,7 @@
 /**
  * Templates Registry Validator
- * Validates registry.yaml and all template.yaml files (simplified version)
+ * Validates registry.yaml and all template.yaml files
+ * Supports both new project templates and legacy adapters/presets
  */
 export interface ValidationResult {
     valid: boolean;
@@ -10,6 +11,9 @@ export interface ValidationResult {
         templatesCount: number;
         validTemplates: number;
         invalidTemplates: number;
+        adaptersCount: number;
+        presetsCount: number;
+        legacyCount: number;
     };
 }
 export interface ValidationError {
@@ -30,6 +34,9 @@ export interface TemplateInfo {
     level: string;
     tags: string[];
     path: string;
+    type: 'project' | 'adapter' | 'preset';
+    legacy: boolean;
+    migrationNotes?: string;
 }
 /**
  * Validate registry.yaml
@@ -42,5 +49,8 @@ export declare function validateTemplateFile(templatePath: string): ValidationRe
 /**
  * Get list of all templates from registry
  */
-export declare function listTemplates(registryPath: string): TemplateInfo[];
+export declare function listTemplates(registryPath: string, options?: {
+    includeLegacy?: boolean;
+    type?: string;
+}): TemplateInfo[];
 //# sourceMappingURL=templates.d.ts.map

@@ -2,25 +2,170 @@ apiVersion: templates/v2
 kind: Registry
 metadata:
   name: production-backend-kit
-  version: "2.0.0"
+  version: "2.0.1"
   description: "Production-grade backend project templates"
+  lastUpdated: "2026-01-17"
 
+# =============================================================================
+# PROJECT TEMPLATES (New - v2.0)
+# Full project scaffolding with skeleton files
+# =============================================================================
 templates:
   - id: node-minimal
     ref: ./projects/node-minimal/template.yaml
+    type: project
+    legacy: false
 
   - id: node-standard
     ref: ./projects/node-standard/template.yaml
+    type: project
+    legacy: false
 
   - id: python-fastapi
     ref: ./projects/python-fastapi/template.yaml
+    type: project
+    legacy: false
 
   - id: go-minimal
     ref: ./projects/go-minimal/template.yaml
+    type: project
+    legacy: false
 
-# Legacy adapter templates (backward compatible)
+# =============================================================================
+# LEGACY AI ADAPTER TEMPLATES
+# AI coding assistant configuration files
+# =============================================================================
+adapters:
+  - id: adapter-base
+    name: "Base Adapter Template"
+    description: "Core workflow template for all AI adapters"
+    type: adapter
+    legacy: true
+    sourcePath: ../adapters/templates/base.md
+    stack: multi
+    level: standard
+    tags: ["legacy", "adapter", "ai", "workflow"]
+    migrationNotes: "Reference template - used as base for other adapters"
+
+  - id: adapter-copilot
+    name: "GitHub Copilot Instructions"
+    description: "Custom instructions for GitHub Copilot"
+    type: adapter
+    legacy: true
+    sourcePath: ../adapters/templates/copilot.md
+    stack: multi
+    level: standard
+    tags: ["legacy", "adapter", "copilot", "github"]
+    targetFile: ".github/copilot-instructions.md"
+    migrationNotes: "Copy to .github/copilot-instructions.md in your project"
+    docsLink: "https://docs.github.com/en/copilot/customizing-copilot"
+
+  - id: adapter-cursor
+    name: "Cursor IDE Rules"
+    description: "Rules file for Cursor AI IDE"
+    type: adapter
+    legacy: true
+    sourcePath: ../adapters/templates/cursor.md
+    stack: multi
+    level: standard
+    tags: ["legacy", "adapter", "cursor", "ide"]
+    targetFile: ".cursorrules"
+    migrationNotes: "Copy to .cursorrules or .cursor/rules/ in your project"
+    docsLink: "https://docs.cursor.com/context/rules"
+
+  - id: adapter-claude
+    name: "Claude Code Instructions"
+    description: "CLAUDE.md project file for Claude Code"
+    type: adapter
+    legacy: true
+    sourcePath: ../adapters/templates/claude.md
+    stack: multi
+    level: standard
+    tags: ["legacy", "adapter", "claude", "anthropic"]
+    targetFile: "CLAUDE.md"
+    migrationNotes: "Copy to CLAUDE.md at project root"
+    docsLink: "https://docs.anthropic.com/en/docs/claude-code"
+
+  - id: adapter-codex
+    name: "OpenAI Codex/Agent Instructions"
+    description: "AGENTS.md configuration for OpenAI Codex"
+    type: adapter
+    legacy: true
+    sourcePath: ../adapters/templates/codex.md
+    stack: multi
+    level: standard
+    tags: ["legacy", "adapter", "codex", "openai"]
+    targetFile: "AGENTS.md"
+    migrationNotes: "Copy to AGENTS.md at project root"
+
+# =============================================================================
+# CLI PRESETS (Pattern bundles)
+# Bundles of patterns + checklists for quick setup
+# =============================================================================
+presets:
+  - id: preset-node-express
+    name: "Node.js Express Bundle"
+    description: "Express.js API with error handling, validation, observability"
+    type: preset
+    legacy: true
+    stack: node
+    level: standard
+    tags: ["legacy", "preset", "express", "nodejs"]
+    patterns:
+      - api.error-model
+      - api.request-validation
+      - obs.structured-logging
+      - obs.correlation-id
+      - sec.rate-limiting
+    checklists:
+      - checklist.api-review
+      - checklist.prod-readiness
+    migrationNotes: "Use 'bek init --preset node-express' to apply"
+
+  - id: preset-node-fastify
+    name: "Node.js Fastify Bundle"
+    description: "Fastify API with schema validation and performance focus"
+    type: preset
+    legacy: true
+    stack: node
+    level: standard
+    tags: ["legacy", "preset", "fastify", "nodejs"]
+    patterns:
+      - api.error-model
+      - api.request-validation
+      - obs.structured-logging
+      - rel.timeouts
+      - sec.rate-limiting
+    checklists:
+      - checklist.api-review
+      - checklist.reliability-review
+    migrationNotes: "Use 'bek init --preset node-fastify' to apply"
+
+  - id: preset-node-minimal
+    name: "Node.js Minimal Bundle"
+    description: "Minimal setup with error handling and logging"
+    type: preset
+    legacy: true
+    stack: node
+    level: minimal
+    tags: ["legacy", "preset", "minimal", "nodejs"]
+    patterns:
+      - api.error-model
+      - obs.structured-logging
+    checklists:
+      - checklist.api-review
+    migrationNotes: "Use 'bek init --preset node-minimal' to apply"
+
+# =============================================================================
+# LEGACY MAPPING (Backward Compatibility)
+# Maps old template IDs to new locations
+# =============================================================================
 legacyMapping:
+  # CLI --ai flag mappings
   copilot: ../adapters/copilot
   cursor: ../adapters/cursor
   claude: ../adapters/claude
   codex: ../adapters/codex
+  # Old preset names
+  node-express: preset-node-express
+  node-fastify: preset-node-fastify

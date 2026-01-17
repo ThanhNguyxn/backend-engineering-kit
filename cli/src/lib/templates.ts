@@ -1,6 +1,7 @@
 /**
  * Templates Registry Validator
- * Validates registry.yaml and all template.yaml files (simplified version)
+ * Validates registry.yaml and all template.yaml files
+ * Supports both new project templates and legacy adapters/presets
  */
 
 import * as fs from 'fs';
@@ -19,6 +20,9 @@ export interface ValidationResult {
         templatesCount: number;
         validTemplates: number;
         invalidTemplates: number;
+        adaptersCount: number;
+        presetsCount: number;
+        legacyCount: number;
     };
 }
 
@@ -42,6 +46,9 @@ export interface TemplateInfo {
     level: string;
     tags: string[];
     path: string;
+    type: 'project' | 'adapter' | 'preset';
+    legacy: boolean;
+    migrationNotes?: string;
 }
 
 /**
@@ -60,7 +67,32 @@ interface RegistryData {
     apiVersion?: string;
     kind?: string;
     metadata?: { name?: string; version?: string };
-    templates?: Array<{ id: string; ref: string }>;
+    templates?: Array<{ id: string; ref: string; legacy?: boolean; type?: string }>;
+    adapters?: Array<{
+        id: string;
+        name: string;
+        description?: string;
+        type?: string;
+        legacy?: boolean;
+        sourcePath: string;
+        stack?: string;
+        level?: string;
+        tags?: string[];
+        migrationNotes?: string;
+    }>;
+    presets?: Array<{
+        id: string;
+        name: string;
+        description?: string;
+        type?: string;
+        legacy?: boolean;
+        stack?: string;
+        level?: string;
+        tags?: string[];
+        patterns?: string[];
+        checklists?: string[];
+        migrationNotes?: string;
+    }>;
     legacyMapping?: Record<string, string>;
 }
 
@@ -80,6 +112,9 @@ export function validateRegistryFile(registryPath: string): ValidationResult {
     let templatesCount = 0;
     let validTemplates = 0;
     let invalidTemplates = 0;
+    let adaptersCount = 0;
+    let presetsCount = 0;
+    let legacyCount = 0;
 
     // Load registry
     const registry = loadYaml<RegistryData>(registryPath);
@@ -89,7 +124,7 @@ export function validateRegistryFile(registryPath: string): ValidationResult {
             path: registryPath,
             message: 'Failed to parse registry.yaml',
         });
-        return { valid: false, errors, warnings, summary: { templatesCount: 0, validTemplates: 0, invalidTemplates: 0 } };
+        return { valid: false, errors, warnings, summary: { templatesCount: 0, validTemplates: 0, invalidTemplates: 0, adaptersCount: 0, presetsCount: 0, legacyCount: 0 } };
     }
 
     // Basic schema validation
@@ -109,7 +144,7 @@ export function validateRegistryFile(registryPath: string): ValidationResult {
         });
     }
 
-    // Validate each template ref
+    // Validate project templates
     const templates = registry.templates || [];
     templatesCount = templates.length;
     const registryDir = path.dirname(registryPath);
@@ -117,7 +152,6 @@ export function validateRegistryFile(registryPath: string): ValidationResult {
     for (const templateEntry of templates) {
         const templatePath = path.resolve(registryDir, templateEntry.ref);
 
-        // Check if template.yaml exists
         if (!fs.existsSync(templatePath)) {
             errors.push({
                 type: 'integrity',
@@ -128,7 +162,6 @@ export function validateRegistryFile(registryPath: string): ValidationResult {
             continue;
         }
 
-        // Validate template
         const result = validateTemplateFile(templatePath);
         if (result.valid) {
             validTemplates++;
@@ -139,11 +172,79 @@ export function validateRegistryFile(registryPath: string): ValidationResult {
         warnings.push(...result.warnings);
     }
 
+    // Validate adapters (legacy)
+    const adapters = registry.adapters || [];
+    adaptersCount = adapters.length;
+
+    for (const adapter of adapters) {
+        if (adapter.legacy) legacyCount++;
+
+        const adapterPath = path.resolve(registryDir, adapter.sourcePath);
+        if (!fs.existsSync(adapterPath)) {
+            if (adapter.legacy) {
+                warnings.push({
+                    path: adapter.sourcePath,
+                    message: `Legacy adapter file not found: ${adapter.sourcePath}`,
+                });
+            } else {
+                errors.push({
+                    type: 'integrity',
+                    path: adapter.sourcePath,
+                    message: `Adapter file not found: ${adapter.sourcePath}`,
+                });
+            }
+        }
+
+        // Validate required fields
+        if (!adapter.id) {
+            errors.push({
+                type: 'schema',
+                path: 'registry.yaml/adapters',
+                message: 'Adapter missing required field: id',
+            });
+        }
+        if (!adapter.name) {
+            warnings.push({
+                path: `adapter:${adapter.id}`,
+                message: 'Adapter missing recommended field: name',
+            });
+        }
+    }
+
+    // Validate presets (legacy)
+    const presets = registry.presets || [];
+    presetsCount = presets.length;
+
+    for (const preset of presets) {
+        if (preset.legacy) legacyCount++;
+
+        if (!preset.id) {
+            errors.push({
+                type: 'schema',
+                path: 'registry.yaml/presets',
+                message: 'Preset missing required field: id',
+            });
+        }
+        if (!preset.patterns || preset.patterns.length === 0) {
+            warnings.push({
+                path: `preset:${preset.id}`,
+                message: 'Preset has no patterns defined',
+            });
+        }
+    }
+
     return {
         valid: errors.length === 0,
         errors,
         warnings,
-        summary: { templatesCount, validTemplates, invalidTemplates },
+        summary: {
+            templatesCount,
+            validTemplates,
+            invalidTemplates,
+            adaptersCount,
+            presetsCount,
+            legacyCount,
+        },
     };
 }
 
@@ -154,7 +255,6 @@ export function validateTemplateFile(templatePath: string): ValidationResult {
     const errors: ValidationError[] = [];
     const warnings: ValidationWarning[] = [];
 
-    // Load template
     const template = loadYaml<TemplateData>(templatePath);
     if (!template) {
         errors.push({
@@ -162,10 +262,9 @@ export function validateTemplateFile(templatePath: string): ValidationResult {
             path: templatePath,
             message: 'Failed to parse template.yaml',
         });
-        return { valid: false, errors, warnings, summary: { templatesCount: 1, validTemplates: 0, invalidTemplates: 1 } };
+        return { valid: false, errors, warnings, summary: { templatesCount: 1, validTemplates: 0, invalidTemplates: 1, adaptersCount: 0, presetsCount: 0, legacyCount: 0 } };
     }
 
-    // Basic schema validation
     if (template.apiVersion !== 'templates/v2') {
         errors.push({
             type: 'schema',
@@ -198,7 +297,7 @@ export function validateTemplateFile(templatePath: string): ValidationResult {
         });
     }
 
-    // Check skeleton files exist
+    // Check skeleton files
     const templateDir = path.dirname(templatePath);
     const skeletonDir = path.join(templateDir, 'skeleton');
 
@@ -209,9 +308,7 @@ export function validateTemplateFile(templatePath: string): ValidationResult {
             message: 'Missing skeleton/ directory',
         });
     } else {
-        // Check required files
         const requiredFiles = template.spec?.files?.required || [];
-
         for (const file of requiredFiles) {
             const filePath = path.join(skeletonDir, file);
             if (!fs.existsSync(filePath)) {
@@ -228,22 +325,34 @@ export function validateTemplateFile(templatePath: string): ValidationResult {
         valid: errors.length === 0,
         errors,
         warnings,
-        summary: { templatesCount: 1, validTemplates: errors.length === 0 ? 1 : 0, invalidTemplates: errors.length > 0 ? 1 : 0 },
+        summary: {
+            templatesCount: 1,
+            validTemplates: errors.length === 0 ? 1 : 0,
+            invalidTemplates: errors.length > 0 ? 1 : 0,
+            adaptersCount: 0,
+            presetsCount: 0,
+            legacyCount: 0,
+        },
     };
 }
 
 /**
  * Get list of all templates from registry
  */
-export function listTemplates(registryPath: string): TemplateInfo[] {
+export function listTemplates(registryPath: string, options?: { includeLegacy?: boolean; type?: string }): TemplateInfo[] {
     const registry = loadYaml<RegistryData>(registryPath);
     if (!registry) return [];
 
     const templates: TemplateInfo[] = [];
     const registryDir = path.dirname(registryPath);
-    const entries = registry.templates || [];
+    const includeLegacy = options?.includeLegacy ?? false;
+    const filterType = options?.type;
 
+    // Project templates
+    const entries = registry.templates || [];
     for (const entry of entries) {
+        if (filterType && filterType !== 'project') continue;
+
         const templatePath = path.resolve(registryDir, entry.ref);
         const template = loadYaml<TemplateData>(templatePath);
         if (!template?.metadata || !template?.spec) continue;
@@ -256,7 +365,51 @@ export function listTemplates(registryPath: string): TemplateInfo[] {
             level: template.spec.level,
             tags: template.spec.tags || [],
             path: templatePath,
+            type: 'project',
+            legacy: entry.legacy ?? false,
         });
+    }
+
+    // Adapters (legacy)
+    if (includeLegacy) {
+        const adapters = registry.adapters || [];
+        for (const adapter of adapters) {
+            if (filterType && filterType !== 'adapter') continue;
+
+            templates.push({
+                id: adapter.id,
+                name: adapter.name,
+                description: adapter.description || '',
+                stack: adapter.stack || 'multi',
+                level: adapter.level || 'standard',
+                tags: adapter.tags || [],
+                path: path.resolve(registryDir, adapter.sourcePath),
+                type: 'adapter',
+                legacy: adapter.legacy ?? true,
+                migrationNotes: adapter.migrationNotes,
+            });
+        }
+    }
+
+    // Presets (legacy)
+    if (includeLegacy) {
+        const presets = registry.presets || [];
+        for (const preset of presets) {
+            if (filterType && filterType !== 'preset') continue;
+
+            templates.push({
+                id: preset.id,
+                name: preset.name,
+                description: preset.description || '',
+                stack: preset.stack || 'node',
+                level: preset.level || 'standard',
+                tags: preset.tags || [],
+                path: '',
+                type: 'preset',
+                legacy: preset.legacy ?? true,
+                migrationNotes: preset.migrationNotes,
+            });
+        }
     }
 
     return templates;
