@@ -158,6 +158,90 @@ adapters:
     targetFile: ".zed/instructions.md"
     migrationNotes: "Use as system prompt for Zed AI"
 
+  - id: adapter-opencode
+    name: "OpenCode AI Instructions"
+    description: "Instructions for OpenCode terminal AI"
+    type: adapter
+    legacy: false
+    sourcePath: ../adapters/templates/opencode.md
+    stack: multi
+    level: standard
+    tags: ["adapter", "opencode", "terminal", "cli"]
+    targetFile: "AGENTS.md"
+    migrationNotes: "Copy to AGENTS.md - OpenCode uses /init to generate"
+
+  - id: adapter-goose
+    name: "Goose AI Instructions"
+    description: "Instructions for Block's Goose AI agent"
+    type: adapter
+    legacy: false
+    sourcePath: ../adapters/templates/goose.md
+    stack: multi
+    level: standard
+    tags: ["adapter", "goose", "block", "terminal"]
+    targetFile: ".goose/instructions.md"
+    migrationNotes: "Place in .goose/instructions.md or use in plan.md"
+
+  - id: adapter-gemini
+    name: "Gemini CLI Instructions"
+    description: "Instructions for Google Gemini CLI"
+    type: adapter
+    legacy: false
+    sourcePath: ../adapters/templates/gemini.md
+    stack: multi
+    level: standard
+    tags: ["adapter", "gemini", "google", "cli"]
+    targetFile: ".gemini/context.md"
+    migrationNotes: "Use as context for Gemini CLI"
+
+  - id: adapter-amazonq
+    name: "Amazon Q Developer Instructions"
+    description: "Instructions for Amazon Q Developer"
+    type: adapter
+    legacy: false
+    sourcePath: ../adapters/templates/amazonq.md
+    stack: multi
+    level: standard
+    tags: ["adapter", "amazonq", "aws", "cli", "ide"]
+    targetFile: ".amazonq/instructions.md"
+    migrationNotes: "Use as context for Amazon Q"
+
+  - id: adapter-tabnine
+    name: "Tabnine Instructions"
+    description: "Instructions for Tabnine AI"
+    type: adapter
+    legacy: false
+    sourcePath: ../adapters/templates/tabnine.md
+    stack: multi
+    level: standard
+    tags: ["adapter", "tabnine", "ide", "autocomplete"]
+    targetFile: ".tabnine/instructions.md"
+    migrationNotes: "Use as context for Tabnine"
+
+  - id: adapter-codeium
+    name: "Codeium Instructions"
+    description: "Instructions for Codeium AI"
+    type: adapter
+    legacy: false
+    sourcePath: ../adapters/templates/codeium.md
+    stack: multi
+    level: standard
+    tags: ["adapter", "codeium", "ide", "autocomplete"]
+    targetFile: ".codeium/instructions.md"
+    migrationNotes: "Use as context for Codeium"
+
+  - id: adapter-cody
+    name: "Sourcegraph Cody Instructions"
+    description: "Instructions for Sourcegraph Cody AI"
+    type: adapter
+    legacy: false
+    sourcePath: ../adapters/templates/cody.md
+    stack: multi
+    level: standard
+    tags: ["adapter", "cody", "sourcegraph", "ide"]
+    targetFile: ".cody/instructions.md"
+    migrationNotes: "Use as context for Sourcegraph Cody"
+
 # =============================================================================
 # CLI PRESETS (Pattern bundles)
 # Bundles of patterns + checklists for quick setup
