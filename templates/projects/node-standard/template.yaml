@@ -6,11 +6,23 @@ metadata:
   name: "Node.js Standard"
   description: "Production-ready Node.js with TypeScript, logging, OpenAPI, Docker, CI"
   version: "1.0.0"
-  author: "Production Backend Kit"
+  maintainers: ["@production-backend-kit"]
 
 spec:
   stack: node
   level: standard
+  language: typescript
+  framework: fastify
+  database: none
+  features:
+    - docker
+    - ci
+    - healthcheck
+    - openapi
+    - logging
+    - validation
+  ports: [3000]
+  difficulty: intermediate
   tags:
     - typescript
     - docker
