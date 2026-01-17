@@ -1,0 +1,78 @@
+apiVersion: templates/v2
+kind: Template
+
+metadata:
+  id: python-fastapi
+  name: "Python FastAPI"
+  description: "Production-ready FastAPI with OpenAPI, Docker, testing"
+  version: "1.0.0"
+  author: "Production Backend Kit"
+
+spec:
+  stack: python
+  level: standard
+  tags:
+    - fastapi
+    - pydantic
+    - docker
+    - openapi
+    - testing
+    - uvicorn
+
+  prerequisites:
+    - Python >= 3.11
+    - pip or uv
+    - Docker (optional)
+
+  parameters:
+    - name: projectName
+      type: string
+      description: "Name of your project"
+      required: true
+      pattern: "^[a-z][a-z0-9_]*$"
+
+    - name: description
+      type: string
+      description: "Project description"
+      default: "A FastAPI backend service"
+
+    - name: author
+      type: string
+      description: "Author name"
+
+    - name: port
+      type: number
+      description: "Server port"
+      default: 8000
+
+    - name: includeDocker
+      type: boolean
+      description: "Include Docker configuration"
+      default: true
+
+    - name: database
+      type: choice
+      description: "Database type"
+      default: "none"
+      choices:
+        - none
+        - postgres
+        - mongodb
+        - sqlite
+
+  files:
+    required:
+      - pyproject.toml
+      - app/__init__.py
+      - app/main.py
+      - app/config.py
+      - app/routes/health.py
+    optional:
+      - Dockerfile
+      - docker-compose.yml
+      - tests/conftest.py
+
+  hooks:
+    postGenerate:
+      - action: python-install
+      - action: git-init

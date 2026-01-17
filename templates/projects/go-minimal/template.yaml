@@ -1,0 +1,46 @@
+apiVersion: templates/v2
+kind: Template
+
+metadata:
+  id: go-minimal
+  name: "Go Minimal"
+  description: "Minimal Go service with standard library"
+  version: "1.0.0"
+  author: "Production Backend Kit"
+
+spec:
+  stack: go
+  level: minimal
+  tags:
+    - go
+    - stdlib
+
+  prerequisites:
+    - Go >= 1.22
+
+  parameters:
+    - name: projectName
+      type: string
+      description: "Name of your project (Go module name)"
+      required: true
+      pattern: "^[a-z][a-z0-9-]*$"
+
+    - name: modulePath
+      type: string
+      description: "Go module path (e.g., github.com/user/project)"
+      required: true
+
+    - name: description
+      type: string
+      description: "Project description"
+      default: "A minimal Go service"
+
+  files:
+    required:
+      - go.mod
+      - cmd/main.go
+
+  hooks:
+    postGenerate:
+      - action: go-mod-tidy
+      - action: git-init

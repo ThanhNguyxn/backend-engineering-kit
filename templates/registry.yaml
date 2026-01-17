@@ -1,0 +1,26 @@
+apiVersion: templates/v2
+kind: Registry
+metadata:
+  name: production-backend-kit
+  version: "2.0.0"
+  description: "Production-grade backend project templates"
+
+templates:
+  - id: node-minimal
+    ref: ./projects/node-minimal/template.yaml
+
+  - id: node-standard
+    ref: ./projects/node-standard/template.yaml
+
+  - id: python-fastapi
+    ref: ./projects/python-fastapi/template.yaml
+
+  - id: go-minimal
+    ref: ./projects/go-minimal/template.yaml
+
+# Legacy adapter templates (backward compatible)
+legacyMapping:
+  copilot: ../adapters/copilot
+  cursor: ../adapters/cursor
+  claude: ../adapters/claude
+  codex: ../adapters/codex

@@ -58,11 +58,13 @@
         "access": "public"
     },
     "dependencies": {
+        "ajv": "^8.17.1",
         "chalk": "^5.3.0",
         "commander": "^14.0.2",
         "fast-glob": "^3.3.2",
         "gray-matter": "^4.0.3",
-        "minisearch": "^7.1.0"
+        "minisearch": "^7.1.0",
+        "yaml": "^2.8.2"
     },
     "devDependencies": {
         "@types/node": "^25.0.9",

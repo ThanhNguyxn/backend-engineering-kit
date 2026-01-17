@@ -11,6 +11,7 @@ import { normalizeCommand } from './normalize-content.js';
 import { doctorCommand } from './commands/doctor.js';
 import { initCommand } from './commands/init.js';
 import { lintCommand } from './commands/lint.js';
+import templatesCommand from './commands/templates.js';
 import { setLogLevel } from './lib/logger.js';
 import { wrapCommand, CLIError } from './lib/errors.js';
 import logger from './lib/logger.js';
@@ -227,6 +228,8 @@ program
     logger.newline();
     process.exit(0); // Exit with success for CI usage
 }));
+// Templates command (project scaffolding)
+program.addCommand(templatesCommand);
 // Parse arguments
 program.parse();
 // Show help if no command provided

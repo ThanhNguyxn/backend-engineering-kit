@@ -1,0 +1,47 @@
+apiVersion: templates/v2
+kind: Template
+
+metadata:
+  id: node-minimal
+  name: "Node.js Minimal"
+  description: "Bare minimum Node.js + TypeScript starter"
+  version: "1.0.0"
+  author: "Production Backend Kit"
+
+spec:
+  stack: node
+  level: minimal
+  tags:
+    - typescript
+    - esm
+
+  prerequisites:
+    - Node.js >= 20
+    - npm >= 10
+
+  parameters:
+    - name: projectName
+      type: string
+      description: "Name of your project"
+      required: true
+      pattern: "^[a-z][a-z0-9-]*$"
+
+    - name: description
+      type: string
+      description: "Project description"
+      default: "A minimal Node.js service"
+
+    - name: author
+      type: string
+      description: "Author name"
+
+  files:
+    required:
+      - package.json
+      - tsconfig.json
+      - src/index.ts
+
+  hooks:
+    postGenerate:
+      - action: npm-install
+      - action: git-init

@@ -12,6 +12,7 @@ import { normalizeCommand } from './normalize-content.js';
 import { doctorCommand } from './commands/doctor.js';
 import { initCommand } from './commands/init.js';
 import { lintCommand } from './commands/lint.js';
+import templatesCommand from './commands/templates.js';
 import { setLogLevel, LogLevel } from './lib/logger.js';
 import { wrapCommand, handleError, CLIError } from './lib/errors.js';
 import logger from './lib/logger.js';
@@ -269,6 +270,9 @@ program
         logger.newline();
         process.exit(0); // Exit with success for CI usage
     }));
+
+// Templates command (project scaffolding)
+program.addCommand(templatesCommand);
 
 // Parse arguments
 program.parse();

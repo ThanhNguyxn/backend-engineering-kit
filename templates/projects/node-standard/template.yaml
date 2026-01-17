@@ -1,0 +1,87 @@
+apiVersion: templates/v2
+kind: Template
+
+metadata:
+  id: node-standard
+  name: "Node.js Standard"
+  description: "Production-ready Node.js with TypeScript, logging, OpenAPI, Docker, CI"
+  version: "1.0.0"
+  author: "Production Backend Kit"
+
+spec:
+  stack: node
+  level: standard
+  tags:
+    - typescript
+    - docker
+    - openapi
+    - testing
+    - logging
+    - ci-github
+    - eslint
+    - prettier
+
+  prerequisites:
+    - Node.js >= 20
+    - npm >= 10
+    - Docker (optional)
+
+  parameters:
+    - name: projectName
+      type: string
+      description: "Name of your project"
+      required: true
+      pattern: "^[a-z][a-z0-9-]*$"
+
+    - name: description
+      type: string
+      description: "Project description"
+      default: "A production-ready backend service"
+
+    - name: author
+      type: string
+      description: "Author name"
+
+    - name: port
+      type: number
+      description: "Server port"
+      default: 3000
+
+    - name: includeDocker
+      type: boolean
+      description: "Include Docker configuration"
+      default: true
+
+    - name: includeCI
+      type: boolean
+      description: "Include GitHub Actions CI"
+      default: true
+
+    - name: database
+      type: choice
+      description: "Database type"
+      default: "none"
+      choices:
+        - none
+        - postgres
+        - mongodb
+        - sqlite
+
+  files:
+    required:
+      - package.json
+      - tsconfig.json
+      - src/index.ts
+      - src/config.ts
+      - src/logger.ts
+      - src/routes/health.ts
+    optional:
+      - Dockerfile
+      - docker-compose.yml
+      - .github/workflows/ci.yml
+      - openapi.yaml
+
+  hooks:
+    postGenerate:
+      - action: npm-install
+      - action: git-init
