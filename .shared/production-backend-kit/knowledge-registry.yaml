@@ -8,12 +8,12 @@ metadata:
   sourcePath: ".shared/production-backend-kit"
 
 # =============================================================================
-# PATTERNS - 25 total
+# PATTERNS
 # Best practices and reference implementations
 # =============================================================================
 patterns:
   # ---------------------------------------------------------------------------
-  # API Patterns (6)
+  # API Patterns
   # ---------------------------------------------------------------------------
   - id: api.error-model
     name: "API Error Model"
@@ -70,7 +70,7 @@ patterns:
     sourcePath: patterns/api.webhooks-signatures.md
 
   # ---------------------------------------------------------------------------
-  # Database Patterns (6)
+  # Database Patterns
   # ---------------------------------------------------------------------------
   - id: db.indexing-basics
     name: "Database Indexing Basics"
@@ -127,7 +127,7 @@ patterns:
     sourcePath: patterns/db.transactions-boundaries.md
 
   # ---------------------------------------------------------------------------
-  # Observability Patterns (3)
+  # Observability Patterns
   # ---------------------------------------------------------------------------
   - id: obs.correlation-id
     name: "Correlation IDs"
@@ -157,7 +157,7 @@ patterns:
     sourcePath: patterns/obs.structured-logging.md
 
   # ---------------------------------------------------------------------------
-  # Reliability Patterns (5)
+  # Reliability Patterns
   # ---------------------------------------------------------------------------
   - id: rel.circuit-breaker
     name: "Circuit Breaker"
@@ -205,7 +205,7 @@ patterns:
     sourcePath: patterns/rel.timeouts.md
 
   # ---------------------------------------------------------------------------
-  # Security Patterns (5)
+  # Security Patterns
   # ---------------------------------------------------------------------------
   - id: sec.authn-authz-boundary
     name: "AuthN/AuthZ Boundary"
@@ -253,7 +253,7 @@ patterns:
     sourcePath: patterns/sec.threat-checklist.md
 
 # =============================================================================
-# CHECKLISTS - 5 total
+# CHECKLISTS
 # Quality gates for reviews
 # =============================================================================
 checklists:
@@ -292,8 +292,5 @@ checklists:
     tags: ["checklist", "production", "deployment"]
     sourcePath: checklists/checklist.prod-readiness.md
 # =============================================================================
-# SUMMARY
+# Run `bek lint --json` to get current counts
 # =============================================================================
-# Total: 25 patterns + 5 checklists = 30 knowledge items
-# Scopes: api (6), database (6), observability (3), reliability (5), security (5)
-# Levels: beginner (5), intermediate (14), advanced (11)
