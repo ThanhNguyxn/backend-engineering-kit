@@ -98,6 +98,66 @@ adapters:
     targetFile: "AGENTS.md"
     migrationNotes: "Copy to AGENTS.md at project root"
 
+  - id: adapter-windsurf
+    name: "Windsurf AI Rules"
+    description: "Rules for Windsurf/Codeium AI IDE"
+    type: adapter
+    legacy: false
+    sourcePath: ../adapters/templates/windsurf.md
+    stack: multi
+    level: standard
+    tags: ["adapter", "windsurf", "codeium", "ide"]
+    targetFile: ".windsurfrules"
+    migrationNotes: "Copy to .windsurfrules or .windsurfmemories in your project"
+
+  - id: adapter-cline
+    name: "Cline AI Rules"
+    description: "Rules file for Cline VS Code extension"
+    type: adapter
+    legacy: false
+    sourcePath: ../adapters/templates/cline.md
+    stack: multi
+    level: standard
+    tags: ["adapter", "cline", "vscode", "autonomous"]
+    targetFile: ".clinerules"
+    migrationNotes: "Copy to .clinerules at project root"
+
+  - id: adapter-aider
+    name: "Aider CLI Configuration"
+    description: "Configuration for Aider CLI tool"
+    type: adapter
+    legacy: false
+    sourcePath: ../adapters/templates/aider.md
+    stack: multi
+    level: standard
+    tags: ["adapter", "aider", "cli", "opensource"]
+    targetFile: ".aider.conf.yml"
+    migrationNotes: "Use as context or place in .aider.conf.yml"
+
+  - id: adapter-continue
+    name: "Continue AI Configuration"
+    description: "Configuration for Continue VS Code/JetBrains extension"
+    type: adapter
+    legacy: false
+    sourcePath: ../adapters/templates/continue.md
+    stack: multi
+    level: standard
+    tags: ["adapter", "continue", "vscode", "jetbrains", "opensource"]
+    targetFile: ".continue/config.json"
+    migrationNotes: "Use as context for Continue assistant"
+
+  - id: adapter-zed
+    name: "Zed AI Assistant Instructions"
+    description: "Instructions for Zed editor AI assistant"
+    type: adapter
+    legacy: false
+    sourcePath: ../adapters/templates/zed.md
+    stack: multi
+    level: standard
+    tags: ["adapter", "zed", "editor"]
+    targetFile: ".zed/instructions.md"
+    migrationNotes: "Use as system prompt for Zed AI"
+
 # =============================================================================
 # CLI PRESETS (Pattern bundles)
 # Bundles of patterns + checklists for quick setup
