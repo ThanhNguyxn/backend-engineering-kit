@@ -206,11 +206,11 @@ function syncDocs(options = {}) {
         const files = simpleGlob(source.glob, ROOT);
 
         for (const filePath of files) {
-            const relativePath = relative(ROOT, filePath);
+            const relativePath = normalizePath(relative(ROOT, filePath));
             const filename = source.rename || basename(filePath);
             const destDir = join(CONTENT_DIR, source.dest);
             const destPath = join(destDir, filename);
-            const destRelative = relative(CONTENT_DIR, destPath);
+            const destRelative = normalizePath(relative(CONTENT_DIR, destPath));
 
             // Skip if in preserveManual list
             if (config.preserveManual.includes(destRelative)) {
@@ -240,10 +240,10 @@ function syncDocs(options = {}) {
                     const normalizedExisting = existing.replace(/\r\n/g, '\n');
                     const normalizedContent = content.replace(/\r\n/g, '\n');
                     if (normalizedExisting !== normalizedContent) {
-                        changes.push({ file: destRelative, status: 'modified' });
+                        changes.push({ file: normalizePath(destRelative), status: 'modified' });
                     }
                 } else {
-                    changes.push({ file: destRelative, status: 'missing' });
+                    changes.push({ file: normalizePath(destRelative), status: 'missing' });
                 }
             } else {
                 // Write file

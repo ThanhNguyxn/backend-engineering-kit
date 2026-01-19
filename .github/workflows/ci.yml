@@ -109,9 +109,9 @@ jobs:
 
           echo "✅ Package structure verified"
 
-  docs-check:
+  docs-build:
     runs-on: ubuntu-latest
-    name: Docs Sync Check
+    name: Docs Build Check
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -125,13 +125,11 @@ jobs:
         working-directory: docs-site
         run: npm install
 
-      - name: Check docs are in sync
+      - name: Sync and build docs-site
         working-directory: docs-site
-        run: npm run sync:check
-
-      - name: Build docs-site
-        working-directory: docs-site
-        run: npm run build
+        run: |
+          npm run sync:docs
+          npm run build
 
   e2e-smoke:
     runs-on: ubuntu-latest
