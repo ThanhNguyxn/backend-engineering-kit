@@ -46,6 +46,28 @@ export const PRESETS: Record<string, Preset> = {
         description: 'Minimal setup with just error handling and logging',
         patterns: ['api.error-model', 'obs.structured-logging'],
         checklists: ['checklist.api-review']
+    },
+    'saas-multitenant-lite': {
+        name: 'SaaS Multi-Tenant Lite',
+        description: 'Production-ready multi-tenancy patterns for SaaS monoliths',
+        patterns: [
+            'sec.multitenancy-basics',
+            'sec.tenant-context',
+            'sec.data-isolation',
+            'sec.rbac-boundaries',
+            'sec.billing-integration',
+            'api.error-model',
+            'obs.structured-logging',
+            'obs.correlation-id',
+            'sec.rate-limiting'
+        ],
+        checklists: [
+            'checklist.multitenancy-review',
+            'checklist.security-review',
+            'checklist.api-review',
+            'checklist.prod-readiness'
+        ],
+        adapters: ['claude', 'cursor']
     }
 };
 

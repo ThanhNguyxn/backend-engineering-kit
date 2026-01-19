@@ -300,6 +300,31 @@ presets:
       - checklist.api-review
     migrationNotes: "Use 'bek init --preset node-minimal' to apply"
 
+  - id: preset-saas-multitenant-lite
+    name: "SaaS Multi-Tenant Lite"
+    description: "Production-ready multi-tenancy patterns for SaaS monoliths"
+    type: preset
+    legacy: false
+    stack: multi
+    level: standard
+    tags: ["preset", "saas", "multitenant", "security"]
+    patterns:
+      - sec.multitenancy-basics
+      - sec.tenant-context
+      - sec.data-isolation
+      - sec.rbac-boundaries
+      - sec.billing-integration
+      - api.error-model
+      - obs.structured-logging
+      - obs.correlation-id
+      - sec.rate-limiting
+    checklists:
+      - checklist.multitenancy-review
+      - checklist.security-review
+      - checklist.api-review
+      - checklist.prod-readiness
+    migrationNotes: "Use 'bek init --preset saas-multitenant-lite' to apply"
+
 # =============================================================================
 # LEGACY MAPPING (Backward Compatibility)
 # Maps old template IDs to new locations
