@@ -1,0 +1,16 @@
+{
+  "files": [
+    "reference/architecture.md",
+    "reference/backend-engineering-patterns.md",
+    "reference/backend-quick-reference.md",
+    "reference/content-spec-v1.md",
+    "reference/legacy-inventory.md",
+    "reference/release.md",
+    "reference/templates-2.0-design.md",
+    "reference/templates.md",
+    "guides/contributing.md",
+    "guides/security.md",
+    "reference/changelog.md"
+  ],
+  "lastSync": "2026-01-19T09:55:44.773Z"
+}

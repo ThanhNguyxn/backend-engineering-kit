@@ -248,12 +248,14 @@ function syncDocs(options = {}) {
                 console.log(`  ✅ Synced: ${relativePath} → ${destRelative}`);
             }
 
-            newFiles.push(destRelative);
+            newFiles.push(normalizePath(destRelative));
         }
     }
 
     // Clean up stale files (files in old manifest but not in new)
-    const staleFiles = manifest.files.filter(f => !newFiles.includes(f));
+    // Normalize manifest files for cross-platform comparison
+    const normalizedManifestFiles = manifest.files.map(f => normalizePath(f));
+    const staleFiles = normalizedManifestFiles.filter(f => !newFiles.includes(f));
     for (const stale of staleFiles) {
         const fullPath = join(CONTENT_DIR, stale);
         if (existsSync(fullPath)) {
