@@ -231,6 +231,78 @@ export const AI_ADAPTERS: Record<string, {
         file: 'backend-kit.md',
         template: 'zed.md',
     },
+    'amazonq': {
+        name: 'Amazon Q',
+        folder: '.amazonq',
+        file: 'backend-kit.md',
+        template: 'amazonq.md',
+    },
+    'augment': {
+        name: 'Augment Code',
+        folder: '.augment',
+        file: 'backend-kit.md',
+        template: 'augment.md',
+    },
+    'codeium': {
+        name: 'Codeium',
+        folder: '.codeium',
+        file: 'instructions.md',
+        template: 'codeium.md',
+    },
+    'cody': {
+        name: 'Sourcegraph Cody',
+        folder: '.cody',
+        file: 'instructions.md',
+        template: 'cody.md',
+    },
+    'devin': {
+        name: 'Devin',
+        folder: '.devin',
+        file: 'backend-kit.md',
+        template: 'devin.md',
+    },
+    'goose': {
+        name: 'Goose',
+        folder: '.goose',
+        file: 'backend-kit.md',
+        template: 'goose.md',
+    },
+    'junie': {
+        name: 'JetBrains Junie',
+        folder: '.junie',
+        file: 'backend-kit.md',
+        template: 'junie.md',
+    },
+    'opencode': {
+        name: 'OpenCode',
+        folder: '.opencode',
+        file: 'backend-kit.md',
+        template: 'opencode.md',
+    },
+    'replit': {
+        name: 'Replit AI',
+        folder: '.replit',
+        file: 'backend-kit.md',
+        template: 'replit.md',
+    },
+    'supermaven': {
+        name: 'Supermaven',
+        folder: '.supermaven',
+        file: 'backend-kit.md',
+        template: 'supermaven.md',
+    },
+    'tabnine': {
+        name: 'Tabnine',
+        folder: '.tabnine',
+        file: 'backend-kit.md',
+        template: 'tabnine.md',
+    },
+    'trae': {
+        name: 'TRAE (ByteDance)',
+        folder: '.trae',
+        file: 'backend-kit.md',
+        template: 'trae.md',
+    },
 };
 
 export function getAvailableAdapters(): string[] {
