@@ -1,0 +1,49 @@
+:root {
+  --sl-color-accent-low: #1e3a5f;
+  --sl-color-accent: #3b82f6;
+  --sl-color-accent-high: #93c5fd;
+  --sl-color-white: #ffffff;
+  --sl-color-gray-1: #eceef2;
+  --sl-color-gray-2: #c0c2c7;
+  --sl-color-gray-3: #888b96;
+  --sl-color-gray-4: #545861;
+  --sl-color-gray-5: #353841;
+  --sl-color-gray-6: #24272f;
+  --sl-color-black: #17181c;
+}
+
+/* Template cards */
+.template-card {
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.template-card:hover {
+  border-color: var(--sl-color-accent);
+}
+
+.template-card h3 {
+  margin-top: 0;
+}
+
+.template-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.template-tag {
+  background: var(--sl-color-gray-6);
+  color: var(--sl-color-gray-2);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.template-tag.node { background: #22c55e22; color: #22c55e; }
+.template-tag.python { background: #3b82f622; color: #3b82f6; }
+.template-tag.go { background: #06b6d422; color: #06b6d4; }
