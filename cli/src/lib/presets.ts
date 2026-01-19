@@ -5,6 +5,22 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+/**
+ * Resolve asset directory path
+ * Works in both development (assets in repo root) and installed (assets in package)
+ */
+function resolveAssetDir(assetName: string): string {
+    // Try installed location first (cli/adapters, cli/.shared)
+    const installedPath = path.resolve(__dirname, '../..', assetName);
+    if (fs.existsSync(installedPath)) {
+        return installedPath;
+    }
+    
+    // Fall back to development location (repo root)
+    const devPath = path.resolve(__dirname, '../../..', assetName);
+    return devPath;
+}
+
 export interface Preset {
     name: string;
     description: string;
@@ -88,7 +104,7 @@ export function validatePresetName(name: string): boolean {
 }
 
 export function getSourcePath(type: 'pattern' | 'checklist', id: string): string {
-    const baseDir = path.resolve(__dirname, '../../../.shared/production-backend-kit');
+    const baseDir = path.join(resolveAssetDir('.shared'), 'production-backend-kit');
     if (type === 'pattern') {
         return path.join(baseDir, 'patterns', `${id}.md`);
     }
@@ -173,8 +189,8 @@ export const AI_ADAPTERS: Record<string, {
     },
     'windsurf': {
         name: 'Windsurf',
-        folder: '.windsurf/workflows',
-        file: 'backend-kit.md',
+        folder: '.',
+        file: '.windsurfrules',
         template: 'windsurf.md',
     },
     'codex': {
@@ -209,14 +225,14 @@ export const AI_ADAPTERS: Record<string, {
     },
     'cline': {
         name: 'Cline',
-        folder: '.cline',
-        file: 'backend-kit.md',
+        folder: '.',
+        file: '.clinerules',
         template: 'cline.md',
     },
     'aider': {
         name: 'Aider',
-        folder: '.aider',
-        file: 'backend-kit.md',
+        folder: '.',
+        file: '.aider.conventions.md',
         template: 'aider.md',
     },
     'continue': {
@@ -227,8 +243,8 @@ export const AI_ADAPTERS: Record<string, {
     },
     'zed': {
         name: 'Zed',
-        folder: '.zed',
-        file: 'backend-kit.md',
+        folder: '.',
+        file: '.rules',
         template: 'zed.md',
     },
     'amazonq': {
@@ -239,7 +255,7 @@ export const AI_ADAPTERS: Record<string, {
     },
     'augment': {
         name: 'Augment Code',
-        folder: '.augment',
+        folder: '.augment/rules',
         file: 'backend-kit.md',
         template: 'augment.md',
     },
@@ -258,31 +274,31 @@ export const AI_ADAPTERS: Record<string, {
     'devin': {
         name: 'Devin',
         folder: '.devin',
-        file: 'backend-kit.md',
+        file: 'AGENTS.md',
         template: 'devin.md',
     },
     'goose': {
         name: 'Goose',
-        folder: '.goose',
-        file: 'backend-kit.md',
+        folder: '.',
+        file: '.goosehints',
         template: 'goose.md',
     },
     'junie': {
         name: 'JetBrains Junie',
         folder: '.junie',
-        file: 'backend-kit.md',
+        file: 'guidelines.md',
         template: 'junie.md',
     },
     'opencode': {
         name: 'OpenCode',
         folder: '.opencode',
-        file: 'backend-kit.md',
+        file: 'AGENTS.md',
         template: 'opencode.md',
     },
     'replit': {
         name: 'Replit AI',
-        folder: '.replit',
-        file: 'backend-kit.md',
+        folder: '.',
+        file: 'replit.md',
         template: 'replit.md',
     },
     'supermaven': {
@@ -298,10 +314,55 @@ export const AI_ADAPTERS: Record<string, {
         template: 'tabnine.md',
     },
     'trae': {
-        name: 'TRAE (ByteDance)',
-        folder: '.trae',
-        file: 'backend-kit.md',
+        name: 'Trae',
+        folder: '.',
+        file: '.traerules',
         template: 'trae.md',
+    },
+    // ==========================================================================
+    // LOCAL AI TOOLS (Unique feature - run models locally!)
+    // ==========================================================================
+    'ollama': {
+        name: 'Ollama',
+        folder: '.',
+        file: 'Modelfile.backend-kit',
+        template: 'ollama.md',
+    },
+    'lmstudio': {
+        name: 'LM Studio',
+        folder: '.lmstudio/presets',
+        file: 'backend-kit.json',
+        template: 'lmstudio.md',
+    },
+    'localai': {
+        name: 'LocalAI',
+        folder: 'models',
+        file: 'backend-kit.yaml',
+        template: 'localai.md',
+    },
+    'gpt4all': {
+        name: 'GPT4All',
+        folder: '.gpt4all',
+        file: 'backend-kit-prompt.txt',
+        template: 'gpt4all.md',
+    },
+    'jan': {
+        name: 'Jan',
+        folder: 'jan/assistants',
+        file: 'backend-kit.json',
+        template: 'jan.md',
+    },
+    'llm': {
+        name: 'LLM CLI (Simon Willison)',
+        folder: '.llm/templates',
+        file: 'backend-kit.yaml',
+        template: 'llm.md',
+    },
+    'llamafile': {
+        name: 'llamafile (Mozilla)',
+        folder: '.llamafile',
+        file: 'system-prompt.txt',
+        template: 'llamafile.md',
     },
 };
 
@@ -317,8 +378,8 @@ export function copyAdapterFiles(
     const copied: string[] = [];
     const missing: string[] = [];
     
-    const templatesDir = path.resolve(__dirname, '../../../adapters/templates');
-    const sharedDir = path.resolve(__dirname, '../../../.shared/production-backend-kit');
+    const templatesDir = path.join(resolveAssetDir('adapters'), 'templates');
+    const sharedDir = path.join(resolveAssetDir('.shared'), 'production-backend-kit');
     
     for (const adapterId of adapters) {
         const adapter = AI_ADAPTERS[adapterId];
@@ -377,7 +438,7 @@ export function copyIndustryRules(
     targetDir: string,
     dryRun: boolean
 ): boolean {
-    const rulesDir = path.resolve(__dirname, '../../../.shared/production-backend-kit/rules');
+    const rulesDir = path.join(resolveAssetDir('.shared'), 'production-backend-kit', 'rules');
     const destDir = path.join(targetDir, '.backend-kit', 'rules');
     
     if (!fs.existsSync(rulesDir)) {

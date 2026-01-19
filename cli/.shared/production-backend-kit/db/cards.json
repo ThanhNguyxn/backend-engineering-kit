@@ -1,0 +1,639 @@
+[
+  {
+    "id": "api-error-model",
+    "title": "API Error Model",
+    "tags": [
+      "api",
+      "error-handling",
+      "rest",
+      "http"
+    ],
+    "level": "beginner",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/api.error-model.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# API Error Model\r\n\r\n## Problem\r\n\r\nAPIs return errors in inconsistent formats, making client-side error handling fragile and debugging difficult. Without a standard structure, developers waste time parsing different error shapes.\r\n\r\n## When to use\r\n\r\n- Building any REST or GraphQL API\r\n- Designing public or internal APIs\r\n- When multiple teams consume your API\r\n- When you need consistent error handling across services\r\n\r\n## Solution\r\n\r\n1. **Define a standard error envelope**\r\n   - Always wrap errors in an `error` object\r\n   - Include machine-readable code (SCREAMING_SNAKE)\r\n   - Include human-readable message\r\n   - Add request ID for tracing\r\n\r\n2. **Map errors to HTTP status codes**\r\n   - 400: Validation errors\r\n   - 401: Missing/invalid authentication\r\n   - 403: Insufficient permissions\r\n   - 404: Resource not found\r\n   - 409: Conflict (duplicate)\r\n   - 429: Rate limit exceeded\r\n   - 500: Internal server error\r\n\r\n3. **Add field-level details for validation**\r\n   - Include array of field errors\r\n   - Each with field name, code, and message\r\n\r\n4. **Include metadata**\r\n   - Timestamp (ISO 8601)\r\n   - Request ID\r\n   - Optional documentation link\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| Exposing stack traces | Only log server-side, return generic message |\r\n| Inconsistent structures | Use shared error factory/middleware |\r\n| Returning 200 for errors | Always use appropriate 4xx/5xx codes |\r\n| Leaking internal details | Sanitize error messages before returning |\r\n| Missing request ID | Generate at edge, propagate everywhere |\r\n\r\n## Checklist\r\n\r\n- [ ] Error response has consistent JSON structure\r\n- [ ] Machine-readable error code defined\r\n- [ ] Human-readable message included\r\n- [ ] Request ID present in every error\r\n- [ ] HTTP status code matches error type\r\n- [ ] Stack traces never exposed to clients\r\n- [ ] Validation errors include field-level details\r\n- [ ] Error codes documented in API spec\r\n- [ ] Logging captures full context server-side\r\n- [ ] Error messages are localizable\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nError Response Structure:\r\n{\r\n  \"error\": {\r\n    \"code\": \"VALIDATION_ERROR\",\r\n    \"message\": \"Invalid request parameters\",\r\n    \"details\": [\r\n      {\"field\": \"email\", \"code\": \"INVALID_FORMAT\", \"message\": \"Must be valid email\"}\r\n    ],\r\n    \"requestId\": \"req_abc123\",\r\n    \"timestamp\": \"2026-01-14T12:00:00Z\"\r\n  }\r\n}\r\n\r\nSteps:\r\n1. Create error factory with (code, message, details?) signature\r\n2. Attach request ID from context/middleware\r\n3. Map exception types to HTTP status codes\r\n4. Log full error with stack server-side\r\n5. Return sanitized error to client\r\n```\r\n\r\n## Sources\r\n\r\n- RFC 7807 - Problem Details for HTTP APIs: https://datatracker.ietf.org/doc/html/rfc7807\r\n- Google API Design Guide - Errors: https://cloud.google.com/apis/design/errors\r\n- Microsoft REST API Guidelines - Error Handling: https://github.com/microsoft/api-guidelines/blob/vNext/Guidelines.md\r\n- Zalando RESTful API Guidelines: https://opensource.zalando.com/restful-api-guidelines/\r\n"
+  },
+  {
+    "id": "api-idempotency-keys",
+    "title": "Idempotency Keys",
+    "tags": [
+      "api",
+      "idempotency",
+      "reliability",
+      "payments"
+    ],
+    "level": "intermediate",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/api.idempotency-keys.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Idempotency Keys\r\n\r\n## Problem\r\n\r\nNetwork failures and client retries can cause duplicate operations—duplicate payments, double orders, or repeated emails. Without idempotency, retrying safe operations becomes dangerous.\r\n\r\n## When to use\r\n\r\n- Payment processing APIs\r\n- Order creation endpoints\r\n- Any non-idempotent operation (POST/PATCH)\r\n- Webhook delivery systems\r\n- Message queue consumers\r\n- Financial transactions\r\n\r\n## Solution\r\n\r\n1. **Accept idempotency key from client**\r\n   - Header: `Idempotency-Key: <uuid>`\r\n   - Client generates unique key per operation\r\n   - Key should be UUID or similar unique string\r\n\r\n2. **Store request-response mapping**\r\n   - Key: idempotency key + user/tenant\r\n   - Value: request hash + response + status\r\n   - TTL: 24-48 hours typical\r\n\r\n3. **Processing logic**\r\n   - Check if key exists\r\n   - If exists and request matches → return stored response\r\n   - If exists and request differs → return 422 Conflict\r\n   - If not exists → process, store result, return\r\n\r\n4. **Handle in-flight requests**\r\n   - Lock on idempotency key during processing\r\n   - Return 409 if same key is in-flight\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| Not hashing request body | Store and compare request fingerprint |\r\n| Too short TTL | Use 24-48 hours minimum |\r\n| Key reuse across users | Scope key to user/tenant |\r\n| No lock during processing | Use distributed lock or DB row lock |\r\n| Ignoring in-flight requests | Return 409 Conflict |\r\n\r\n## Checklist\r\n\r\n- [ ] Idempotency-Key header accepted\r\n- [ ] Key scoped to user/tenant\r\n- [ ] Request fingerprint stored with key\r\n- [ ] Response cached for replay\r\n- [ ] TTL set appropriately (24-48h)\r\n- [ ] Concurrent requests handled (locking)\r\n- [ ] Mismatched request returns 422\r\n- [ ] In-flight request returns 409\r\n- [ ] Storage is highly available (Redis/DB)\r\n- [ ] Key format documented for clients\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nClient Request:\r\nPOST /v1/payments\r\nIdempotency-Key: idem_a1b2c3d4\r\nContent-Type: application/json\r\n{ \"amount\": 1000, \"currency\": \"USD\" }\r\n\r\nProcessing Flow:\r\n1. Receive request with Idempotency-Key\r\n2. Hash: SHA256(method + path + body)\r\n3. Check cache/DB for key\r\n   - Found + hash matches → return cached response\r\n   - Found + hash differs → return 422 Conflict\r\n   - Not found → continue\r\n4. Acquire lock on key\r\n5. Process request\r\n6. Store: { key, hash, response, status, expires_at }\r\n7. Release lock, return response\r\n\r\nStorage Schema:\r\n{\r\n  \"key\": \"user_123:idem_a1b2c3d4\",\r\n  \"request_hash\": \"sha256...\",\r\n  \"response\": { ... },\r\n  \"status_code\": 201,\r\n  \"created_at\": \"...\",\r\n  \"expires_at\": \"...\"\r\n}\r\n```\r\n\r\n## Sources\r\n\r\n- Stripe Idempotent Requests: https://stripe.com/docs/api/idempotent_requests\r\n- Designing Robust Idempotency Keys (Brandur): https://brandur.org/idempotency-keys\r\n- Amazon API Gateway Idempotency: https://docs.aws.amazon.com/lambda/latest/dg/invocation-retries.html\r\n- PayPal Idempotency: https://developer.paypal.com/docs/api/reference/api-responses/\r\n"
+  },
+  {
+    "id": "api-pagination-filter-sort",
+    "title": "API Pagination, Filter & Sort",
+    "tags": [
+      "api",
+      "pagination",
+      "filtering",
+      "sorting",
+      "rest"
+    ],
+    "level": "intermediate",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/api.pagination-filter-sort.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# API Pagination, Filter & Sort\r\n\r\n## Problem\r\n\r\nList endpoints returning unbounded results cause performance issues, memory exhaustion, and poor UX. Without standard pagination, clients can't efficiently navigate large datasets.\r\n\r\n## When to use\r\n\r\n- Any endpoint returning collections\r\n- Large datasets (>100 items potential)\r\n- Admin dashboards, data tables\r\n- Infinite scroll UIs\r\n- Real-time feeds\r\n\r\n## Solution\r\n\r\n1. **Choose pagination strategy**\r\n   - **Offset-based**: Simple, supports random access, bad for real-time\r\n   - **Cursor-based**: Consistent with inserts, good for real-time, no random access\r\n\r\n2. **Implement with constraints**\r\n   - Set maximum page size (e.g., 100)\r\n   - Default to sensible limit (e.g., 20)\r\n   - Return pagination metadata\r\n\r\n3. **Add filtering support**\r\n   - Simple: `?status=active&type=premium`\r\n   - Advanced: `?filter[price][gte]=100`\r\n   - Validate filter fields against allowlist\r\n\r\n4. **Add sorting support**\r\n   - Single: `?sort=created_at` or `?sort=-created_at`\r\n   - Multi: `?sort=-created_at,name`\r\n   - Only allow indexed columns\r\n\r\n5. **Return complete metadata**\r\n   - Total count (if performant)\r\n   - Has more flag\r\n   - Next/prev links (HATEOAS)\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| Unlimited page sizes | Enforce max (e.g., 100 items) |\r\n| Offset with real-time data | Use cursor-based pagination |\r\n| Filtering non-indexed fields | Allowlist filterable fields |\r\n| Expensive total counts | Make optional or use estimates |\r\n| Sort on unindexed columns | Validate against index list |\r\n\r\n## Checklist\r\n\r\n- [ ] Maximum page size enforced\r\n- [ ] Default page size is sensible (20-25)\r\n- [ ] Pagination metadata included in response\r\n- [ ] Filter fields validated against allowlist\r\n- [ ] Sort fields validated against indexed columns\r\n- [ ] Cursor pagination used for real-time data\r\n- [ ] Total count is optional or estimated for large sets\r\n- [ ] HATEOAS links provided (self, next, prev)\r\n- [ ] Empty results return `[]`, not null\r\n- [ ] Query params documented in API spec\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nOffset-based Request:\r\nGET /api/users?page=2&per_page=20&sort=-created_at&status=active\r\n\r\nResponse Structure:\r\n{\r\n  \"data\": [...],\r\n  \"pagination\": {\r\n    \"page\": 2,\r\n    \"per_page\": 20,\r\n    \"total\": 150,\r\n    \"has_more\": true\r\n  },\r\n  \"links\": {\r\n    \"next\": \"/api/users?page=3&per_page=20\",\r\n    \"prev\": \"/api/users?page=1&per_page=20\"\r\n  }\r\n}\r\n\r\nCursor-based Request:\r\nGET /api/posts?limit=20&cursor=eyJpZCI6MTAwfQ\r\n\r\nSteps:\r\n1. Parse pagination params with defaults\r\n2. Validate and cap page size\r\n3. Apply filters (validate against allowlist)\r\n4. Apply sorting (validate against indexes)\r\n5. Execute query with LIMIT + 1 (to detect has_more)\r\n6. Build response with metadata\r\n```\r\n\r\n## Sources\r\n\r\n- Slack API Pagination: https://api.slack.com/docs/pagination\r\n- Stripe API Pagination: https://stripe.com/docs/api/pagination\r\n- JSON:API Specification - Pagination: https://jsonapi.org/format/#fetching-pagination\r\n- GraphQL Cursor Connections Spec: https://relay.dev/graphql/connections.htm\r\n"
+  },
+  {
+    "id": "api-request-validation",
+    "title": "Request Validation",
+    "tags": [
+      "api",
+      "validation",
+      "security",
+      "input"
+    ],
+    "level": "beginner",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/api.request-validation.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Request Validation\r\n\r\n## Problem\r\n\r\nAccepting unvalidated input leads to crashes, security vulnerabilities, and data corruption. Invalid data propagating through the system causes debugging nightmares and inconsistent state.\r\n\r\n## When to use\r\n\r\n- Every API endpoint accepting input\r\n- Form submissions\r\n- File uploads\r\n- Query parameters\r\n- Request headers\r\n- Any external data source\r\n\r\n## Solution\r\n\r\n1. **Validate at API boundary**\r\n   - Define schema for every endpoint\r\n   - Validate before business logic executes\r\n   - Use schema validation library (Zod, Joi, Pydantic)\r\n\r\n2. **Validate all input types**\r\n   - Request body (JSON, form data)\r\n   - Path parameters\r\n   - Query parameters\r\n   - Headers (Content-Type, Authorization format)\r\n\r\n3. **Apply validation rules**\r\n   - Type checking (string, number, boolean)\r\n   - Format validation (email, UUID, date)\r\n   - Range constraints (min, max, length)\r\n   - Enum validation (allowed values)\r\n   - Custom business rules\r\n\r\n4. **Return actionable errors**\r\n   - Field-level error messages\r\n   - Clear indication of what's wrong\r\n   - Suggestion for correction\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| Validating only some fields | Use schema for entire request |\r\n| Trusting client-side validation | Always validate server-side |\r\n| Generic error messages | Return field-specific errors |\r\n| Forgetting query params | Include in validation schema |\r\n| Not sanitizing after validation | Sanitize HTML, SQL, etc. |\r\n\r\n## Checklist\r\n\r\n- [ ] Schema defined for every endpoint\r\n- [ ] Validation runs before business logic\r\n- [ ] All input sources validated (body, params, query, headers)\r\n- [ ] Type validation applied\r\n- [ ] Format validation for emails, URLs, dates\r\n- [ ] Length/range constraints enforced\r\n- [ ] Enum values validated against allowlist\r\n- [ ] Field-level errors returned to client\r\n- [ ] Validation library used (not manual checks)\r\n- [ ] Sanitization applied after validation\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nSchema Definition (pseudo-code):\r\nUserCreateSchema:\r\n  email: required, string, email format\r\n  password: required, string, min 8, max 128\r\n  age: optional, integer, min 13, max 120\r\n  role: optional, enum [\"user\", \"admin\"], default \"user\"\r\n\r\nValidation Flow:\r\n1. Receive request\r\n2. Select schema based on route\r\n3. Parse and validate against schema\r\n4. If invalid → return 400 with field errors\r\n5. If valid → pass sanitized data to handler\r\n\r\nError Response:\r\n{\r\n  \"error\": {\r\n    \"code\": \"VALIDATION_ERROR\",\r\n    \"message\": \"Invalid request parameters\",\r\n    \"details\": [\r\n      { \"field\": \"email\", \"message\": \"Must be valid email\" },\r\n      { \"field\": \"password\", \"message\": \"Minimum 8 characters\" }\r\n    ]\r\n  }\r\n}\r\n\r\nValidation Middleware:\r\n1. Extract schema for route\r\n2. Validate request.body, request.params, request.query\r\n3. Attach validated data to request object\r\n4. Call next() or return 400\r\n```\r\n\r\n## Sources\r\n\r\n- OWASP Input Validation Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html\r\n- Zod Documentation: https://zod.dev/\r\n- JSON Schema Specification: https://json-schema.org/\r\n- Pydantic Documentation: https://docs.pydantic.dev/\r\n"
+  },
+  {
+    "id": "api-versioning",
+    "title": "API Versioning",
+    "tags": [
+      "api",
+      "versioning",
+      "rest",
+      "backward-compatibility"
+    ],
+    "level": "intermediate",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/api.versioning.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# API Versioning\r\n\r\n## Problem\r\n\r\nAPIs evolve over time. Without versioning, breaking changes disrupt existing clients. Poor versioning strategy leads to maintenance burden and client frustration.\r\n\r\n## When to use\r\n\r\n- Public APIs consumed by third parties\r\n- Internal APIs with multiple consumer teams\r\n- When breaking changes are anticipated\r\n- Long-lived APIs requiring evolution\r\n- Microservices with independent deployment\r\n\r\n## Solution\r\n\r\n1. **Choose versioning strategy**\r\n   - **URL path** (recommended): `/v1/users` - most explicit, cacheable\r\n   - **Header**: `Accept: application/vnd.api+json;version=1`\r\n   - **Query param**: `?version=1` - easy but less clean\r\n\r\n2. **Define version lifecycle**\r\n   - Alpha/Beta → Stable → Deprecated → Sunset\r\n   - Communicate deprecation timeline (e.g., 6-12 months)\r\n   - Use `Deprecation` and `Sunset` headers\r\n\r\n3. **Minimize breaking changes**\r\n   - Add fields, don't remove\r\n   - Make new fields optional\r\n   - Use feature flags for gradual rollout\r\n\r\n4. **Document migration paths**\r\n   - Changelog for each version\r\n   - Migration guides for breaking changes\r\n   - SDK updates aligned with API versions\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| Too many versions | Limit to 2-3 active versions max |\r\n| Silent breaking changes | Use API contracts, run compatibility tests |\r\n| No deprecation notice | Add headers, notify consumers proactively |\r\n| Header versioning caching issues | URL versioning is more cache-friendly |\r\n| Versioning internal-only APIs | Consider if you really need versioning |\r\n\r\n## Checklist\r\n\r\n- [ ] Versioning strategy documented\r\n- [ ] Version included in all API routes\r\n- [ ] Deprecation timeline defined (6-12 months)\r\n- [ ] Deprecation header returned for old versions\r\n- [ ] Changelog maintained per version\r\n- [ ] Breaking changes trigger major version bump\r\n- [ ] SDKs versioned alongside API\r\n- [ ] Monitoring tracks version adoption\r\n- [ ] Migration guides available\r\n- [ ] Sunset date communicated clearly\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nURL Path Versioning:\r\nGET /v1/users          # Version 1\r\nGET /v2/users          # Version 2\r\n\r\nDeprecation Headers:\r\nDeprecation: true\r\nSunset: Sat, 01 Jun 2027 00:00:00 GMT\r\nLink: </v2/users>; rel=\"successor-version\"\r\n\r\nVersion Lifecycle:\r\n1. v1 (stable) ──┐\r\n2. v2 (beta)     │ overlap period (6-12 months)\r\n3. v1 deprecated │\r\n4. v1 sunset ────┘\r\n5. v2 (stable)\r\n\r\nSteps:\r\n1. Define versioning strategy in API guidelines\r\n2. Implement version routing (middleware/gateway)\r\n3. Add deprecation header middleware\r\n4. Set up version adoption metrics\r\n5. Document migration for each major version\r\n```\r\n\r\n## Sources\r\n\r\n- Stripe API Versioning: https://stripe.com/blog/api-versioning\r\n- Microsoft REST API Guidelines - Versioning: https://github.com/microsoft/api-guidelines\r\n- Google API Design Guide - Versioning: https://cloud.google.com/apis/design/versioning\r\n- Zalando RESTful API Guidelines - Compatibility: https://opensource.zalando.com/restful-api-guidelines/\r\n"
+  },
+  {
+    "id": "api-webhooks-signatures",
+    "title": "Webhook Signatures",
+    "tags": [
+      "api",
+      "webhooks",
+      "security",
+      "signatures"
+    ],
+    "level": "intermediate",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/api.webhooks-signatures.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Webhook Signatures\r\n\r\n## Problem\r\n\r\nWebhooks can be spoofed by attackers sending fake payloads to your endpoints. Without signature verification, your system may process malicious or forged events.\r\n\r\n## When to use\r\n\r\n- Receiving webhooks from any external service\r\n- Building webhook delivery systems\r\n- Payment processor callbacks\r\n- GitHub/GitLab event hooks\r\n- Any event-driven integration\r\n\r\n## Solution\r\n\r\n1. **Signing (sender side)**\r\n   - Generate HMAC-SHA256 of payload\r\n   - Use shared secret per consumer\r\n   - Include timestamp to prevent replay\r\n   - Send signature in header\r\n\r\n2. **Verification (receiver side)**\r\n   - Extract signature from header\r\n   - Recompute HMAC with your secret\r\n   - Compare signatures (constant-time)\r\n   - Validate timestamp freshness (5-minute window)\r\n\r\n3. **Replay protection**\r\n   - Include timestamp in signed payload\r\n   - Reject events older than tolerance window\r\n   - Optionally store event IDs for dedup\r\n\r\n4. **Secret rotation**\r\n   - Support multiple active secrets\r\n   - Grace period during rotation\r\n   - Notify consumers before rotation\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| Using simple string compare | Use constant-time comparison |\r\n| No timestamp validation | Check event is within 5-minute window |\r\n| Sharing secret across consumers | Unique secret per webhook endpoint |\r\n| Not logging verification failures | Track for security monitoring |\r\n| Ignoring replay attacks | Store event IDs or use timestamps |\r\n\r\n## Checklist\r\n\r\n- [ ] HMAC-SHA256 used for signatures\r\n- [ ] Unique secret per consumer/endpoint\r\n- [ ] Signature sent in secure header\r\n- [ ] Constant-time comparison used\r\n- [ ] Timestamp included and validated\r\n- [ ] Replay window enforced (5 min typical)\r\n- [ ] Failed verifications logged with context\r\n- [ ] Secret rotation mechanism in place\r\n- [ ] Multiple secrets supported during rotation\r\n- [ ] Signature scheme documented\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nSignature Generation (Sender):\r\n1. Create payload: { \"event\": \"payment.completed\", \"data\": {...}, \"timestamp\": 1642000000 }\r\n2. Stringify payload (canonical JSON)\r\n3. Compute: signature = HMAC-SHA256(secret, timestamp + \".\" + payload)\r\n4. Send header: X-Signature: t=1642000000,v1=abc123...\r\n\r\nSignature Verification (Receiver):\r\n1. Extract header: t=1642000000,v1=abc123...\r\n2. Parse timestamp and signature\r\n3. Check: abs(now - timestamp) < 300 seconds\r\n4. Compute expected: HMAC-SHA256(secret, timestamp + \".\" + raw_body)\r\n5. Compare: constant_time_equal(expected, received_signature)\r\n6. If mismatch → 401 Unauthorized\r\n\r\nHeader Format (Stripe-style):\r\nX-Signature: t=1642000000,v1=5257a869e7ecebeda32affa62cdca3fa51cad7e77a0e56ff536d0ce8e108d8bd\r\n```\r\n\r\n## Sources\r\n\r\n- Stripe Webhook Signatures: https://stripe.com/docs/webhooks/signatures\r\n- GitHub Webhook Secrets: https://docs.github.com/en/webhooks/securing\r\n- Twilio Request Validation: https://www.twilio.com/docs/usage/security\r\n- OWASP Webhook Security: https://cheatsheetseries.owasp.org/cheatsheets/Webhook_Security_Cheat_Sheet.html\r\n"
+  },
+  {
+    "id": "db-indexing-basics",
+    "title": "Database Indexing Basics",
+    "tags": [
+      "database",
+      "indexing",
+      "performance",
+      "query-optimization"
+    ],
+    "level": "intermediate",
+    "stacks": [
+      "postgresql",
+      "mysql",
+      "sqlserver",
+      "mongodb"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "postgresql",
+      "mysql",
+      "sqlserver",
+      "mongodb"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/db.indexing-basics.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Database Indexing Basics\r\n\r\n## Problem\r\n\r\nQueries on large tables without proper indexes result in full table scans, causing slow response times, high CPU usage, and poor user experience. Over-indexing wastes disk space and slows writes.\r\n\r\n## When to use\r\n\r\n- Columns used in WHERE clauses\r\n- Columns used in JOIN conditions\r\n- Columns used in ORDER BY / GROUP BY\r\n- Foreign key columns\r\n- Columns with high selectivity\r\n\r\n## Solution\r\n\r\n1. **Identify query patterns**\r\n   - Analyze slow query logs\r\n   - Review application queries\r\n   - Use EXPLAIN/EXPLAIN ANALYZE\r\n\r\n2. **Choose index type**\r\n   - B-tree: Default, works for most cases\r\n   - Hash: Equality comparisons only\r\n   - GIN/GiST: Full-text, JSONB, arrays\r\n   - Partial: Subset of rows\r\n\r\n3. **Create composite indexes**\r\n   - Order columns by selectivity\r\n   - Include all columns for covering index\r\n   - Match query patterns exactly\r\n\r\n4. **Monitor and maintain**\r\n   - Track index usage statistics\r\n   - Remove unused indexes\r\n   - Rebuild fragmented indexes\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| Indexing every column | Only index queried columns |\r\n| Wrong column order in composite | Put highest selectivity first |\r\n| Ignoring index on FKs | Always index foreign keys |\r\n| Not using EXPLAIN | Always verify index usage |\r\n| Indexes on low-cardinality columns | Boolean/status rarely benefit |\r\n\r\n## Checklist\r\n\r\n- [ ] Foreign key columns indexed\r\n- [ ] Frequently queried columns indexed\r\n- [ ] Composite index column order optimized\r\n- [ ] EXPLAIN used to verify index usage\r\n- [ ] Unused indexes identified and removed\r\n- [ ] Partial indexes used where applicable\r\n- [ ] Index on columns in WHERE/JOIN/ORDER BY\r\n- [ ] Write performance impact considered\r\n- [ ] Index statistics up to date\r\n- [ ] Index naming convention followed\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nEXPLAIN ANALYZE:\r\nEXPLAIN ANALYZE SELECT * FROM users WHERE email = 'test@example.com';\r\n-- Look for: \"Index Scan\" vs \"Seq Scan\"\r\n\r\nCreating Indexes:\r\n-- Single column\r\nCREATE INDEX idx_users_email ON users(email);\r\n\r\n-- Composite (order matters!)\r\nCREATE INDEX idx_orders_user_status ON orders(user_id, status);\r\n\r\n-- Partial index\r\nCREATE INDEX idx_orders_pending ON orders(created_at) \r\n  WHERE status = 'pending';\r\n\r\n-- Covering index (includes all needed columns)\r\nCREATE INDEX idx_orders_covering ON orders(user_id, status) \r\n  INCLUDE (total, created_at);\r\n\r\nIndex Selection Rules:\r\n1. Column in WHERE → Consider index\r\n2. Column in JOIN ON → Index required\r\n3. Column in ORDER BY → May benefit from index\r\n4. Low cardinality (boolean) → Usually skip\r\n5. High write table → Be conservative\r\n\r\nSteps:\r\n1. Enable slow query logging\r\n2. Identify top slow queries\r\n3. Run EXPLAIN ANALYZE on them\r\n4. Add targeted indexes\r\n5. Verify with EXPLAIN again\r\n6. Monitor index usage over time\r\n```\r\n\r\n## Sources\r\n\r\n- Use The Index, Luke: https://use-the-index-luke.com/\r\n- PostgreSQL Indexes: https://www.postgresql.org/docs/current/indexes.html\r\n- MySQL Index Optimization: https://dev.mysql.com/doc/refman/8.0/en/optimization-indexes.html\r\n- MongoDB Indexing Strategies: https://www.mongodb.com/docs/manual/indexes/\r\n"
+  },
+  {
+    "id": "db-migrations-strategy",
+    "title": "Database Migrations Strategy",
+    "tags": [
+      "database",
+      "migrations",
+      "schema",
+      "devops"
+    ],
+    "level": "intermediate",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/db.migrations-strategy.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Database Migrations Strategy\r\n\r\n## Problem\r\n\r\nUnmanaged schema changes cause deployment failures, data loss, and environment drift. Without migration strategy, rolling back is painful and synchronizing schemas across environments is error-prone.\r\n\r\n## When to use\r\n\r\n- Any application with database\r\n- Multi-environment deployments (dev, staging, prod)\r\n- Team collaboration on schema\r\n- CI/CD pipelines\r\n- Blue-green or rolling deployments\r\n\r\n## Solution\r\n\r\n1. **Use migration tool**\r\n   - Version-controlled migrations\r\n   - Track applied migrations in DB table\r\n   - Popular: Flyway, Liquibase, Alembic, Knex\r\n\r\n2. **Write safe migrations**\r\n   - One change per migration\r\n   - Always provide rollback\r\n   - Make migrations idempotent when possible\r\n   - Test data migrations separately\r\n\r\n3. **Deploy safely**\r\n   - Run migrations before app deployment\r\n   - Separate destructive changes\r\n   - Use expand-contract pattern for zero-downtime\r\n\r\n4. **Handle production data**\r\n   - Backup before major migrations\r\n   - Test on production-like data volume\r\n   - Use batching for large updates\r\n   - Monitor during migration\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| Missing rollback script | Always write down + up migration |\r\n| Locking tables in prod | Use CREATE INDEX CONCURRENTLY |\r\n| Dropping columns immediately | Expand-contract: deprecate first |\r\n| Testing on empty DB | Test with production-like data |\r\n| Manual schema changes | Only apply through migrations |\r\n\r\n## Checklist\r\n\r\n- [ ] Migration tool configured\r\n- [ ] Migrations version-controlled\r\n- [ ] Up and down scripts provided\r\n- [ ] Migrations run in CI\r\n- [ ] Non-destructive changes preferred\r\n- [ ] Large data updates batched\r\n- [ ] Indexes created concurrently (if supported)\r\n- [ ] Production backup taken before major changes\r\n- [ ] Schema drift detection in place\r\n- [ ] Migration rollback tested\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nMigration File Structure:\r\nmigrations/\r\n├── 001_create_users_table.sql\r\n├── 002_add_email_to_users.sql\r\n├── 003_create_orders_table.sql\r\n└── 004_add_user_id_index_orders.sql\r\n\r\nExpand-Contract Pattern:\r\nPhase 1 (Expand):\r\n  - Add new column (nullable)\r\n  - Backfill data\r\n  - Update app to write to both\r\n  \r\nPhase 2 (Migrate):\r\n  - Update app to read from new column\r\n  - Verify all data migrated\r\n\r\nPhase 3 (Contract):\r\n  - Remove old column references\r\n  - Drop old column\r\n\r\nSafe Index Creation (PostgreSQL):\r\nCREATE INDEX CONCURRENTLY idx_orders_user_id ON orders(user_id);\r\n\r\nSteps:\r\n1. Generate migration file (timestamped)\r\n2. Write UP migration (apply change)\r\n3. Write DOWN migration (rollback)\r\n4. Test in development\r\n5. Apply in staging\r\n6. Backup production\r\n7. Apply in production (during low traffic)\r\n8. Verify and monitor\r\n```\r\n\r\n## Sources\r\n\r\n- Flyway Documentation: https://documentation.red-gate.com/fd/flyway-documentation-138346877.html\r\n- GitHub - Expand and Contract: https://github.blog/2024-02-12-how-github-evolved-its-schema-to-support-notifications-at-scale/\r\n- Strong Migrations (Ruby): https://github.com/ankane/strong_migrations\r\n- Liquibase Best Practices: https://docs.liquibase.com/concepts/bestpractices.html\r\n"
+  },
+  {
+    "id": "db-n-plus-1-avoid",
+    "title": "Avoiding N+1 Query Problem",
+    "tags": [
+      "database",
+      "performance",
+      "orm",
+      "optimization"
+    ],
+    "level": "intermediate",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/db.n-plus-1-avoid.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Avoiding N+1 Query Problem\r\n\r\n## Problem\r\n\r\nN+1 queries occur when code fetches a list, then executes one query per item to get related data. This causes 1 + N database roundtrips instead of 2, destroying performance.\r\n\r\n## When to use\r\n\r\n- Using any ORM (ActiveRecord, Hibernate, SQLAlchemy)\r\n- Fetching collections with relationships\r\n- API endpoints returning nested data\r\n- GraphQL resolvers\r\n- Anytime you loop and query\r\n\r\n## Solution\r\n\r\n1. **Identify N+1 patterns**\r\n   - Enable query logging in development\r\n   - Use APM or profiling tools\r\n   - Look for loops that trigger queries\r\n\r\n2. **Use eager loading**\r\n   - Load relationships in initial query\r\n   - JOIN or separate IN query\r\n   - Specify includes/joins upfront\r\n\r\n3. **Use DataLoader pattern**\r\n   - Batch and dedupe requests\r\n   - Especially for GraphQL\r\n   - Works across single request\r\n\r\n4. **Optimize query patterns**\r\n   - Fetch only needed fields\r\n   - Use subqueries or CTEs\r\n   - Consider denormalization for reads\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| Over-eager loading | Only load what you need |\r\n| Lazy loading by default | Configure ORM for explicit loading |\r\n| Not monitoring queries | Enable query logging always |\r\n| Ignoring in tests | Tests often hide N+1 (small data) |\r\n| Nested N+1 | Check all relationship levels |\r\n\r\n## Checklist\r\n\r\n- [ ] Query logging enabled in development\r\n- [ ] N+1 detection tool configured\r\n- [ ] Eager loading used for known relationships\r\n- [ ] DataLoader used for GraphQL (or similar)\r\n- [ ] Code review checks for loops with queries\r\n- [ ] Lazy loading avoided by default\r\n- [ ] APM tracks query counts per request\r\n- [ ] Benchmarks use realistic data volume\r\n- [ ] SELECT fields limited to needed columns\r\n- [ ] Complex queries reviewed by DBA\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nN+1 Problem Example:\r\n-- First query: get all orders\r\nSELECT * FROM orders;\r\n\r\n-- Then for EACH order (N times):\r\nSELECT * FROM users WHERE id = ?;  -- Called N times!\r\n\r\nFixed with Eager Loading:\r\n-- Option 1: JOIN\r\nSELECT orders.*, users.* \r\nFROM orders \r\nJOIN users ON orders.user_id = users.id;\r\n\r\n-- Option 2: Separate IN query (2 queries total)\r\nSELECT * FROM orders;\r\nSELECT * FROM users WHERE id IN (1, 2, 3, 4, 5);\r\n\r\nORM Eager Loading (pseudo):\r\n-- Bad\r\norders = Order.all()\r\nfor order in orders:\r\n  print(order.user.name)  # Triggers query each time!\r\n\r\n-- Good\r\norders = Order.all().include('user')  # or .prefetch_related()\r\nfor order in orders:\r\n  print(order.user.name)  # No additional queries\r\n\r\nDataLoader Pattern:\r\n1. Collect all user_ids needed in request\r\n2. Batch into single query: WHERE id IN (...)\r\n3. Return results mapped by id\r\n4. Each resolver gets pre-fetched data\r\n\r\nDetection Steps:\r\n1. Enable query logging\r\n2. Run typical request\r\n3. Count queries (should be ~2-3 for list endpoint)\r\n4. If queries ~ item count, you have N+1\r\n5. Add eager loading or DataLoader\r\n```\r\n\r\n## Sources\r\n\r\n- Rails Bullet Gem: https://github.com/flyerhzm/bullet\r\n- SQLAlchemy Eager Loading: https://docs.sqlalchemy.org/en/14/orm/loading_relationships.html\r\n- GraphQL DataLoader: https://github.com/graphql/dataloader\r\n- Django select_related/prefetch_related: https://docs.djangoproject.com/en/5.0/ref/models/querysets/#select-related\r\n"
+  },
+  {
+    "id": "db-schema-constraints",
+    "title": "Database Schema Constraints",
+    "tags": [
+      "database",
+      "schema",
+      "constraints",
+      "integrity"
+    ],
+    "level": "beginner",
+    "stacks": [
+      "postgresql",
+      "mysql",
+      "sqlserver"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "postgresql",
+      "mysql",
+      "sqlserver"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/db.schema-constraints.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Database Schema Constraints\r\n\r\n## Problem\r\n\r\nWithout proper constraints, invalid data enters the database, causing application crashes, data corruption, and expensive cleanup operations. Business rules enforced only in application code can be bypassed.\r\n\r\n## When to use\r\n\r\n- Every database table design\r\n- Data integrity is critical\r\n- Multiple applications access same database\r\n- Preventing orphan records\r\n- Enforcing business rules at data layer\r\n\r\n## Solution\r\n\r\n1. **Primary key constraints**\r\n   - Every table needs a primary key\r\n   - Prefer surrogate keys (UUID, auto-increment)\r\n   - Composite keys for junction tables\r\n\r\n2. **Foreign key constraints**\r\n   - Define relationships explicitly\r\n   - Choose appropriate ON DELETE action\r\n   - Index foreign key columns\r\n\r\n3. **Unique constraints**\r\n   - Prevent duplicates on business keys\r\n   - Consider partial unique indexes\r\n   - Handle NULL behavior\r\n\r\n4. **Check constraints**\r\n   - Validate ranges, formats, enums\r\n   - Enforce business rules\r\n   - Keep simple for performance\r\n\r\n5. **Not null constraints**\r\n   - Default to NOT NULL\r\n   - Only allow NULL when meaningful\r\n   - Document NULL semantics\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| No foreign key indexes | Always index FK columns |\r\n| CASCADE DELETE on critical data | Use RESTRICT or SET NULL |\r\n| Over-constraining early | Start strict, relax if needed |\r\n| Ignoring NULL in unique | Use partial index or COALESCE |\r\n| Complex check constraints | Move complex logic to triggers/app |\r\n\r\n## Checklist\r\n\r\n- [ ] Every table has primary key\r\n- [ ] Foreign keys defined for relationships\r\n- [ ] Foreign key columns indexed\r\n- [ ] ON DELETE behavior explicitly chosen\r\n- [ ] Unique constraints on business keys\r\n- [ ] NOT NULL on required fields\r\n- [ ] Check constraints for simple validations\r\n- [ ] Constraint names are descriptive\r\n- [ ] Migration tests validate constraints\r\n- [ ] Constraints documented in schema\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nTable Definition:\r\nCREATE TABLE orders (\r\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\r\n  user_id UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT,\r\n  status VARCHAR(20) NOT NULL CHECK (status IN ('pending', 'paid', 'shipped')),\r\n  total_cents INTEGER NOT NULL CHECK (total_cents >= 0),\r\n  email VARCHAR(255) NOT NULL,\r\n  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),\r\n  \r\n  CONSTRAINT orders_user_id_idx INDEX (user_id),\r\n  CONSTRAINT orders_email_unique UNIQUE (email)\r\n);\r\n\r\nON DELETE Options:\r\n- RESTRICT: Prevent delete if children exist\r\n- CASCADE: Delete children automatically\r\n- SET NULL: Set FK to NULL on parent delete\r\n- SET DEFAULT: Set FK to default value\r\n\r\nSteps:\r\n1. Define primary key (UUID or serial)\r\n2. Add foreign keys with ON DELETE behavior\r\n3. Create indexes on foreign key columns\r\n4. Add NOT NULL to required fields\r\n5. Add unique constraints on business keys\r\n6. Add check constraints for enums/ranges\r\n```\r\n\r\n## Sources\r\n\r\n- PostgreSQL Constraints: https://www.postgresql.org/docs/current/ddl-constraints.html\r\n- MySQL Foreign Keys: https://dev.mysql.com/doc/refman/8.0/en/create-table-foreign-keys.html\r\n- Use The Index, Luke: https://use-the-index-luke.com/\r\n- Database Design Best Practices: https://vertabelo.com/blog/database-design-best-practices/\r\n"
+  },
+  {
+    "id": "db-soft-delete-audit",
+    "title": "Soft Delete & Audit Trail",
+    "tags": [
+      "database",
+      "soft-delete",
+      "auditing",
+      "compliance"
+    ],
+    "level": "intermediate",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/db.soft-delete-audit.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Soft Delete & Audit Trail\r\n\r\n## Problem\r\n\r\nHard deletes permanently lose data, making debugging, compliance, and recovery impossible. Without audit trails, you can't answer \"who changed what and when.\"\r\n\r\n## When to use\r\n\r\n- Regulatory compliance (GDPR, SOX, HIPAA)\r\n- Data recovery requirements\r\n- Undo/restore functionality\r\n- Historical analysis and reporting\r\n- Debugging production issues\r\n- Multi-tenant applications\r\n\r\n## Solution\r\n\r\n1. **Implement soft delete**\r\n   - Add `deleted_at` timestamp column\r\n   - Filter out soft-deleted in default queries\r\n   - Keep foreign key integrity\r\n   - Consider global query scope/filter\r\n\r\n2. **Create audit trail**\r\n   - Track who, what, when for changes\r\n   - Store old and new values\r\n   - Use triggers or application middleware\r\n   - Consider event sourcing for critical domains\r\n\r\n3. **Handle related data**\r\n   - Cascade soft-delete to children\r\n   - Consider restore implications\r\n   - Archive old soft-deleted data\r\n\r\n4. **Set retention policy**\r\n   - Define how long to keep deleted data\r\n   - Automate hard-delete after retention period\r\n   - Consider compliance requirements\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| Forgetting filter in queries | Use global scope/default clause |\r\n| Unique constraint conflicts | Include deleted_at in unique indexes |\r\n| Performance degradation | Partition or archive old records |\r\n| Missing FK in soft-delete | Soft-delete must cascade appropriately |\r\n| Audit table bloat | Archive or partition audit logs |\r\n\r\n## Checklist\r\n\r\n- [ ] deleted_at column added to relevant tables\r\n- [ ] Default query scope filters deleted records\r\n- [ ] Unique indexes include deleted_at\r\n- [ ] Audit table captures who/what/when\r\n- [ ] Old and new values stored in audit\r\n- [ ] Foreign key implications handled\r\n- [ ] Restore functionality tested\r\n- [ ] Retention policy defined\r\n- [ ] Archive strategy for old data\r\n- [ ] GDPR right-to-erasure considered\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nSoft Delete Schema:\r\nCREATE TABLE users (\r\n  id UUID PRIMARY KEY,\r\n  email VARCHAR(255) NOT NULL,\r\n  name VARCHAR(255),\r\n  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),\r\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),\r\n  deleted_at TIMESTAMPTZ NULL  -- NULL = not deleted\r\n);\r\n\r\n-- Unique that allows \"deleted\" duplicates\r\nCREATE UNIQUE INDEX idx_users_email_active \r\n  ON users(email) WHERE deleted_at IS NULL;\r\n\r\nAudit Table Schema:\r\nCREATE TABLE audit_log (\r\n  id UUID PRIMARY KEY,\r\n  table_name VARCHAR(100) NOT NULL,\r\n  record_id UUID NOT NULL,\r\n  action VARCHAR(10) NOT NULL,  -- INSERT, UPDATE, DELETE\r\n  old_values JSONB,\r\n  new_values JSONB,\r\n  changed_by UUID REFERENCES users(id),\r\n  changed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),\r\n  ip_address INET,\r\n  user_agent TEXT\r\n);\r\n\r\nSoft Delete Query:\r\n-- Default: only active records\r\nSELECT * FROM users WHERE deleted_at IS NULL;\r\n\r\n-- Include deleted (admin view)\r\nSELECT * FROM users;\r\n\r\n-- Only deleted (recovery view)\r\nSELECT * FROM users WHERE deleted_at IS NOT NULL;\r\n\r\nSteps:\r\n1. Add deleted_at column (nullable timestamp)\r\n2. Update unique constraints to be partial\r\n3. Add default scope to filter deleted\r\n4. Create audit_log table\r\n5. Implement trigger or middleware for auditing\r\n6. Define retention and archive strategy\r\n```\r\n\r\n## Sources\r\n\r\n- Soft Delete Patterns: https://brandur.org/soft-deletion\r\n- PostgreSQL Audit Trigger: https://wiki.postgresql.org/wiki/Audit_trigger\r\n- Django Simple History: https://django-simple-history.readthedocs.io/\r\n- Database Audit Logging (OWASP): https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html\r\n"
+  },
+  {
+    "id": "db-transactions-boundaries",
+    "title": "Transaction Boundaries",
+    "tags": [
+      "database",
+      "transactions",
+      "acid",
+      "consistency"
+    ],
+    "level": "intermediate",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/db.transactions-boundaries.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Transaction Boundaries\r\n\r\n## Problem\r\n\r\nIncorrect transaction boundaries lead to partial updates, data inconsistency, and race conditions. Too-long transactions cause lock contention; too-short transactions cause inconsistent state.\r\n\r\n## When to use\r\n\r\n- Multiple related writes that must succeed together\r\n- Read-modify-write operations\r\n- Business operations with consistency requirements\r\n- Cross-table updates\r\n- Financial or inventory operations\r\n\r\n## Solution\r\n\r\n1. **Define clear boundaries**\r\n   - Transaction = one business operation\r\n   - Keep transactions as short as possible\r\n   - Group related writes together\r\n\r\n2. **Choose isolation level**\r\n   - Read Committed: Default, prevents dirty reads\r\n   - Repeatable Read: Prevents non-repeatable reads\r\n   - Serializable: Strongest, prevents phantoms\r\n\r\n3. **Handle errors properly**\r\n   - Rollback on any error\r\n   - Don't catch and ignore DB errors\r\n   - Retry transient failures with backoff\r\n\r\n4. **Optimize for performance**\r\n   - Avoid external calls inside transactions\r\n   - Use optimistic locking when possible\r\n   - Batch operations when appropriate\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| HTTP calls inside transaction | Move external calls outside |\r\n| Long-running transactions | Keep transactions short (< 1 sec) |\r\n| Not handling deadlocks | Implement retry logic |\r\n| Mixing read-write isolation | Understand isolation trade-offs |\r\n| Auto-commit mode surprises | Explicitly manage transactions |\r\n\r\n## Checklist\r\n\r\n- [ ] Transaction boundaries match business operations\r\n- [ ] Transactions kept as short as possible\r\n- [ ] No external calls inside transactions\r\n- [ ] Isolation level explicitly chosen\r\n- [ ] Error handling includes rollback\r\n- [ ] Deadlock retry logic implemented\r\n- [ ] Optimistic locking used where appropriate\r\n- [ ] Connection pool sized correctly\r\n- [ ] Transaction timeouts configured\r\n- [ ] Nested transactions avoided or handled\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nBasic Transaction Pattern:\r\nBEGIN TRANSACTION;\r\n  UPDATE accounts SET balance = balance - 100 WHERE id = 1;\r\n  UPDATE accounts SET balance = balance + 100 WHERE id = 2;\r\n  INSERT INTO transfers (from_id, to_id, amount) VALUES (1, 2, 100);\r\nCOMMIT;\r\n-- On any error: ROLLBACK;\r\n\r\nApplication Code Pattern:\r\ntry:\r\n  tx = db.begin_transaction()\r\n  account_from = tx.update(account1, balance=balance - amount)\r\n  account_to = tx.update(account2, balance=balance + amount)\r\n  tx.insert(Transfer(from=1, to=2, amount=amount))\r\n  tx.commit()\r\nexcept Exception:\r\n  tx.rollback()\r\n  raise\r\n\r\nOptimistic Locking:\r\nUPDATE products \r\nSET quantity = quantity - 1, version = version + 1\r\nWHERE id = 123 AND version = 5;\r\n-- If affected_rows == 0, retry (someone else updated)\r\n\r\nIsolation Levels:\r\n- READ UNCOMMITTED: Dirty reads possible (avoid!)\r\n- READ COMMITTED: Only committed data visible\r\n- REPEATABLE READ: Snapshot at transaction start\r\n- SERIALIZABLE: Full isolation, may have failures\r\n\r\nSteps:\r\n1. Identify business operation boundaries\r\n2. Wrap related writes in single transaction\r\n3. Choose appropriate isolation level\r\n4. Add error handling with rollback\r\n5. Implement retry for transient failures\r\n6. Monitor for lock contention\r\n```\r\n\r\n## Sources\r\n\r\n- PostgreSQL Transaction Isolation: https://www.postgresql.org/docs/current/transaction-iso.html\r\n- Martin Kleppmann - Designing Data-Intensive Applications: https://dataintensive.net/\r\n- MySQL Transaction Management: https://dev.mysql.com/doc/refman/8.0/en/innodb-transaction-model.html\r\n- Jepsen Analysis (Consistency Testing): https://jepsen.io/analyses\r\n"
+  },
+  {
+    "id": "obs-correlation-id",
+    "title": "Correlation ID",
+    "tags": [
+      "observability",
+      "tracing",
+      "debugging",
+      "distributed-systems"
+    ],
+    "level": "beginner",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/obs.correlation-id.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Correlation ID\r\n\r\n## Problem\r\n\r\nIn distributed systems, a single user request may span multiple services, databases, and queues. Without a common identifier linking all these operations, debugging becomes nearly impossible.\r\n\r\n## When to use\r\n\r\n- Any distributed system\r\n- Microservices architecture\r\n- Request tracing across services\r\n- Log correlation\r\n- Debugging production issues\r\n\r\n## Solution\r\n\r\n1. **Generate at entry point**\r\n   - Create unique ID at edge (API gateway, load balancer)\r\n   - Use UUID, ULID, or similar\r\n   - Accept from client if provided (for end-to-end tracing)\r\n\r\n2. **Propagate everywhere**\r\n   - Pass in HTTP headers (`X-Correlation-ID`, `X-Request-ID`)\r\n   - Include in async messages\r\n   - Store in thread-local/context\r\n\r\n3. **Log with every entry**\r\n   - Attach to all log entries\r\n   - Include in error responses\r\n   - Pass to downstream services\r\n\r\n4. **Integrate with tracing**\r\n   - Use as parent span ID\r\n   - Link with OpenTelemetry/Jaeger\r\n   - Enable distributed tracing\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| Not propagating to async jobs | Explicitly pass correlation ID in job payload |\r\n| Generating new ID at each service | Only generate at edge, propagate everywhere |\r\n| Not logging correlation ID | Add to logging context/MDC |\r\n| Missing from error responses | Include in all responses for debugging |\r\n| Inconsistent header names | Standardize on one name across org |\r\n\r\n## Checklist\r\n\r\n- [ ] Correlation ID generated at entry point\r\n- [ ] ID propagated in HTTP headers\r\n- [ ] ID attached to all log entries\r\n- [ ] ID included in error responses\r\n- [ ] ID passed in async message payloads\r\n- [ ] Thread-local/context stores current ID\r\n- [ ] Downstream services extract and use ID\r\n- [ ] Header name standardized across services\r\n- [ ] ID format is URL-safe\r\n- [ ] Integration with distributed tracing\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nHTTP Header:\r\nX-Correlation-ID: corr_a1b2c3d4-e5f6-7890-abcd-ef1234567890\r\n\r\nRequest Flow:\r\nClient → API Gateway → Service A → Service B → Database\r\n         │                │            │\r\n         └── corr_abc ────┴── corr_abc─┴── corr_abc\r\n\r\nMiddleware Implementation:\r\ndef correlation_middleware(request, next):\r\n  # Extract or generate\r\n  correlation_id = request.headers.get('X-Correlation-ID')\r\n  if not correlation_id:\r\n    correlation_id = generate_uuid()\r\n  \r\n  # Store in context\r\n  context.set('correlation_id', correlation_id)\r\n  \r\n  # Add to logging context\r\n  logging.set_context({'correlation_id': correlation_id})\r\n  \r\n  # Process request\r\n  response = next(request)\r\n  \r\n  # Include in response\r\n  response.headers['X-Correlation-ID'] = correlation_id\r\n  return response\r\n\r\nLog Entry:\r\n{\r\n  \"timestamp\": \"2026-01-14T12:00:00Z\",\r\n  \"level\": \"INFO\",\r\n  \"message\": \"Order created\",\r\n  \"correlation_id\": \"corr_a1b2c3d4\",\r\n  \"service\": \"order-service\",\r\n  \"user_id\": \"user_123\"\r\n}\r\n\r\nAsync Job Payload:\r\n{\r\n  \"job_type\": \"send_email\",\r\n  \"correlation_id\": \"corr_a1b2c3d4\",  # Propagated!\r\n  \"payload\": { ... }\r\n}\r\n```\r\n\r\n## Sources\r\n\r\n- OpenTelemetry Trace Context: https://www.w3.org/TR/trace-context/\r\n- AWS X-Ray Tracing: https://docs.aws.amazon.com/xray/latest/devguide/xray-concepts.html\r\n- Microservices Logging Best Practices: https://www.datadoghq.com/blog/microservices-logging-best-practices/\r\n- Spring Cloud Sleuth: https://spring.io/projects/spring-cloud-sleuth\r\n"
+  },
+  {
+    "id": "obs-metrics-red-use",
+    "title": "RED & USE Metrics",
+    "tags": [
+      "observability",
+      "metrics",
+      "monitoring",
+      "sre"
+    ],
+    "level": "intermediate",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/obs.metrics-red-use.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# RED & USE Metrics\r\n\r\n## Problem\r\n\r\nWithout standardized metrics, teams measure random things and miss critical signals. You need a consistent framework to monitor service health and diagnose issues quickly.\r\n\r\n## When to use\r\n\r\n- All production services\r\n- API endpoints monitoring\r\n- Infrastructure monitoring\r\n- SLO/SLA tracking\r\n- Capacity planning\r\n\r\n## Solution\r\n\r\n1. **RED Method (for services/endpoints)**\r\n   - **R**ate: Requests per second\r\n   - **E**rrors: Failed requests per second\r\n   - **D**uration: Latency distribution (p50, p95, p99)\r\n\r\n2. **USE Method (for resources)**\r\n   - **U**tilization: How busy is the resource\r\n   - **S**aturation: How much queued/waiting work\r\n   - **E**rrors: Error count for the resource\r\n\r\n3. **Implement at right layers**\r\n   - RED: API routes, service methods\r\n   - USE: CPU, memory, disk, network, queues, pools\r\n\r\n4. **Set up dashboards & alerts**\r\n   - Primary dashboard with RED metrics\r\n   - Infrastructure dashboard with USE\r\n   - Alert on error rate and latency spikes\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| Too many metrics | Focus on RED/USE first |\r\n| Not tracking percentiles | Always track p50, p95, p99 |\r\n| Alerting on averages | Use percentiles for latency alerts |\r\n| Ignoring saturation | Track queue depths, thread pool usage |\r\n| No baseline | Establish normal ranges before alerting |\r\n\r\n## Checklist\r\n\r\n- [ ] Request rate tracked per endpoint\r\n- [ ] Error rate tracked per endpoint\r\n- [ ] Latency percentiles tracked (p50, p95, p99)\r\n- [ ] CPU utilization monitored\r\n- [ ] Memory utilization monitored\r\n- [ ] Disk I/O and space monitored\r\n- [ ] Queue depths tracked (saturation)\r\n- [ ] Connection pool utilization tracked\r\n- [ ] Dashboards created for RED and USE\r\n- [ ] Alerts configured with appropriate thresholds\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nRED Metrics (per endpoint):\r\nhttp_requests_total{method=\"GET\", path=\"/api/users\", status=\"200\"} 1000\r\nhttp_requests_total{method=\"GET\", path=\"/api/users\", status=\"500\"} 5\r\nhttp_request_duration_seconds{method=\"GET\", path=\"/api/users\", quantile=\"0.50\"} 0.05\r\nhttp_request_duration_seconds{method=\"GET\", path=\"/api/users\", quantile=\"0.95\"} 0.2\r\nhttp_request_duration_seconds{method=\"GET\", path=\"/api/users\", quantile=\"0.99\"} 0.5\r\n\r\nUSE Metrics (per resource):\r\n# CPU\r\ncpu_utilization_percent 75\r\ncpu_saturation (runnable processes waiting) 2\r\n\r\n# Memory\r\nmemory_utilization_percent 60\r\nmemory_saturation (swap usage) 0\r\n\r\n# Disk\r\ndisk_utilization_percent 40\r\ndisk_io_wait_seconds 0.01\r\n\r\n# Connection Pool\r\npool_utilization_percent 80\r\npool_pending_requests 5\r\npool_errors_total 0\r\n\r\nDashboard Layout:\r\n┌─────────────────────────────────────────┐\r\n│ SERVICE RED METRICS                     │\r\n├─────────────┬─────────────┬─────────────┤\r\n│ Request Rate│ Error Rate  │ Latency p99 │\r\n│ 1000 req/s  │ 0.5%        │ 200ms       │\r\n└─────────────┴─────────────┴─────────────┘\r\n┌─────────────────────────────────────────┐\r\n│ RESOURCE USE METRICS                    │\r\n├──────┬──────┬──────┬──────┬─────────────┤\r\n│ CPU  │ Mem  │ Disk │ Pool │ Queue Depth │\r\n│ 75%  │ 60%  │ 40%  │ 80%  │ 50 msgs     │\r\n└──────┴──────┴──────┴──────┴─────────────┘\r\n\r\nAlerting Thresholds (example):\r\n- Error rate > 1% for 5 min → Page\r\n- p99 latency > 500ms for 10 min → Warn\r\n- CPU utilization > 80% for 15 min → Warn\r\n- Queue depth > 1000 for 5 min → Page\r\n```\r\n\r\n## Sources\r\n\r\n- RED Method (Tom Wilkie): https://www.weave.works/blog/the-red-method-key-metrics-for-microservices-architecture/\r\n- USE Method (Brendan Gregg): https://www.brendangregg.com/usemethod.html\r\n- Google SRE Book - Monitoring: https://sre.google/sre-book/monitoring-distributed-systems/\r\n- Prometheus Best Practices: https://prometheus.io/docs/practices/naming/\r\n"
+  },
+  {
+    "id": "obs-structured-logging",
+    "title": "Structured Logging",
+    "tags": [
+      "observability",
+      "logging",
+      "json",
+      "debugging"
+    ],
+    "level": "beginner",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/obs.structured-logging.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Structured Logging\r\n\r\n## Problem\r\n\r\nUnstructured log messages are hard to parse, search, and analyze. Free-form text logs make automated monitoring and alerting nearly impossible at scale.\r\n\r\n## When to use\r\n\r\n- All production applications\r\n- Microservices environments\r\n- Any system requiring log analysis\r\n- When using log aggregation (ELK, Datadog)\r\n- Debugging distributed systems\r\n\r\n## Solution\r\n\r\n1. **Use JSON format**\r\n   - Key-value pairs instead of free text\r\n   - Consistent field names across services\r\n   - Machine-parseable\r\n\r\n2. **Include standard fields**\r\n   - Timestamp (ISO 8601)\r\n   - Level (INFO, WARN, ERROR)\r\n   - Message (human-readable)\r\n   - Service name\r\n   - Correlation ID\r\n\r\n3. **Add contextual data**\r\n   - User ID (where appropriate)\r\n   - Request path, method\r\n   - Duration for operations\r\n   - Error details and stack traces\r\n\r\n4. **Handle sensitive data**\r\n   - Never log passwords, tokens\r\n   - Mask PII as needed\r\n   - Define sensitive field list\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| Logging sensitive data | Create allowlist, auto-mask patterns |\r\n| Inconsistent field names | Define org-wide logging schema |\r\n| Giant log entries | Set size limits, truncate long values |\r\n| Not including context | Use logging context/MDC |\r\n| Mixing formats | Enforce JSON-only in production |\r\n\r\n## Checklist\r\n\r\n- [ ] JSON format used for all logs\r\n- [ ] Standard fields defined (timestamp, level, message)\r\n- [ ] Correlation ID in every log entry\r\n- [ ] Service name included\r\n- [ ] Sensitive data excluded/masked\r\n- [ ] Field names standardized across services\r\n- [ ] Log levels used correctly\r\n- [ ] Stack traces included for errors\r\n- [ ] Log aggregation configured\r\n- [ ] Alerting based on log patterns\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nStructured Log Entry:\r\n{\r\n  \"timestamp\": \"2026-01-14T12:00:00.123Z\",\r\n  \"level\": \"INFO\",\r\n  \"message\": \"User login successful\",\r\n  \"service\": \"auth-service\",\r\n  \"version\": \"1.2.3\",\r\n  \"correlation_id\": \"corr_abc123\",\r\n  \"user_id\": \"user_456\",\r\n  \"duration_ms\": 45,\r\n  \"request\": {\r\n    \"method\": \"POST\",\r\n    \"path\": \"/api/login\",\r\n    \"ip\": \"192.168.1.1\"\r\n  }\r\n}\r\n\r\nError Log Entry:\r\n{\r\n  \"timestamp\": \"2026-01-14T12:00:00.123Z\",\r\n  \"level\": \"ERROR\",\r\n  \"message\": \"Failed to process order\",\r\n  \"service\": \"order-service\",\r\n  \"correlation_id\": \"corr_def456\",\r\n  \"error\": {\r\n    \"type\": \"ValidationError\",\r\n    \"message\": \"Invalid product ID\",\r\n    \"stack\": \"ValidationError: Invalid product ID\\n  at ...\"\r\n  },\r\n  \"order_id\": \"order_789\"\r\n}\r\n\r\nLog Levels:\r\n- DEBUG: Detailed dev info (disable in prod)\r\n- INFO: Normal operations, milestones\r\n- WARN: Unexpected but handled situations\r\n- ERROR: Failures requiring attention\r\n\r\nStandard Fields:\r\n| Field | Type | Description |\r\n|-------|------|-------------|\r\n| timestamp | string | ISO 8601 with milliseconds |\r\n| level | string | DEBUG, INFO, WARN, ERROR |\r\n| message | string | Human-readable description |\r\n| service | string | Service/app name |\r\n| correlation_id | string | Request tracing ID |\r\n| duration_ms | number | Operation duration |\r\n\r\nLogging Setup:\r\n1. Configure JSON formatter\r\n2. Define standard fields\r\n3. Set up logging context/MDC\r\n4. Add sensitive data filters\r\n5. Configure log shipping to aggregator\r\n```\r\n\r\n## Sources\r\n\r\n- Google SRE Book - Practical Alerting: https://sre.google/sre-book/practical-alerting/\r\n- The 12 Factor App - Logs: https://12factor.net/logs\r\n- ELK Stack Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html\r\n- Datadog Logging Best Practices: https://docs.datadoghq.com/logs/\r\n"
+  },
+  {
+    "id": "rel-circuit-breaker",
+    "title": "Circuit Breaker",
+    "tags": [
+      "reliability",
+      "circuit-breaker",
+      "resilience",
+      "fault-tolerance"
+    ],
+    "level": "advanced",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/rel.circuit-breaker.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Circuit Breaker\r\n\r\n## Problem\r\n\r\nWhen a downstream service fails, continuing to send requests wastes resources, increases latency, and can cause cascading failures. You need to fail fast and allow time for recovery.\r\n\r\n## When to use\r\n\r\n- Calls to external services\r\n- Database connections under load\r\n- Any dependency that can fail\r\n- Preventing cascade failures\r\n- Protecting shared resources\r\n\r\n## Solution\r\n\r\n1. **Understand circuit states**\r\n   - **Closed**: Normal operation, requests pass through\r\n   - **Open**: Failures exceeded threshold, fail fast\r\n   - **Half-Open**: Testing if service recovered\r\n\r\n2. **Configure thresholds**\r\n   - Failure count/percentage to open\r\n   - Timeout duration for open state\r\n   - Success count to close from half-open\r\n\r\n3. **Define failure criteria**\r\n   - HTTP 5xx errors\r\n   - Timeouts\r\n   - Connection failures\r\n   - Exception types\r\n\r\n4. **Handle open circuit**\r\n   - Return cached data if available\r\n   - Return degraded response\r\n   - Fail fast with clear error\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| Too sensitive thresholds | Tune based on normal error rates |\r\n| Too long open duration | Balance recovery time vs availability |\r\n| Not handling half-open properly | Limit probe requests in half-open |\r\n| Circuit per-instance, not per-dependency | Group by logical dependency |\r\n| No fallback behavior | Always define degraded response |\r\n\r\n## Checklist\r\n\r\n- [ ] Circuit breaker configured for external calls\r\n- [ ] Failure threshold defined (count/percentage)\r\n- [ ] Open state timeout configured\r\n- [ ] Half-open probe strategy defined\r\n- [ ] Fallback behavior implemented\r\n- [ ] Circuit state metrics exposed\r\n- [ ] Alerts on circuit open events\r\n- [ ] Different circuits per dependency\r\n- [ ] Circuit state logged\r\n- [ ] Recovery behavior tested\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nCircuit Breaker States:\r\n     ┌──────────────────────────────────────┐\r\n     │                                      │\r\n     ▼                                      │\r\n  CLOSED ──(failures > threshold)──▶ OPEN  │\r\n     ▲                                │     │\r\n     │                                │     │\r\n     │                         (timeout)    │\r\n     │                                │     │\r\n     │                                ▼     │\r\n     └──(successes > threshold)── HALF-OPEN┘\r\n                                      │\r\n                               (failure)\r\n                                      │\r\n                                      └──▶ OPEN\r\n\r\nConfiguration Example:\r\ncircuit_breaker = CircuitBreaker(\r\n  failure_threshold=5,        # Open after 5 failures\r\n  success_threshold=3,        # Close after 3 successes in half-open\r\n  timeout=30s,                # Time in open state before half-open\r\n  failure_rate_threshold=50%  # Or use percentage\r\n)\r\n\r\nUsage Pattern:\r\ndef call_external_service():\r\n  if circuit.is_open():\r\n    return fallback_response()\r\n  \r\n  try:\r\n    response = http.get(external_url)\r\n    circuit.record_success()\r\n    return response\r\n  except Exception as e:\r\n    circuit.record_failure()\r\n    if circuit.is_open():\r\n      log.warn(\"Circuit opened for external_service\")\r\n    raise\r\n\r\nFallback Strategies:\r\n- Return cached data\r\n- Return default/empty response\r\n- Call alternative service\r\n- Queue for later processing\r\n- Return error with context\r\n\r\nMetrics to Track:\r\n- Circuit state (closed/open/half-open)\r\n- Failure count and rate\r\n- Time spent in each state\r\n- Fallback invocation count\r\n```\r\n\r\n## Sources\r\n\r\n- Martin Fowler - Circuit Breaker: https://martinfowler.com/bliki/CircuitBreaker.html\r\n- Netflix Hystrix (archived but educational): https://github.com/Netflix/Hystrix/wiki\r\n- Resilience4j Circuit Breaker: https://resilience4j.readme.io/docs/circuitbreaker\r\n- Microsoft Circuit Breaker Pattern: https://learn.microsoft.com/en-us/azure/architecture/patterns/circuit-breaker\r\n"
+  },
+  {
+    "id": "rel-dlq-basics",
+    "title": "Dead Letter Queue Basics",
+    "tags": [
+      "reliability",
+      "dlq",
+      "messaging",
+      "error-handling"
+    ],
+    "level": "intermediate",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/rel.dlq-basics.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Dead Letter Queue Basics\r\n\r\n## Problem\r\n\r\nMessages that repeatedly fail processing can block queues, causing backlog and preventing healthy messages from being processed. You need a way to isolate problematic messages for later analysis.\r\n\r\n## When to use\r\n\r\n- Any message queue or event-driven system\r\n- Background job processing\r\n- Webhook handling\r\n- Event sourcing\r\n- Async task execution\r\n\r\n## Solution\r\n\r\n1. **Configure DLQ routing**\r\n   - Route failed messages after N retries\r\n   - Preserve original message + metadata\r\n   - Add failure context (error, attempts, timestamp)\r\n\r\n2. **Define failure criteria**\r\n   - Max retry count exceeded\r\n   - Specific exception types\r\n   - Message expired (TTL)\r\n\r\n3. **Monitor and alert**\r\n   - Track DLQ depth\r\n   - Alert on sudden spikes\r\n   - Set up dashboards\r\n\r\n4. **Handle DLQ messages**\r\n   - Manual review and fix\r\n   - Automated replay after fix\r\n   - Archive or delete after analysis\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| DLQ grows unbounded | Set retention/TTL, regular cleanup |\r\n| No alerting on DLQ | Monitor depth, alert on threshold |\r\n| Losing failure context | Store original message + error info |\r\n| No replay mechanism | Build tooling to replay from DLQ |\r\n| Retrying without fixing | Analyze root cause before replay |\r\n\r\n## Checklist\r\n\r\n- [ ] DLQ configured for each queue\r\n- [ ] Max retry count defined before DLQ\r\n- [ ] Original message preserved in DLQ\r\n- [ ] Failure context stored (error, traces)\r\n- [ ] DLQ depth monitored and alerted\r\n- [ ] Retention policy for DLQ messages\r\n- [ ] Replay mechanism available\r\n- [ ] DLQ messages auditable\r\n- [ ] Root cause analysis process defined\r\n- [ ] Runbook for DLQ handling\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nDLQ Message Structure:\r\n{\r\n  \"original_message\": {\r\n    \"type\": \"OrderCreated\",\r\n    \"payload\": { \"orderId\": 123, \"amount\": 100 }\r\n  },\r\n  \"failure_context\": {\r\n    \"queue\": \"orders\",\r\n    \"first_failure\": \"2026-01-14T10:00:00Z\",\r\n    \"last_failure\": \"2026-01-14T10:05:00Z\",\r\n    \"attempt_count\": 5,\r\n    \"last_error\": \"ValidationError: Invalid product ID\",\r\n    \"stack_trace\": \"...\",\r\n    \"correlation_id\": \"corr_abc123\"\r\n  }\r\n}\r\n\r\nMessage Flow:\r\nMain Queue ─┬─► Success ─► Done\r\n            │\r\n            └─► Failure ─► Retry (up to N times)\r\n                              │\r\n                              └─► DLQ (after N failures)\r\n\r\nDLQ Handling Process:\r\n1. Alert received: DLQ depth > threshold\r\n2. Investigate sample messages\r\n3. Identify root cause (bug, bad data, dependency)\r\n4. Fix the issue\r\n5. Replay messages from DLQ\r\n6. Monitor for success\r\n7. Archive processed DLQ messages\r\n\r\nAWS SQS DLQ Config (pseudo):\r\nmain_queue:\r\n  redrive_policy:\r\n    dead_letter_queue: dlq_arn\r\n    max_receive_count: 5\r\n\r\nRabbitMQ DLQ Config (pseudo):\r\nexchange: orders-exchange\r\nqueue: orders-queue\r\n  arguments:\r\n    x-dead-letter-exchange: orders-dlx\r\n    x-dead-letter-routing-key: orders-dlq\r\n\r\nDLQ Tooling Commands:\r\n# View DLQ messages\r\ndlq-tool list --queue orders-dlq --limit 10\r\n\r\n# Replay single message\r\ndlq-tool replay --queue orders-dlq --message-id msg_123\r\n\r\n# Replay all (after fix deployed)\r\ndlq-tool replay-all --queue orders-dlq --dry-run\r\n```\r\n\r\n## Sources\r\n\r\n- AWS SQS Dead Letter Queues: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html\r\n- RabbitMQ Dead Letter Exchanges: https://www.rabbitmq.com/docs/dlx\r\n- Azure Service Bus DLQ: https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dead-letter-queues\r\n- Kafka Error Handling: https://www.confluent.io/blog/error-handling-patterns-in-kafka/\r\n"
+  },
+  {
+    "id": "rel-outbox-pattern",
+    "title": "Outbox Pattern",
+    "tags": [
+      "reliability",
+      "outbox",
+      "eventual-consistency",
+      "distributed"
+    ],
+    "level": "advanced",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/rel.outbox-pattern.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Outbox Pattern\r\n\r\n## Problem\r\n\r\nIn distributed systems, you often need to update a database AND publish an event atomically. Without coordination, you risk data inconsistency—either the event is lost or published without the DB change.\r\n\r\n## When to use\r\n\r\n- Microservices event-driven architecture\r\n- Database change + message publish\r\n- Ensuring eventual consistency\r\n- Reliable event delivery\r\n- Avoiding dual-write problem\r\n\r\n## Solution\r\n\r\n1. **Write event to outbox table**\r\n   - Same transaction as business data\r\n   - Store event payload, status, created_at\r\n   - Guarantees atomicity\r\n\r\n2. **Publish from outbox**\r\n   - Background worker reads pending events\r\n   - Publishes to message broker\r\n   - Marks as processed\r\n\r\n3. **Handle failures**\r\n   - Retry failed publications\r\n   - Dead letter after max retries\r\n   - Idempotent consumers required\r\n\r\n4. **Cleanup processed events**\r\n   - Archive or delete old events\r\n   - Prevent table bloat\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| Dual-write (DB + broker separately) | Always use transactional outbox |\r\n| Consumer not idempotent | Design consumers for at-least-once |\r\n| Outbox table grows unbounded | Regular cleanup/archival |\r\n| Publisher not fault-tolerant | Retry with backoff, use DLQ |\r\n| Wrong event ordering | Order by created_at, use sequence IDs |\r\n\r\n## Checklist\r\n\r\n- [ ] Outbox table in same database as business data\r\n- [ ] Event written in same transaction as business change\r\n- [ ] Background worker publishes pending events\r\n- [ ] Published events marked as processed\r\n- [ ] Failed events retried with backoff\r\n- [ ] Dead letter queue for failed events\r\n- [ ] Consumers are idempotent\r\n- [ ] Cleanup job removes old events\r\n- [ ] Outbox processing monitored\r\n- [ ] Event ordering preserved\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nOutbox Table Schema:\r\nCREATE TABLE outbox (\r\n  id UUID PRIMARY KEY,\r\n  aggregate_type VARCHAR(100) NOT NULL,\r\n  aggregate_id UUID NOT NULL,\r\n  event_type VARCHAR(100) NOT NULL,\r\n  payload JSONB NOT NULL,\r\n  status VARCHAR(20) DEFAULT 'pending',\r\n  retry_count INT DEFAULT 0,\r\n  created_at TIMESTAMPTZ DEFAULT NOW(),\r\n  processed_at TIMESTAMPTZ NULL\r\n);\r\n\r\nCREATE INDEX idx_outbox_pending ON outbox(created_at) \r\n  WHERE status = 'pending';\r\n\r\nBusiness Transaction:\r\nBEGIN;\r\n  -- Update business data\r\n  UPDATE orders SET status = 'paid' WHERE id = 123;\r\n  \r\n  -- Write event to outbox (same transaction)\r\n  INSERT INTO outbox (aggregate_type, aggregate_id, event_type, payload)\r\n  VALUES ('order', 123, 'OrderPaid', '{\"orderId\": 123, \"amount\": 100}');\r\nCOMMIT;\r\n\r\nOutbox Publisher (Background Worker):\r\nwhile true:\r\n  events = db.query(\"SELECT * FROM outbox WHERE status = 'pending' \r\n                     ORDER BY created_at LIMIT 100\")\r\n  \r\n  for event in events:\r\n    try:\r\n      broker.publish(event.event_type, event.payload)\r\n      db.update(\"UPDATE outbox SET status = 'processed', \r\n                 processed_at = NOW() WHERE id = ?\", event.id)\r\n    except PublishError:\r\n      db.update(\"UPDATE outbox SET retry_count = retry_count + 1 \r\n                 WHERE id = ?\", event.id)\r\n      if event.retry_count >= MAX_RETRIES:\r\n        move_to_dlq(event)\r\n  \r\n  sleep(poll_interval)\r\n```\r\n\r\n## Sources\r\n\r\n- Microservices Patterns (Chris Richardson) - Outbox: https://microservices.io/patterns/data/transactional-outbox.html\r\n- Debezium Outbox Pattern: https://debezium.io/documentation/reference/transformations/outbox-event-router.html\r\n- AWS Building Event-Driven Architectures: https://aws.amazon.com/event-driven-architecture/\r\n- Martin Kleppmann - Designing Data-Intensive Applications: https://dataintensive.net/\r\n"
+  },
+  {
+    "id": "rel-retries-backoff",
+    "title": "Retries with Backoff",
+    "tags": [
+      "reliability",
+      "retries",
+      "backoff",
+      "resilience"
+    ],
+    "level": "intermediate",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/rel.retries-backoff.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Retries with Backoff\r\n\r\n## Problem\r\n\r\nTransient failures (network blips, temporary overload) cause unnecessary errors if not retried. But aggressive retries without backoff create thundering herd problems that worsen outages.\r\n\r\n## When to use\r\n\r\n- Network calls to external services\r\n- Database connection failures\r\n- Distributed system communication\r\n- Idempotent operations\r\n- Queue message processing\r\n\r\n## Solution\r\n\r\n1. **Implement exponential backoff**\r\n   - Double delay between retries\r\n   - Start with small delay (100-500ms)\r\n   - Cap maximum delay (30-60s)\r\n\r\n2. **Add jitter**\r\n   - Randomize delay to prevent thundering herd\r\n   - Full jitter or decorrelated jitter\r\n   - Spreads retry load over time\r\n\r\n3. **Limit retry attempts**\r\n   - Set maximum retry count (3-5 typical)\r\n   - Or maximum total time budget\r\n   - Fail after exhausting retries\r\n\r\n4. **Identify retryable errors**\r\n   - 503 Service Unavailable\r\n   - 429 Too Many Requests\r\n   - Connection timeouts\r\n   - Rate limit errors\r\n   - NOT: 400 Bad Request, 404 Not Found\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| Retrying non-idempotent ops | Only retry safe/idempotent operations |\r\n| No jitter (thundering herd) | Always add random jitter |\r\n| Retrying client errors (4xx) | Only retry transient/server errors |\r\n| Unbounded retries | Set max attempts or time budget |\r\n| Ignoring Retry-After header | Respect server guidance |\r\n\r\n## Checklist\r\n\r\n- [ ] Exponential backoff implemented\r\n- [ ] Random jitter added\r\n- [ ] Maximum retry count configured\r\n- [ ] Only transient errors retried\r\n- [ ] Retry-After header respected\r\n- [ ] Total retry budget defined\r\n- [ ] Idempotency ensured for retry\r\n- [ ] Retry metrics tracked\r\n- [ ] Final failure handled gracefully\r\n- [ ] Retry logic tested\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nExponential Backoff with Jitter:\r\nbase_delay = 100ms\r\nmax_delay = 60s\r\nmax_attempts = 5\r\n\r\nfor attempt in 1..max_attempts:\r\n  try:\r\n    return make_request()\r\n  except RetryableError:\r\n    if attempt == max_attempts:\r\n      raise\r\n    \r\n    # Exponential: 100ms, 200ms, 400ms, 800ms, 1600ms...\r\n    exp_delay = base_delay * (2 ^ (attempt - 1))\r\n    \r\n    # Cap at maximum\r\n    delay = min(exp_delay, max_delay)\r\n    \r\n    # Add jitter (full jitter)\r\n    jitter_delay = random(0, delay)\r\n    \r\n    sleep(jitter_delay)\r\n\r\nJitter Strategies:\r\n- Full jitter: random(0, delay)\r\n- Equal jitter: delay/2 + random(0, delay/2)\r\n- Decorrelated jitter: min(cap, random(base, prev_delay * 3))\r\n\r\nRetryable vs Non-Retryable:\r\nRetry:\r\n  - 500, 502, 503, 504 (server errors)\r\n  - 429 (rate limit - respect Retry-After)\r\n  - Connection timeout\r\n  - Network errors\r\n\r\nDon't Retry:\r\n  - 400 (bad request)\r\n  - 401, 403 (auth errors)\r\n  - 404 (not found)\r\n  - 422 (validation)\r\n\r\nRetry-After Header:\r\nHTTP/1.1 429 Too Many Requests\r\nRetry-After: 30\r\n\r\n# Wait at least 30 seconds before retry\r\n```\r\n\r\n## Sources\r\n\r\n- AWS Exponential Backoff and Jitter: https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/\r\n- Google API Client Retry: https://cloud.google.com/storage/docs/retry-strategy\r\n- Azure Retry Guidance: https://learn.microsoft.com/en-us/azure/architecture/best-practices/retry-service-specific\r\n- Polly .NET Resilience: https://github.com/App-vNext/Polly\r\n"
+  },
+  {
+    "id": "rel-timeouts",
+    "title": "Timeouts",
+    "tags": [
+      "reliability",
+      "timeouts",
+      "resilience",
+      "latency"
+    ],
+    "level": "intermediate",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/rel.timeouts.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Timeouts\r\n\r\n## Problem\r\n\r\nWithout proper timeouts, a slow or unresponsive service can block resources indefinitely, causing cascading failures, thread pool exhaustion, and system-wide outages.\r\n\r\n## When to use\r\n\r\n- Any external HTTP calls\r\n- Database queries\r\n- Message queue operations\r\n- File I/O operations\r\n- Any I/O that could hang\r\n\r\n## Solution\r\n\r\n1. **Set timeouts on all I/O**\r\n   - Connection timeout: Time to establish connection\r\n   - Read/Request timeout: Time waiting for response\r\n   - Total timeout: End-to-end operation time\r\n\r\n2. **Choose appropriate values**\r\n   - Based on SLAs and acceptable latency\r\n   - Consider P99 response times\r\n   - Include buffer for retries\r\n\r\n3. **Layer timeouts properly**\r\n   - Client → Gateway → Service → Database\r\n   - Inner timeouts < outer timeouts\r\n   - Leave room for processing\r\n\r\n4. **Handle timeout errors**\r\n   - Treat as transient failure\r\n   - Consider retry with backoff\r\n   - Log with context for debugging\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| No timeout set (infinite wait) | Always configure explicit timeouts |\r\n| Timeout too long | Base on P99 + buffer, not worst case |\r\n| Timeout too aggressive | Allow for realistic response times |\r\n| Inner > outer timeout | Ensure inner < outer for proper cascade |\r\n| Not considering retry budget | Total time = (attempts × timeout) |\r\n\r\n## Checklist\r\n\r\n- [ ] Connection timeout configured\r\n- [ ] Read/request timeout configured\r\n- [ ] Database query timeout set\r\n- [ ] Message queue operation timeout set\r\n- [ ] Inner timeouts shorter than outer\r\n- [ ] Timeout values documented\r\n- [ ] Timeout errors logged with context\r\n- [ ] Retry budget considers timeout × attempts\r\n- [ ] Circuit breaker monitors timeout rate\r\n- [ ] Timeouts tested in integration tests\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nTimeout Layers:\r\nFrontend (30s) → API Gateway (25s) → Service (20s) → Database (5s)\r\n\r\nHTTP Client Configuration:\r\nclient = HttpClient(\r\n  connect_timeout=5s,\r\n  read_timeout=10s,\r\n  total_timeout=15s\r\n)\r\n\r\nDatabase Configuration:\r\nconnection_timeout=5s\r\nquery_timeout=30s\r\npool_checkout_timeout=3s\r\n\r\nTimeout Guidelines:\r\n- API calls to external services: 5-30s\r\n- Database queries: 5-60s (depends on query)\r\n- Cache reads: 100-500ms\r\n- Internal microservice calls: 1-10s\r\n- Background job steps: varies (minutes for complex)\r\n\r\nLayered Timeout Example:\r\n# Total budget: 25 seconds\r\n# - Initial attempt: 10s timeout\r\n# - First retry: 7s timeout  \r\n# - Second retry: 5s timeout\r\n# - Remaining buffer: 3s\r\n\r\nTimeout Error Handling:\r\ntry:\r\n  response = http.get(url, timeout=10s)\r\nexcept TimeoutError:\r\n  log.warn(\"Request to {url} timed out\", context)\r\n  if should_retry:\r\n    return retry_with_backoff()\r\n  else:\r\n    raise ServiceUnavailable()\r\n```\r\n\r\n## Sources\r\n\r\n- AWS Best Practices for Timeouts: https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/\r\n- Netflix Hystrix Wiki: https://github.com/Netflix/Hystrix/wiki\r\n- Google SRE Book - Handling Overload: https://sre.google/sre-book/handling-overload/\r\n- Release It! (Michael Nygard): https://pragprog.com/titles/mnee2/release-it-second-edition/\r\n"
+  },
+  {
+    "id": "sec-authn-authz-boundary",
+    "title": "Authentication vs Authorization Boundary",
+    "tags": [
+      "security",
+      "authentication",
+      "authorization",
+      "rbac",
+      "access-control"
+    ],
+    "level": "intermediate",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/sec.authn-authz-boundary.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Authentication vs Authorization Boundary\r\n\r\n## Problem\r\n\r\nConfusing authentication (who are you?) with authorization (what can you do?) leads to security holes, inconsistent access controls, and hard-to-maintain permission systems.\r\n\r\n## When to use\r\n\r\n- Any application with user accounts\r\n- Multi-tenant systems\r\n- APIs with different access levels\r\n- Role-based or attribute-based access\r\n- Resource-level permissions\r\n\r\n## Solution\r\n\r\n1. **Separate concerns clearly**\r\n   - Authentication: Verify identity (login, tokens)\r\n   - Authorization: Check permissions (roles, policies)\r\n   - Handle in separate middleware/layers\r\n\r\n2. **Authentication layer**\r\n   - Validate credentials (password, OAuth, SSO)\r\n   - Issue tokens (JWT, session)\r\n   - Attach identity to request context\r\n   - Return 401 Unauthorized if fails\r\n\r\n3. **Authorization layer**\r\n   - Extract permissions from identity\r\n   - Check against required permissions\r\n   - Return 403 Forbidden if denied\r\n   - Use consistent permission model\r\n\r\n4. **Choose authorization model**\r\n   - RBAC: Role-Based Access Control\r\n   - ABAC: Attribute-Based Access Control\r\n   - ReBAC: Relationship-Based Access Control\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| Mixing 401 and 403 | 401 = who are you?, 403 = you can't do that |\r\n| Checking perms in business logic | Use middleware/decorators |\r\n| Hardcoding roles everywhere | Centralize permission checks |\r\n| Not logging access denials | Always log for security audit |\r\n| Over-privileged defaults | Default deny, explicit allow |\r\n\r\n## Checklist\r\n\r\n- [ ] Authentication and authorization are separate layers\r\n- [ ] 401 used for authentication failures\r\n- [ ] 403 used for authorization failures\r\n- [ ] Identity attached to request context after auth\r\n- [ ] Permissions checked before business logic\r\n- [ ] Role/permission model documented\r\n- [ ] Default-deny policy enforced\r\n- [ ] Access denials logged with context\r\n- [ ] Admin functions protected separately\r\n- [ ] Permission changes audited\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nRequest Flow:\r\n1. Request arrives\r\n2. Authentication middleware:\r\n   - Extract token from header\r\n   - Verify token signature & expiry\r\n   - Attach user identity to context\r\n   - If invalid → 401 Unauthorized\r\n3. Authorization middleware:\r\n   - Extract required permissions for route\r\n   - Check user roles/permissions\r\n   - If denied → 403 Forbidden\r\n4. Business logic executes\r\n\r\nHTTP Status Codes:\r\n- 401 Unauthorized: \"I don't know who you are\"\r\n  - Missing token, invalid token, expired token\r\n- 403 Forbidden: \"I know who you are, but no access\"\r\n  - Valid user, insufficient permissions\r\n\r\nRBAC Model:\r\nUser → Roles → Permissions\r\nExample: user.roles = ['editor']\r\n         editor.permissions = ['read', 'write']\r\n         admin.permissions = ['read', 'write', 'delete']\r\n\r\nMiddleware Pattern:\r\n@authenticate  # First: verify identity\r\n@authorize('write')  # Second: check permission\r\ndef update_article(id):\r\n  # Business logic here\r\n```\r\n\r\n## Sources\r\n\r\n- OWASP Authentication Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html\r\n- OWASP Authorization Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html\r\n- NIST RBAC Model: https://csrc.nist.gov/projects/role-based-access-control\r\n- Google Zanzibar Paper: https://research.google/pubs/pub48190/\r\n"
+  },
+  {
+    "id": "sec-password-storage",
+    "title": "Password Storage",
+    "tags": [
+      "security",
+      "passwords",
+      "hashing",
+      "authentication"
+    ],
+    "level": "intermediate",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/sec.password-storage.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Password Storage\r\n\r\n## Problem\r\n\r\nWeak password storage leads to credential theft and account compromise. Plaintext or poorly hashed passwords, once leaked, expose users across multiple sites due to password reuse.\r\n\r\n## When to use\r\n\r\n- User registration systems\r\n- Any password-based authentication\r\n- Migrating legacy password systems\r\n- Internal admin accounts\r\n- Service account credentials\r\n\r\n## Solution\r\n\r\n1. **Use modern hashing algorithms**\r\n   - **Argon2id**: Recommended (winner of PHC)\r\n   - **bcrypt**: Widely supported, proven\r\n   - **scrypt**: Memory-hard alternative\r\n   - Never: MD5, SHA1, SHA256 alone\r\n\r\n2. **Configure work factors**\r\n   - Target ~250ms hash time\r\n   - Increase as hardware improves\r\n   - Balance security vs UX\r\n\r\n3. **Implement properly**\r\n   - Generate unique salt per password\r\n   - Store algorithm parameters with hash\r\n   - Upgrade hashes on login\r\n\r\n4. **Add complementary controls**\r\n   - Password strength requirements\r\n   - Breach detection (HaveIBeenPwned)\r\n   - Rate limiting on login attempts\r\n   - Multi-factor authentication\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| Using fast hashes (MD5/SHA) | Use bcrypt, Argon2, or scrypt |\r\n| Global salt for all users | Unique salt per password |\r\n| Low work factor | Target 250ms+ hash time |\r\n| Not upgrading old hashes | Re-hash on successful login |\r\n| Timing attacks | Use constant-time comparison |\r\n\r\n## Checklist\r\n\r\n- [ ] Argon2id or bcrypt used\r\n- [ ] Unique salt per password\r\n- [ ] Work factor targets 250ms+ hash time\r\n- [ ] Password requirements enforced (length, complexity)\r\n- [ ] Compromised password check integrated\r\n- [ ] Rate limiting on login attempts\r\n- [ ] Legacy hashes upgraded on login\r\n- [ ] Password stored in separate secure store\r\n- [ ] Constant-time comparison used\r\n- [ ] MFA supported/encouraged\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nArgon2id Configuration:\r\n- Memory: 64 MB (65536 KB)\r\n- Iterations: 3\r\n- Parallelism: 4\r\n- Hash length: 32 bytes\r\n- Salt length: 16 bytes\r\n\r\nbcrypt Configuration:\r\n- Work factor (cost): 12-14 (adjust per hardware)\r\n- Auto-generates salt\r\n\r\nHash Storage Format:\r\n$argon2id$v=19$m=65536,t=3,p=4$salt_base64$hash_base64\r\n\r\nPassword Hashing Steps:\r\n1. Receive plaintext password\r\n2. Validate strength requirements\r\n3. Generate cryptographically random salt\r\n4. Hash with configured algorithm\r\n5. Store full hash string (includes params)\r\n\r\nVerification Steps:\r\n1. Retrieve stored hash\r\n2. Parse algorithm and parameters\r\n3. Hash input with same params + salt\r\n4. Constant-time compare result\r\n5. If match and old algorithm → upgrade hash\r\n\r\nPassword Requirements:\r\n- Minimum length: 12 characters\r\n- No maximum (up to 128)\r\n- Check against breached password list\r\n- No composition rules (allow any chars)\r\n\r\nHash Upgrade on Login:\r\nif verify_password(input, stored_hash):\r\n  if is_legacy_algorithm(stored_hash):\r\n    new_hash = hash_password(input)  # New algorithm\r\n    update_user_password_hash(user, new_hash)\r\n  return login_success()\r\n```\r\n\r\n## Sources\r\n\r\n- OWASP Password Storage Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html\r\n- Password Hashing Competition (Argon2): https://www.password-hashing.net/\r\n- Have I Been Pwned API: https://haveibeenpwned.com/API/v3\r\n- NIST Digital Identity Guidelines: https://pages.nist.gov/800-63-3/sp800-63b.html\r\n"
+  },
+  {
+    "id": "sec-rate-limiting",
+    "title": "Rate Limiting",
+    "tags": [
+      "security",
+      "rate-limiting",
+      "ddos",
+      "availability"
+    ],
+    "level": "intermediate",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/sec.rate-limiting.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Rate Limiting\r\n\r\n## Problem\r\n\r\nWithout rate limiting, malicious users or buggy clients can overwhelm your API with requests, causing denial of service, increased costs, and degraded experience for legitimate users.\r\n\r\n## When to use\r\n\r\n- All public APIs\r\n- Authentication endpoints (login, password reset)\r\n- Resource-intensive operations\r\n- Paid API tiers with quotas\r\n- Protecting against scraping\r\n\r\n## Solution\r\n\r\n1. **Choose rate limiting algorithm**\r\n   - **Token bucket**: Smooth traffic, allows bursts\r\n   - **Sliding window**: Fair distribution over time\r\n   - **Fixed window**: Simple but has boundary issues\r\n   - **Leaky bucket**: Constant output rate\r\n\r\n2. **Define limits by scope**\r\n   - Global: Overall API protection\r\n   - Per user/API key: Fair usage\r\n   - Per IP: Anonymous rate limiting\r\n   - Per endpoint: Protect expensive operations\r\n\r\n3. **Implement response headers**\r\n   - `X-RateLimit-Limit`: Max requests allowed\r\n   - `X-RateLimit-Remaining`: Requests left\r\n   - `X-RateLimit-Reset`: When limit resets\r\n   - Return 429 Too Many Requests\r\n\r\n4. **Use distributed storage**\r\n   - Redis for distributed rate limiting\r\n   - Consistent across instances\r\n   - Handle storage failures gracefully\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| Only IP-based limiting | Combine with API key/user limits |\r\n| Not handling authenticated users | Different limits for auth vs anon |\r\n| Blocking on Redis failure | Fail open with logging, or local fallback |\r\n| Harsh limits on first deploy | Start lenient, tighten based on data |\r\n| No burst allowance | Token bucket allows reasonable bursts |\r\n\r\n## Checklist\r\n\r\n- [ ] Rate limit algorithm chosen\r\n- [ ] Limits defined per scope (global, user, IP)\r\n- [ ] Login/auth endpoints have stricter limits\r\n- [ ] 429 response returned with Retry-After\r\n- [ ] Rate limit headers included in responses\r\n- [ ] Distributed storage (Redis) configured\r\n- [ ] Failure mode defined (open/closed)\r\n- [ ] Limits documented for consumers\r\n- [ ] Monitoring alerts on rate limit hits\r\n- [ ] Different limits for API tiers\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nResponse Headers:\r\nHTTP/1.1 429 Too Many Requests\r\nX-RateLimit-Limit: 1000\r\nX-RateLimit-Remaining: 0\r\nX-RateLimit-Reset: 1642000000\r\nRetry-After: 60\r\n\r\nToken Bucket Algorithm:\r\n1. Bucket holds N tokens (capacity)\r\n2. Tokens added at rate R per second\r\n3. Each request consumes 1 token\r\n4. If no tokens → reject with 429\r\n5. Allows bursts up to capacity\r\n\r\nRedis Rate Limiter (pseudo):\r\nkey = \"rate_limit:{user_id}:{window}\"\r\ncurrent = redis.incr(key)\r\nif current == 1:\r\n  redis.expire(key, window_seconds)\r\nif current > limit:\r\n  return 429\r\n\r\nSliding Window:\r\n1. Count requests in last N seconds\r\n2. Use sorted set with request timestamps\r\n3. Remove expired entries\r\n4. Check count against limit\r\n\r\nTypical Limits:\r\n- Anonymous: 100/minute per IP\r\n- Authenticated: 1000/minute per user\r\n- Login attempts: 5/minute per IP\r\n- Password reset: 3/hour per email\r\n- Expensive operations: 10/minute per user\r\n```\r\n\r\n## Sources\r\n\r\n- Stripe Rate Limiting: https://stripe.com/blog/rate-limiters\r\n- Cloudflare Rate Limiting: https://developers.cloudflare.com/waf/rate-limiting-rules/\r\n- Redis Rate Limiting Patterns: https://redis.io/commands/incr/#pattern-rate-limiter\r\n- Token Bucket Algorithm: https://en.wikipedia.org/wiki/Token_bucket\r\n"
+  },
+  {
+    "id": "sec-secrets-management",
+    "title": "Secrets Management",
+    "tags": [
+      "security",
+      "secrets",
+      "configuration",
+      "devops"
+    ],
+    "level": "intermediate",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/sec.secrets-management.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Secrets Management\r\n\r\n## Problem\r\n\r\nHardcoded secrets in code or config files get committed to version control, exposed in logs, and leaked through breaches. Poor secret management is a top cause of security incidents.\r\n\r\n## When to use\r\n\r\n- API keys, tokens, credentials\r\n- Database connection strings\r\n- Encryption keys\r\n- Third-party service credentials\r\n- Any sensitive configuration\r\n\r\n## Solution\r\n\r\n1. **Never hardcode secrets**\r\n   - No secrets in source code\r\n   - No secrets in docker images\r\n   - No secrets in git history\r\n   - Use environment variables or secret managers\r\n\r\n2. **Use secret management tools**\r\n   - HashiCorp Vault\r\n   - AWS Secrets Manager / Parameter Store\r\n   - Azure Key Vault\r\n   - Google Secret Manager\r\n   - Kubernetes Secrets (with encryption)\r\n\r\n3. **Implement access control**\r\n   - Principle of least privilege\r\n   - Separate secrets per environment\r\n   - Audit access logs\r\n   - Rotate secrets regularly\r\n\r\n4. **Handle secrets in CI/CD**\r\n   - Use CI/CD secret variables\r\n   - Never echo/print secrets\r\n   - Mask in logs automatically\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| Secrets in git history | Use git-secrets, scan before commit |\r\n| Logging credentials | Sanitize logs, mask patterns |\r\n| Same secrets across envs | Unique per environment |\r\n| Never rotating secrets | Schedule rotation quarterly |\r\n| Over-sharing access | Least privilege, need-to-know |\r\n\r\n## Checklist\r\n\r\n- [ ] No secrets in source code\r\n- [ ] No secrets in docker images\r\n- [ ] Secrets stored in dedicated tool\r\n- [ ] Environment-specific secrets\r\n- [ ] Secret access is audited\r\n- [ ] Rotation schedule defined\r\n- [ ] CI/CD secrets masked in logs\r\n- [ ] Git pre-commit hooks scan for secrets\r\n- [ ] Emergency rotation procedure documented\r\n- [ ] Access granted on need-to-know basis\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nEnvironment Variables:\r\n# .env (not committed)\r\nDATABASE_URL=postgres://user:pass@host/db\r\nAPI_KEY=secret_key_here\r\n\r\n# Application reads from env\r\ndb_url = os.environ.get('DATABASE_URL')\r\n\r\nSecret Manager Pattern:\r\n1. Store secret in vault/manager\r\n2. Application authenticates to secret service\r\n3. Fetch secret at runtime\r\n4. Cache with TTL (short-lived)\r\n5. Re-fetch on expiry or rotation\r\n\r\nAWS Secrets Manager:\r\naws secretsmanager get-secret-value --secret-id prod/db/password\r\n\r\nKubernetes Secret (encoded):\r\napiVersion: v1\r\nkind: Secret\r\nmetadata:\r\n  name: db-credentials\r\ntype: Opaque\r\ndata:\r\n  password: base64-encoded-value\r\n\r\nGit Pre-commit Hook:\r\n# .pre-commit-config.yaml\r\n- repo: https://github.com/awslabs/git-secrets\r\n  hooks:\r\n    - id: git-secrets\r\n\r\nRotation Steps:\r\n1. Generate new secret\r\n2. Add new secret (keep old active)\r\n3. Update applications to use new\r\n4. Verify all using new secret\r\n5. Revoke old secret\r\n```\r\n\r\n## Sources\r\n\r\n- OWASP Secrets Management Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html\r\n- HashiCorp Vault: https://www.vaultproject.io/\r\n- AWS Secrets Manager: https://aws.amazon.com/secrets-manager/\r\n- 12 Factor App - Config: https://12factor.net/config\r\n"
+  },
+  {
+    "id": "sec-threat-checklist",
+    "title": "Security Threat Checklist",
+    "tags": [
+      "security",
+      "owasp",
+      "threats",
+      "assessment"
+    ],
+    "level": "advanced",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/sec.threat-checklist.md",
+    "type": "pattern",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Security Threat Checklist\r\n\r\n## Problem\r\n\r\nSecurity is often an afterthought, leading to vulnerabilities that could have been prevented with systematic review. Teams lack structured approach to identify and address common threats.\r\n\r\n## When to use\r\n\r\n- New application security review\r\n- Feature security assessment\r\n- Pre-launch security audit\r\n- Regular security check-ins\r\n- After security incident\r\n\r\n## Solution\r\n\r\n1. **Use OWASP Top 10 as baseline**\r\n   - Review against known vulnerability classes\r\n   - Systematic threat identification\r\n   - Prioritize by risk\r\n\r\n2. **Apply threat modeling**\r\n   - STRIDE: Spoofing, Tampering, Repudiation, Info Disclosure, DoS, Elevation\r\n   - Data flow diagrams\r\n   - Trust boundary analysis\r\n\r\n3. **Automate where possible**\r\n   - SAST (static analysis)\r\n   - DAST (dynamic analysis)\r\n   - Dependency scanning\r\n   - Secret scanning\r\n\r\n4. **Create security requirements**\r\n   - Convert threats to testable requirements\r\n   - Include in definition of done\r\n   - Security regression tests\r\n\r\n## Pitfalls\r\n\r\n| Pitfall | How to Avoid |\r\n|---------|--------------|\r\n| One-time security review | Make security continuous |\r\n| Only external threats | Consider insider threats too |\r\n| Ignoring dependencies | Scan all third-party packages |\r\n| No remediation tracking | File tickets, track resolution |\r\n| Security theater | Focus on real risks, not checkboxes |\r\n\r\n## Checklist\r\n\r\n### Injection\r\n- [ ] SQL injection prevented (parameterized queries)\r\n- [ ] NoSQL injection prevented\r\n- [ ] Command injection prevented\r\n- [ ] LDAP injection prevented\r\n- [ ] XSS (Cross-Site Scripting) prevented\r\n\r\n### Authentication\r\n- [ ] Passwords hashed with bcrypt/Argon2\r\n- [ ] Multi-factor authentication supported\r\n- [ ] Session management secure\r\n- [ ] Password reset flow secure\r\n- [ ] Account lockout after failed attempts\r\n\r\n### Authorization\r\n- [ ] Access controls enforced server-side\r\n- [ ] Principle of least privilege applied\r\n- [ ] IDOR (Insecure Direct Object Reference) prevented\r\n- [ ] Admin functions properly protected\r\n- [ ] API endpoints have authorization checks\r\n\r\n### Data Protection\r\n- [ ] Sensitive data encrypted at rest\r\n- [ ] TLS enforced for data in transit\r\n- [ ] Secrets not in source code\r\n- [ ] PII properly handled\r\n- [ ] Logging doesn't contain sensitive data\r\n\r\n### Configuration\r\n- [ ] Security headers configured (CSP, HSTS, etc.)\r\n- [ ] Debug mode disabled in production\r\n- [ ] Default credentials changed\r\n- [ ] Unnecessary features disabled\r\n- [ ] Error messages don't leak info\r\n\r\n### Dependencies\r\n- [ ] Dependencies regularly updated\r\n- [ ] Vulnerability scanning in CI/CD\r\n- [ ] No known vulnerabilities in deps\r\n- [ ] Software bill of materials maintained\r\n\r\n## Snippets (Generic)\r\n\r\n```\r\nSTRIDE Threat Categories:\r\nS - Spoofing: Can attacker pretend to be someone else?\r\nT - Tampering: Can attacker modify data?\r\nR - Repudiation: Can attacker deny actions?\r\nI - Info Disclosure: Can attacker access private data?\r\nD - Denial of Service: Can attacker crash/slow service?\r\nE - Elevation of Privilege: Can attacker gain more access?\r\n\r\nSecurity Review Process:\r\n1. Draw data flow diagram\r\n2. Identify trust boundaries\r\n3. Apply STRIDE to each component\r\n4. Rate risk (likelihood × impact)\r\n5. Define mitigations\r\n6. Track remediation\r\n\r\nMinimum Security Headers:\r\nContent-Security-Policy: default-src 'self'\r\nX-Content-Type-Options: nosniff\r\nX-Frame-Options: DENY\r\nStrict-Transport-Security: max-age=31536000\r\nX-XSS-Protection: 0 (rely on CSP instead)\r\n\r\nRegular Security Activities:\r\n- Weekly: Review dependency alerts\r\n- Monthly: Security awareness reminder\r\n- Quarterly: Penetration testing\r\n- Per release: Security review\r\n- Annually: Full security audit\r\n```\r\n\r\n## Sources\r\n\r\n- OWASP Top 10: https://owasp.org/www-project-top-ten/\r\n- OWASP Cheat Sheet Series: https://cheatsheetseries.owasp.org/\r\n- STRIDE Threat Modeling: https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool-threats\r\n- NIST Cybersecurity Framework: https://www.nist.gov/cyberframework\r\n"
+  }
+]

@@ -1,0 +1,127 @@
+[
+  {
+    "id": "checklist-api-review",
+    "title": "API Review Checklist",
+    "tags": [
+      "api",
+      "rest",
+      "review",
+      "quality"
+    ],
+    "level": "intermediate",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/checklists/checklist.api-review.md",
+    "type": "checklist",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# API Review Checklist\r\n\r\nUse this checklist when reviewing API endpoints before deployment.\r\n\r\n---\r\n\r\n## 🎯 Design & Consistency\r\n\r\n- [ ] Endpoint follows RESTful naming (`/users`, not `/getUsers`)\r\n- [ ] HTTP methods match semantics (GET=read, POST=create, PUT=update, DELETE=remove)\r\n- [ ] URL uses plural nouns for collections\r\n- [ ] Nested resources max 2 levels deep\r\n- [ ] Query parameters use consistent casing (snake_case or camelCase)\r\n\r\n## 📥 Request Handling\r\n\r\n- [ ] Request body schema defined and validated\r\n- [ ] Required vs optional fields clearly documented\r\n- [ ] Input validation runs before business logic\r\n- [ ] File uploads sanitized and size-limited\r\n- [ ] Content-Type header validated\r\n\r\n## 📤 Response Handling\r\n\r\n- [ ] Response follows standard JSON structure\r\n- [ ] Correct HTTP status codes returned (2xx, 4xx, 5xx)\r\n- [ ] Error responses include code, message, and request ID\r\n- [ ] Empty arrays return `[]`, not `null`\r\n- [ ] Dates use ISO 8601 format\r\n\r\n## 📊 Pagination & Filtering\r\n\r\n- [ ] List endpoints support pagination\r\n- [ ] Maximum page size enforced (e.g., 100)\r\n- [ ] Sorting on indexed columns only\r\n- [ ] Total count provided (if performant)\r\n\r\n## 📝 Documentation\r\n\r\n- [ ] OpenAPI/Swagger spec updated\r\n- [ ] Request/response examples provided\r\n- [ ] Error codes documented\r\n\r\n---\r\n\r\n## Sources\r\n\r\n- Google API Design Guide: https://cloud.google.com/apis/design\r\n- Microsoft REST API Guidelines: https://github.com/microsoft/api-guidelines\r\n- Zalando RESTful API Guidelines: https://opensource.zalando.com/restful-api-guidelines/\r\n"
+  },
+  {
+    "id": "checklist-db-review",
+    "title": "Database Review Checklist",
+    "tags": [
+      "database",
+      "schema",
+      "performance",
+      "review"
+    ],
+    "level": "intermediate",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/checklists/checklist.db-review.md",
+    "type": "checklist",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Database Review Checklist\r\n\r\nUse this checklist when reviewing database changes before deployment.\r\n\r\n---\r\n\r\n## 🗂️ Schema Design\r\n\r\n- [ ] Every table has a primary key\r\n- [ ] Foreign keys defined with appropriate ON DELETE action\r\n- [ ] NOT NULL constraint on required columns\r\n- [ ] Unique constraints on business keys\r\n- [ ] Check constraints for enums and ranges\r\n- [ ] Column types match expected data (avoid TEXT for everything)\r\n\r\n## 📊 Indexing\r\n\r\n- [ ] Foreign key columns indexed\r\n- [ ] Columns in WHERE clauses indexed\r\n- [ ] Composite index column order matches query patterns\r\n- [ ] No duplicate or unused indexes\r\n- [ ] EXPLAIN ANALYZE run on critical queries\r\n\r\n## 🔄 Migrations\r\n\r\n- [ ] Migration has both UP and DOWN scripts\r\n- [ ] Non-destructive changes preferred (add, don't remove)\r\n- [ ] Large data updates batched to avoid locks\r\n- [ ] Indexes created CONCURRENTLY (if supported)\r\n- [ ] Tested on production-like data volume\r\n\r\n## ⚡ Performance\r\n\r\n- [ ] N+1 query problem avoided (eager loading used)\r\n- [ ] Queries avoid SELECT * (explicit columns)\r\n- [ ] Connection pooling configured\r\n- [ ] Query timeout set\r\n- [ ] Slow query logging enabled\r\n\r\n## 🔒 Data Integrity\r\n\r\n- [ ] Transactions wrap multi-step operations\r\n- [ ] Soft delete considered for recoverable data\r\n- [ ] Audit trail for sensitive changes\r\n- [ ] Backup strategy verified\r\n\r\n---\r\n\r\n## Sources\r\n\r\n- PostgreSQL Performance Tips: https://www.postgresql.org/docs/current/performance-tips.html\r\n- Use The Index, Luke: https://use-the-index-luke.com/\r\n- Designing Data-Intensive Applications (Kleppmann): https://dataintensive.net/\r\n"
+  },
+  {
+    "id": "checklist-prod-readiness",
+    "title": "Production Readiness Checklist",
+    "tags": [
+      "production",
+      "deployment",
+      "readiness",
+      "launch"
+    ],
+    "level": "intermediate",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/checklists/checklist.prod-readiness.md",
+    "type": "checklist",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Production Readiness Checklist\r\n\r\nComplete this checklist before any production deployment.\r\n\r\n---\r\n\r\n## 🔧 Configuration\r\n\r\n- [ ] Environment-specific configs separated from code\r\n- [ ] Secrets stored in secret manager (not env files)\r\n- [ ] Debug/verbose logging disabled\r\n- [ ] Feature flags configured for rollback\r\n- [ ] All TODO/FIXME comments resolved\r\n\r\n## 🧪 Testing\r\n\r\n- [ ] Unit tests passing with adequate coverage\r\n- [ ] Integration tests passing\r\n- [ ] End-to-end critical paths tested\r\n- [ ] Load/performance testing completed\r\n- [ ] Security scan run (SAST/DAST)\r\n\r\n## 📊 Observability\r\n\r\n- [ ] Structured logging configured (JSON format)\r\n- [ ] Correlation ID propagated across services\r\n- [ ] Key metrics exposed (RED: rate, errors, duration)\r\n- [ ] Dashboards created for critical metrics\r\n- [ ] Alerts configured with appropriate thresholds\r\n\r\n## 🔒 Security\r\n\r\n- [ ] Dependencies scanned for vulnerabilities\r\n- [ ] Security review completed\r\n- [ ] TLS certificates valid and auto-renewed\r\n- [ ] Access controls verified\r\n- [ ] Audit logging enabled for sensitive operations\r\n\r\n## 🚀 Deployment\r\n\r\n- [ ] Rollback plan documented and tested\r\n- [ ] Database migrations reviewed and tested\r\n- [ ] Zero-downtime deployment strategy in place\r\n- [ ] Health check endpoints working\r\n- [ ] CI/CD pipeline green\r\n\r\n## 📋 Documentation\r\n\r\n- [ ] API documentation up-to-date\r\n- [ ] Runbook for common issues created\r\n- [ ] On-call escalation path defined\r\n- [ ] Architecture diagram current\r\n\r\n---\r\n\r\n## Sources\r\n\r\n- Google Production Readiness Review: https://sre.google/sre-book/evolving-sre-engagement-model/\r\n- AWS Launch Checklist: https://aws.amazon.com/architecture/well-architected/\r\n- The Twelve-Factor App: https://12factor.net/\r\n- Microsoft DevOps Checklist: https://learn.microsoft.com/en-us/azure/architecture/checklist/dev-ops\r\n"
+  },
+  {
+    "id": "checklist-reliability-review",
+    "title": "Reliability Review Checklist",
+    "tags": [
+      "reliability",
+      "resilience",
+      "sre",
+      "review"
+    ],
+    "level": "intermediate",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/checklists/checklist.reliability-review.md",
+    "type": "checklist",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Reliability Review Checklist\r\n\r\nUse this checklist to assess system reliability before production deployment.\r\n\r\n---\r\n\r\n## ⏱️ Timeouts & Retries\r\n\r\n- [ ] Connection timeout configured for all external calls\r\n- [ ] Read/request timeout configured\r\n- [ ] Inner timeouts shorter than outer timeouts\r\n- [ ] Retry logic uses exponential backoff with jitter\r\n- [ ] Maximum retry count defined\r\n- [ ] Only transient errors trigger retries\r\n\r\n## 🔌 Circuit Breakers\r\n\r\n- [ ] Circuit breaker configured for external dependencies\r\n- [ ] Failure threshold defined (count or percentage)\r\n- [ ] Half-open probe strategy implemented\r\n- [ ] Fallback response available when circuit open\r\n- [ ] Circuit state visible in metrics\r\n\r\n## 📨 Messaging & Queues\r\n\r\n- [ ] Dead letter queue configured\r\n- [ ] Message consumers are idempotent\r\n- [ ] Poison message handling in place\r\n- [ ] Message ordering preserved where required\r\n- [ ] Queue depth monitored and alerted\r\n\r\n## 🔄 Graceful Degradation\r\n\r\n- [ ] Non-critical features can be disabled\r\n- [ ] Cached data served when source unavailable\r\n- [ ] Load shedding implemented for overload\r\n- [ ] Health check endpoints available\r\n- [ ] Startup/shutdown hooks handle in-flight requests\r\n\r\n## 📊 Capacity\r\n\r\n- [ ] Auto-scaling configured (if applicable)\r\n- [ ] Resource limits set (CPU, memory)\r\n- [ ] Connection pools sized appropriately\r\n- [ ] Load tested with expected peak traffic\r\n\r\n---\r\n\r\n## Sources\r\n\r\n- Google SRE Book: https://sre.google/sre-book/table-of-contents/\r\n- AWS Well-Architected - Reliability: https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/\r\n- Release It! (Nygard): https://pragprog.com/titles/mnee2/release-it-second-edition/\r\n"
+  },
+  {
+    "id": "checklist-security-review",
+    "title": "Security Review Checklist",
+    "tags": [
+      "security",
+      "owasp",
+      "review",
+      "vulnerabilities"
+    ],
+    "level": "intermediate",
+    "stacks": [
+      "all"
+    ],
+    "scope": "mixed",
+    "maturity": "stable",
+    "works_with": [
+      "all"
+    ],
+    "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/checklists/checklist.security-review.md",
+    "type": "checklist",
+    "sections": [],
+    "checklist": [],
+    "sources": [],
+    "rawContent": "\r\n# Security Review Checklist\r\n\r\nUse this checklist for security review before deploying to production.\r\n\r\n---\r\n\r\n## 🔐 Authentication\r\n\r\n- [ ] Passwords hashed with bcrypt/Argon2 (not MD5/SHA1)\r\n- [ ] Session tokens are cryptographically random\r\n- [ ] JWT validated properly (signature, expiry, issuer)\r\n- [ ] Multi-factor authentication supported\r\n- [ ] Account lockout after failed attempts\r\n\r\n## 🛡️ Authorization\r\n\r\n- [ ] Access controls enforced server-side (not just UI)\r\n- [ ] Principle of least privilege applied\r\n- [ ] IDOR vulnerabilities checked (object-level auth)\r\n- [ ] Admin functions protected with extra verification\r\n- [ ] Role changes require re-authentication\r\n\r\n## 💉 Injection Prevention\r\n\r\n- [ ] SQL queries use parameterized statements\r\n- [ ] NoSQL injection prevented\r\n- [ ] Command injection prevented (no shell exec with user input)\r\n- [ ] XSS prevented (output encoding, CSP headers)\r\n- [ ] LDAP/XML injection considered if applicable\r\n\r\n## 🔑 Secrets & Data\r\n\r\n- [ ] No secrets in source code or logs\r\n- [ ] Sensitive data encrypted at rest\r\n- [ ] TLS enforced for data in transit\r\n- [ ] PII handled per privacy regulations\r\n- [ ] Error messages don't leak internal details\r\n\r\n## 🌐 HTTP Security\r\n\r\n- [ ] Security headers configured (CSP, HSTS, X-Frame-Options)\r\n- [ ] CORS policy restrictive and appropriate\r\n- [ ] Rate limiting enabled on auth endpoints\r\n- [ ] Debug mode disabled in production\r\n\r\n---\r\n\r\n## Sources\r\n\r\n- OWASP Top 10: https://owasp.org/www-project-top-ten/\r\n- OWASP Cheat Sheet Series: https://cheatsheetseries.owasp.org/\r\n- NIST Cybersecurity Framework: https://www.nist.gov/cyberframework\r\n- CWE Top 25: https://cwe.mitre.org/top25/\r\n"
+  }
+]

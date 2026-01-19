@@ -5,7 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.1.0] - 2026-01-19
+
+### Added
+- **7 Local AI adapters** (unique feature!): Ollama, LM Studio, LocalAI, GPT4All, Jan, LLM CLI, llamafile
+- **30 total AI adapters** now supported (up from 22)
+- Detailed setup instructions for each Local AI tool
+- Version-agnostic templates (no hardcoded model versions)
+
+### Changed
+- Updated `AI_ADAPTERS` registry with 32 entries (including kiro, qoder, roocode using base.md)
+- Improved CLI help text for `--ai` option
+- Templates now use generic model references for easier maintenance
+
+### Fixed
+- Restored missing `renderTemplate` function in render-adapters.ts
+- Synced all adapter templates between root and CLI directories
+
+## [1.0.10] - 2026-01-17
 
 ### Added
 - **12 new AI adapters**: amazonq, augment, codeium, cody, devin, goose, junie, opencode, replit, supermaven, tabnine, trae

@@ -1,0 +1,586 @@
+# Backend Engineering Kit - Industry-Specific Reasoning Rules
+# Similar to UI UX Pro Max's 100 industry rules, but for Backend Architecture
+# Version: 1.0.0
+
+metadata:
+  version: "1.0.0"
+  total_rules: 50
+  description: "Industry-specific backend architecture recommendations"
+
+# =============================================================================
+# TECH & SAAS
+# =============================================================================
+
+industries:
+  # ---------------------------------------------------------------------------
+  # SaaS / B2B Enterprise
+  # ---------------------------------------------------------------------------
+  saas_b2b:
+    id: "saas-b2b"
+    name: "SaaS / B2B Enterprise"
+    description: "Multi-tenant B2B software platforms"
+    
+    architecture:
+      pattern: "Multi-tenant Monolith → Modular Monolith → Microservices"
+      database: "PostgreSQL with Row-Level Security (RLS)"
+      caching: "Redis for sessions + tenant config"
+      queue: "RabbitMQ or SQS for async jobs"
+      
+    security_level: "HIGH"
+    compliance:
+      - "SOC 2 Type II"
+      - "GDPR (if EU customers)"
+      - "ISO 27001 (enterprise deals)"
+      
+    required_patterns:
+      - "sec.multitenancy-basics"
+      - "sec.data-isolation"
+      - "sec.tenant-context"
+      - "sec.rbac-boundaries"
+      - "api.versioning"
+      - "obs.correlation-id"
+      
+    recommended_patterns:
+      - "rel.circuit-breaker"
+      - "db.soft-delete-audit"
+      - "sec.billing-integration"
+      
+    anti_patterns:
+      - "Shared database without tenant isolation"
+      - "Storing tenant ID in JWT only (not validating on every query)"
+      - "Single database connection pool for all tenants"
+      - "No audit logging for sensitive operations"
+      
+    checklist: "checklist.multitenancy-review"
+    
+    key_decisions:
+      - question: "Tenant isolation strategy?"
+        options:
+          - name: "Shared schema with tenant_id column"
+            when: "Cost-sensitive, < 100 tenants, standard security needs"
+          - name: "Schema per tenant"
+            when: "Moderate isolation, regulatory requirements"
+          - name: "Database per tenant"
+            when: "Enterprise customers, strict data isolation, high compliance"
+            
+      - question: "API versioning strategy?"
+        options:
+          - name: "URL path versioning (/v1/, /v2/)"
+            when: "Public API, clear breaking changes"
+          - name: "Header versioning"
+            when: "Internal APIs, gradual migration"
+
+  # ---------------------------------------------------------------------------
+  # Micro SaaS
+  # ---------------------------------------------------------------------------
+  micro_saas:
+    id: "micro-saas"
+    name: "Micro SaaS"
+    description: "Small, focused SaaS products (solo founder / small team)"
+    
+    architecture:
+      pattern: "Simple Monolith"
+      database: "PostgreSQL or SQLite (for very small)"
+      caching: "In-memory or Redis (optional)"
+      queue: "Database-backed job queue or none"
+      
+    security_level: "MEDIUM"
+    compliance:
+      - "Basic GDPR awareness"
+      
+    required_patterns:
+      - "api.error-model"
+      - "api.request-validation"
+      - "sec.password-storage"
+      - "sec.rate-limiting"
+      
+    recommended_patterns:
+      - "obs.structured-logging"
+      - "db.migrations-strategy"
+      
+    anti_patterns:
+      - "Premature microservices"
+      - "Over-engineering authentication (use Auth0/Clerk)"
+      - "Building payment system from scratch (use Stripe)"
+      
+    checklist: "checklist.prod-readiness"
+    
+    key_decisions:
+      - question: "Build vs Buy?"
+        options:
+          - name: "Auth: Use Clerk/Auth0/Supabase Auth"
+            when: "Almost always for micro SaaS"
+          - name: "Payments: Use Stripe/Paddle"
+            when: "Always"
+          - name: "Email: Use Resend/Postmark"
+            when: "Always"
+
+  # ---------------------------------------------------------------------------
+  # Fintech / Banking
+  # ---------------------------------------------------------------------------
+  fintech:
+    id: "fintech"
+    name: "Fintech / Banking"
+    description: "Financial services, payment processing, banking apps"
+    
+    architecture:
+      pattern: "Event-Sourced Microservices"
+      database: "PostgreSQL with strict ACID + Event Store"
+      caching: "Redis with encryption at rest"
+      queue: "Kafka for event streaming"
+      
+    security_level: "CRITICAL"
+    compliance:
+      - "PCI DSS (if handling cards)"
+      - "SOC 2 Type II"
+      - "PSD2 (EU payments)"
+      - "SOX (if public company)"
+      
+    required_patterns:
+      - "api.idempotency-keys"
+      - "db.transactions-boundaries"
+      - "rel.outbox-pattern"
+      - "sec.secrets-management"
+      - "sec.authn-authz-boundary"
+      - "obs.correlation-id"
+      - "obs.structured-logging"
+      
+    recommended_patterns:
+      - "rel.circuit-breaker"
+      - "rel.dlq-basics"
+      - "db.soft-delete-audit"
+      
+    anti_patterns:
+      - "Eventual consistency for balance updates"
+      - "Storing card numbers (use tokenization)"
+      - "Single point of failure in payment flow"
+      - "No idempotency keys for money movements"
+      - "Logging sensitive financial data"
+      
+    checklist: "checklist.security-review"
+    
+    key_decisions:
+      - question: "Money representation?"
+        options:
+          - name: "Integer cents (recommended)"
+            when: "Always - avoid floating point"
+          - name: "Decimal with fixed precision"
+            when: "When integer overflow is concern"
+            
+      - question: "Transaction consistency?"
+        options:
+          - name: "Synchronous ACID transactions"
+            when: "Critical money movements"
+          - name: "Saga pattern with compensation"
+            when: "Cross-service transactions"
+
+  # ---------------------------------------------------------------------------
+  # Healthcare / Medical
+  # ---------------------------------------------------------------------------
+  healthcare:
+    id: "healthcare"
+    name: "Healthcare / Medical"
+    description: "Patient data, medical records, health apps"
+    
+    architecture:
+      pattern: "Secure Modular Monolith"
+      database: "PostgreSQL with encryption + Audit tables"
+      caching: "Avoid caching PHI, use encrypted Redis if needed"
+      queue: "HIPAA-compliant queue (AWS SQS with encryption)"
+      
+    security_level: "CRITICAL"
+    compliance:
+      - "HIPAA (US)"
+      - "HITECH"
+      - "GDPR (EU health data)"
+      - "HL7 FHIR (interoperability)"
+      
+    required_patterns:
+      - "sec.data-isolation"
+      - "sec.authn-authz-boundary"
+      - "sec.secrets-management"
+      - "db.soft-delete-audit"
+      - "obs.structured-logging"
+      
+    recommended_patterns:
+      - "api.versioning"
+      - "rel.circuit-breaker"
+      
+    anti_patterns:
+      - "Storing PHI in logs"
+      - "Caching patient data without encryption"
+      - "No audit trail for data access"
+      - "Sharing PHI across services without consent tracking"
+      
+    checklist: "checklist.security-review"
+    
+    key_decisions:
+      - question: "PHI storage strategy?"
+        options:
+          - name: "Encrypted at rest + in transit"
+            when: "Always mandatory"
+          - name: "Separate PHI database"
+            when: "High security requirements"
+            
+      - question: "Audit logging?"
+        options:
+          - name: "Append-only audit tables"
+            when: "Compliance requirements"
+          - name: "Separate audit service"
+            when: "High-volume access logging"
+
+  # ---------------------------------------------------------------------------
+  # E-commerce
+  # ---------------------------------------------------------------------------
+  ecommerce:
+    id: "ecommerce"
+    name: "E-commerce"
+    description: "Online stores, marketplaces, retail platforms"
+    
+    architecture:
+      pattern: "Modular Monolith with CQRS for catalog"
+      database: "PostgreSQL + Elasticsearch for search"
+      caching: "Redis for sessions, cart, product cache"
+      queue: "RabbitMQ for order processing"
+      
+    security_level: "HIGH"
+    compliance:
+      - "PCI DSS (if handling cards)"
+      - "GDPR (EU customers)"
+      
+    required_patterns:
+      - "api.idempotency-keys"
+      - "api.pagination-filter-sort"
+      - "db.transactions-boundaries"
+      - "sec.rate-limiting"
+      - "rel.retries-backoff"
+      
+    recommended_patterns:
+      - "rel.circuit-breaker"
+      - "rel.outbox-pattern"
+      - "obs.metrics-red-use"
+      
+    anti_patterns:
+      - "Overselling (no inventory locks)"
+      - "Cart stored only in frontend"
+      - "Payment without idempotency"
+      - "N+1 queries in product listings"
+      
+    checklist: "checklist.prod-readiness"
+    
+    key_decisions:
+      - question: "Inventory management?"
+        options:
+          - name: "Pessimistic locking"
+            when: "Low inventory, high contention"
+          - name: "Optimistic locking with retry"
+            when: "High inventory, flash sales"
+            
+      - question: "Order state machine?"
+        options:
+          - name: "Simple status enum"
+            when: "Basic flow"
+          - name: "Full state machine"
+            when: "Complex fulfillment, returns"
+
+  # ---------------------------------------------------------------------------
+  # Real-time / Gaming
+  # ---------------------------------------------------------------------------
+  realtime_gaming:
+    id: "realtime-gaming"
+    name: "Real-time / Gaming"
+    description: "Multiplayer games, real-time apps, live features"
+    
+    architecture:
+      pattern: "Event-driven with WebSockets"
+      database: "PostgreSQL + Redis for state"
+      caching: "Redis Cluster"
+      queue: "Redis Pub/Sub or Kafka"
+      
+    security_level: "MEDIUM"
+    compliance:
+      - "COPPA (if children users)"
+      - "GDPR"
+      
+    required_patterns:
+      - "rel.timeouts"
+      - "rel.circuit-breaker"
+      - "obs.metrics-red-use"
+      - "sec.rate-limiting"
+      
+    recommended_patterns:
+      - "api.idempotency-keys"
+      - "obs.correlation-id"
+      
+    anti_patterns:
+      - "Blocking I/O in game loop"
+      - "No connection timeout handling"
+      - "Trusting client-side game state"
+      - "No rate limiting on actions"
+      
+    checklist: "checklist.reliability-review"
+    
+    key_decisions:
+      - question: "State synchronization?"
+        options:
+          - name: "Server authoritative"
+            when: "Competitive games, anti-cheat needed"
+          - name: "Client prediction with reconciliation"
+            when: "Fast-paced action, latency-sensitive"
+
+  # ---------------------------------------------------------------------------
+  # IoT / Edge
+  # ---------------------------------------------------------------------------
+  iot_edge:
+    id: "iot-edge"
+    name: "IoT / Edge Computing"
+    description: "Device management, sensor data, edge processing"
+    
+    architecture:
+      pattern: "Edge + Cloud hybrid"
+      database: "TimescaleDB or InfluxDB for time-series"
+      caching: "Local edge cache + Redis cloud"
+      queue: "MQTT for devices, Kafka for cloud"
+      
+    security_level: "HIGH"
+    compliance:
+      - "Device security standards"
+      - "Data retention policies"
+      
+    required_patterns:
+      - "rel.retries-backoff"
+      - "rel.circuit-breaker"
+      - "rel.dlq-basics"
+      - "obs.structured-logging"
+      
+    recommended_patterns:
+      - "api.webhooks-signatures"
+      - "sec.secrets-management"
+      
+    anti_patterns:
+      - "No offline capability"
+      - "Unbounded data retention"
+      - "No device authentication"
+      - "Trusting device-reported timestamps"
+      
+    checklist: "checklist.reliability-review"
+
+  # ---------------------------------------------------------------------------
+  # AI / ML Platform
+  # ---------------------------------------------------------------------------
+  ai_ml_platform:
+    id: "ai-ml-platform"
+    name: "AI / ML Platform"
+    description: "Machine learning services, AI APIs, model serving"
+    
+    architecture:
+      pattern: "Async-first with batch processing"
+      database: "PostgreSQL + Object storage (S3)"
+      caching: "Redis for inference cache"
+      queue: "Celery/RQ or managed (SQS)"
+      
+    security_level: "HIGH"
+    compliance:
+      - "Data privacy (training data)"
+      - "Model bias auditing"
+      - "AI regulations (emerging)"
+      
+    required_patterns:
+      - "rel.timeouts"
+      - "rel.circuit-breaker"
+      - "api.rate-limiting"
+      - "obs.metrics-red-use"
+      
+    recommended_patterns:
+      - "rel.dlq-basics"
+      - "api.webhooks-signatures"
+      
+    anti_patterns:
+      - "Synchronous inference for heavy models"
+      - "No timeout on model calls"
+      - "Storing PII in training data without consent"
+      - "No model versioning"
+      
+    checklist: "checklist.prod-readiness"
+
+  # ---------------------------------------------------------------------------
+  # Developer Tools / API Platform
+  # ---------------------------------------------------------------------------
+  developer_tools:
+    id: "developer-tools"
+    name: "Developer Tools / API Platform"
+    description: "APIs for developers, SDKs, developer platforms"
+    
+    architecture:
+      pattern: "API Gateway + Microservices"
+      database: "PostgreSQL"
+      caching: "Redis for rate limiting + API responses"
+      queue: "For webhooks delivery"
+      
+    security_level: "HIGH"
+    compliance:
+      - "API security best practices"
+      - "SOC 2 (if enterprise customers)"
+      
+    required_patterns:
+      - "api.versioning"
+      - "api.error-model"
+      - "api.pagination-filter-sort"
+      - "api.rate-limiting"
+      - "api.webhooks-signatures"
+      - "obs.correlation-id"
+      
+    recommended_patterns:
+      - "api.idempotency-keys"
+      - "rel.circuit-breaker"
+      
+    anti_patterns:
+      - "Breaking API changes without versioning"
+      - "Inconsistent error formats"
+      - "No rate limiting"
+      - "No request ID for debugging"
+      
+    checklist: "checklist.api-review"
+
+# =============================================================================
+# PATTERN DOMAINS
+# =============================================================================
+
+domains:
+  api:
+    name: "API Design"
+    description: "REST API, GraphQL, request/response patterns"
+    patterns:
+      - "api.error-model"
+      - "api.idempotency-keys"
+      - "api.pagination-filter-sort"
+      - "api.request-validation"
+      - "api.versioning"
+      - "api.webhooks-signatures"
+      - "api.rate-limiting"
+      
+  database:
+    name: "Database"
+    description: "Schema design, queries, migrations"
+    patterns:
+      - "db.indexing-basics"
+      - "db.migrations-strategy"
+      - "db.n-plus-1-avoid"
+      - "db.schema-constraints"
+      - "db.soft-delete-audit"
+      - "db.transactions-boundaries"
+      
+  security:
+    name: "Security"
+    description: "Authentication, authorization, data protection"
+    patterns:
+      - "sec.authn-authz-boundary"
+      - "sec.billing-integration"
+      - "sec.data-isolation"
+      - "sec.multitenancy-basics"
+      - "sec.password-storage"
+      - "sec.rate-limiting"
+      - "sec.rbac-boundaries"
+      - "sec.secrets-management"
+      - "sec.tenant-context"
+      - "sec.threat-checklist"
+      
+  reliability:
+    name: "Reliability"
+    description: "Fault tolerance, resilience, error handling"
+    patterns:
+      - "rel.circuit-breaker"
+      - "rel.dlq-basics"
+      - "rel.outbox-pattern"
+      - "rel.retries-backoff"
+      - "rel.timeouts"
+      
+  observability:
+    name: "Observability"
+    description: "Logging, metrics, tracing"
+    patterns:
+      - "obs.correlation-id"
+      - "obs.metrics-red-use"
+      - "obs.structured-logging"
+
+# =============================================================================
+# TECH STACKS
+# =============================================================================
+
+stacks:
+  node_express:
+    id: "node-express"
+    name: "Node.js + Express"
+    language: "TypeScript"
+    framework: "Express.js"
+    recommended_for:
+      - "saas_b2b"
+      - "micro_saas"
+      - "developer_tools"
+    libraries:
+      validation: "zod"
+      orm: "Prisma or Drizzle"
+      auth: "Passport.js or Auth0"
+      
+  node_fastify:
+    id: "node-fastify"
+    name: "Node.js + Fastify"
+    language: "TypeScript"
+    framework: "Fastify"
+    recommended_for:
+      - "realtime_gaming"
+      - "ai_ml_platform"
+    libraries:
+      validation: "typebox"
+      orm: "Prisma"
+      
+  python_fastapi:
+    id: "python-fastapi"
+    name: "Python + FastAPI"
+    language: "Python"
+    framework: "FastAPI"
+    recommended_for:
+      - "ai_ml_platform"
+      - "healthcare"
+    libraries:
+      validation: "Pydantic"
+      orm: "SQLAlchemy"
+      
+  go_stdlib:
+    id: "go-stdlib"
+    name: "Go + stdlib"
+    language: "Go"
+    framework: "net/http"
+    recommended_for:
+      - "fintech"
+      - "iot_edge"
+    libraries:
+      validation: "validator"
+      orm: "sqlc or GORM"
+
+# =============================================================================
+# REASONING ENGINE LOGIC
+# =============================================================================
+
+reasoning:
+  input_analysis:
+    - "Extract industry keywords"
+    - "Identify security requirements"
+    - "Detect compliance needs"
+    - "Determine scale expectations"
+    
+  matching_algorithm:
+    - "BM25 ranking for industry match"
+    - "Filter by security level"
+    - "Apply compliance requirements"
+    - "Recommend patterns by priority"
+    
+  output_format:
+    architecture_decision_record:
+      - "Project context"
+      - "Industry classification"
+      - "Recommended architecture"
+      - "Required patterns"
+      - "Security checklist"
+      - "Anti-patterns to avoid"
+      - "Key decisions"

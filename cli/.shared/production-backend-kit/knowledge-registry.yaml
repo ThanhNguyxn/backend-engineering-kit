@@ -1,0 +1,296 @@
+apiVersion: knowledge/v1
+kind: KnowledgeRegistry
+metadata:
+  name: production-backend-kit-knowledge
+  version: "1.0.0"
+  description: "Production patterns and checklists for backend development"
+  lastUpdated: "2026-01-17"
+  sourcePath: ".shared/production-backend-kit"
+
+# =============================================================================
+# PATTERNS
+# Best practices and reference implementations
+# =============================================================================
+patterns:
+  # ---------------------------------------------------------------------------
+  # API Patterns
+  # ---------------------------------------------------------------------------
+  - id: api.error-model
+    name: "API Error Model"
+    description: "Consistent error response format with codes and details"
+    scope: api
+    stack: ["nodejs", "python", "go", "all"]
+    level: intermediate
+    tags: ["api", "error-handling", "rest"]
+    sourcePath: patterns/api.error-model.md
+
+  - id: api.idempotency-keys
+    name: "Idempotency Keys"
+    description: "Safe retry handling with idempotency keys"
+    scope: api
+    stack: ["nodejs", "python", "go", "all"]
+    level: advanced
+    tags: ["api", "idempotency", "retries"]
+    sourcePath: patterns/api.idempotency-keys.md
+
+  - id: api.pagination-filter-sort
+    name: "Pagination, Filtering & Sorting"
+    description: "Standard query parameters for list endpoints"
+    scope: api
+    stack: ["nodejs", "python", "go", "all"]
+    level: beginner
+    tags: ["api", "pagination", "filtering", "sorting"]
+    sourcePath: patterns/api.pagination-filter-sort.md
+
+  - id: api.request-validation
+    name: "Request Validation"
+    description: "Input validation with schemas and sanitization"
+    scope: api
+    stack: ["nodejs", "python", "go", "all"]
+    level: beginner
+    tags: ["api", "validation", "security"]
+    sourcePath: patterns/api.request-validation.md
+
+  - id: api.versioning
+    name: "API Versioning"
+    description: "URL and header-based versioning strategies"
+    scope: api
+    stack: ["nodejs", "python", "go", "all"]
+    level: intermediate
+    tags: ["api", "versioning", "compatibility"]
+    sourcePath: patterns/api.versioning.md
+
+  - id: api.webhooks-signatures
+    name: "Webhook Signatures"
+    description: "HMAC signatures for webhook security"
+    scope: api
+    stack: ["nodejs", "python", "go", "all"]
+    level: advanced
+    tags: ["api", "webhooks", "security", "hmac"]
+    sourcePath: patterns/api.webhooks-signatures.md
+
+  # ---------------------------------------------------------------------------
+  # Database Patterns
+  # ---------------------------------------------------------------------------
+  - id: db.indexing-basics
+    name: "Database Indexing Basics"
+    description: "When and how to create efficient indexes"
+    scope: database
+    stack: ["postgresql", "mysql", "all"]
+    level: intermediate
+    tags: ["database", "indexing", "performance"]
+    sourcePath: patterns/db.indexing-basics.md
+
+  - id: db.migrations-strategy
+    name: "Migration Strategy"
+    description: "Zero-downtime database migrations"
+    scope: database
+    stack: ["postgresql", "mysql", "all"]
+    level: advanced
+    tags: ["database", "migrations", "deployment"]
+    sourcePath: patterns/db.migrations-strategy.md
+
+  - id: db.n-plus-1-avoid
+    name: "N+1 Query Avoidance"
+    description: "Preventing N+1 queries in ORMs"
+    scope: database
+    stack: ["nodejs", "python", "go", "all"]
+    level: intermediate
+    tags: ["database", "performance", "orm"]
+    sourcePath: patterns/db.n-plus-1-avoid.md
+
+  - id: db.schema-constraints
+    name: "Schema Constraints"
+    description: "Enforcing data integrity at database level"
+    scope: database
+    stack: ["postgresql", "mysql", "all"]
+    level: intermediate
+    tags: ["database", "constraints", "integrity"]
+    sourcePath: patterns/db.schema-constraints.md
+
+  - id: db.soft-delete-audit
+    name: "Soft Delete & Audit Trail"
+    description: "Logical deletion with audit history"
+    scope: database
+    stack: ["postgresql", "mysql", "all"]
+    level: intermediate
+    tags: ["database", "soft-delete", "audit"]
+    sourcePath: patterns/db.soft-delete-audit.md
+
+  - id: db.transactions-boundaries
+    name: "Transaction Boundaries"
+    description: "Proper transaction scoping and isolation"
+    scope: database
+    stack: ["postgresql", "mysql", "all"]
+    level: advanced
+    tags: ["database", "transactions", "consistency"]
+    sourcePath: patterns/db.transactions-boundaries.md
+
+  # ---------------------------------------------------------------------------
+  # Observability Patterns
+  # ---------------------------------------------------------------------------
+  - id: obs.correlation-id
+    name: "Correlation IDs"
+    description: "Request tracing across services"
+    scope: observability
+    stack: ["nodejs", "python", "go", "all"]
+    level: intermediate
+    tags: ["observability", "tracing", "distributed"]
+    sourcePath: patterns/obs.correlation-id.md
+
+  - id: obs.metrics-red-use
+    name: "RED & USE Metrics"
+    description: "Rate, Errors, Duration + Utilization, Saturation, Errors"
+    scope: observability
+    stack: ["nodejs", "python", "go", "all"]
+    level: advanced
+    tags: ["observability", "metrics", "monitoring"]
+    sourcePath: patterns/obs.metrics-red-use.md
+
+  - id: obs.structured-logging
+    name: "Structured Logging"
+    description: "JSON logging with context and levels"
+    scope: observability
+    stack: ["nodejs", "python", "go", "all"]
+    level: beginner
+    tags: ["observability", "logging", "json"]
+    sourcePath: patterns/obs.structured-logging.md
+
+  # ---------------------------------------------------------------------------
+  # Reliability Patterns
+  # ---------------------------------------------------------------------------
+  - id: rel.circuit-breaker
+    name: "Circuit Breaker"
+    description: "Fail-fast pattern for external dependencies"
+    scope: reliability
+    stack: ["nodejs", "python", "go", "all"]
+    level: advanced
+    tags: ["reliability", "circuit-breaker", "resilience"]
+    sourcePath: patterns/rel.circuit-breaker.md
+
+  - id: rel.dlq-basics
+    name: "Dead Letter Queue"
+    description: "Handling failed message processing"
+    scope: reliability
+    stack: ["nodejs", "python", "go", "all"]
+    level: advanced
+    tags: ["reliability", "messaging", "dlq"]
+    sourcePath: patterns/rel.dlq-basics.md
+
+  - id: rel.outbox-pattern
+    name: "Outbox Pattern"
+    description: "Reliable event publishing with database"
+    scope: reliability
+    stack: ["nodejs", "python", "go", "all"]
+    level: advanced
+    tags: ["reliability", "events", "consistency"]
+    sourcePath: patterns/rel.outbox-pattern.md
+
+  - id: rel.retries-backoff
+    name: "Retries with Backoff"
+    description: "Exponential backoff and jitter"
+    scope: reliability
+    stack: ["nodejs", "python", "go", "all"]
+    level: intermediate
+    tags: ["reliability", "retries", "backoff"]
+    sourcePath: patterns/rel.retries-backoff.md
+
+  - id: rel.timeouts
+    name: "Timeout Configuration"
+    description: "Setting appropriate timeouts for operations"
+    scope: reliability
+    stack: ["nodejs", "python", "go", "all"]
+    level: beginner
+    tags: ["reliability", "timeouts", "performance"]
+    sourcePath: patterns/rel.timeouts.md
+
+  # ---------------------------------------------------------------------------
+  # Security Patterns
+  # ---------------------------------------------------------------------------
+  - id: sec.authn-authz-boundary
+    name: "AuthN/AuthZ Boundary"
+    description: "Separating authentication from authorization"
+    scope: security
+    stack: ["nodejs", "python", "go", "all"]
+    level: intermediate
+    tags: ["security", "authentication", "authorization"]
+    sourcePath: patterns/sec.authn-authz-boundary.md
+
+  - id: sec.password-storage
+    name: "Password Storage"
+    description: "Secure password hashing with bcrypt/argon2"
+    scope: security
+    stack: ["nodejs", "python", "go", "all"]
+    level: beginner
+    tags: ["security", "passwords", "hashing"]
+    sourcePath: patterns/sec.password-storage.md
+
+  - id: sec.rate-limiting
+    name: "Rate Limiting"
+    description: "Protecting APIs from abuse"
+    scope: security
+    stack: ["nodejs", "python", "go", "all"]
+    level: intermediate
+    tags: ["security", "rate-limiting", "ddos"]
+    sourcePath: patterns/sec.rate-limiting.md
+
+  - id: sec.secrets-management
+    name: "Secrets Management"
+    description: "Secure handling of API keys and credentials"
+    scope: security
+    stack: ["nodejs", "python", "go", "all"]
+    level: intermediate
+    tags: ["security", "secrets", "credentials"]
+    sourcePath: patterns/sec.secrets-management.md
+
+  - id: sec.threat-checklist
+    name: "Threat Checklist"
+    description: "OWASP-based security checklist"
+    scope: security
+    stack: ["nodejs", "python", "go", "all"]
+    level: advanced
+    tags: ["security", "owasp", "checklist"]
+    sourcePath: patterns/sec.threat-checklist.md
+
+# =============================================================================
+# CHECKLISTS
+# Quality gates for reviews
+# =============================================================================
+checklists:
+  - id: checklist-api-review
+    name: "API Review Checklist"
+    description: "REST API best practices verification"
+    scope: api
+    tags: ["checklist", "api", "review"]
+    sourcePath: checklists/checklist.api-review.md
+
+  - id: checklist-db-review
+    name: "Database Review Checklist"
+    description: "Database schema and query review"
+    scope: database
+    tags: ["checklist", "database", "review"]
+    sourcePath: checklists/checklist.db-review.md
+
+  - id: checklist-security-review
+    name: "Security Review Checklist"
+    description: "Security controls verification"
+    scope: security
+    tags: ["checklist", "security", "review"]
+    sourcePath: checklists/checklist.security-review.md
+
+  - id: checklist-reliability-review
+    name: "Reliability Review Checklist"
+    description: "Resilience patterns verification"
+    scope: reliability
+    tags: ["checklist", "reliability", "review"]
+    sourcePath: checklists/checklist.reliability-review.md
+
+  - id: checklist-prod-readiness
+    name: "Production Readiness Checklist"
+    description: "Pre-deployment verification"
+    scope: deployment
+    tags: ["checklist", "production", "deployment"]
+    sourcePath: checklists/checklist.prod-readiness.md
+# =============================================================================
+# Run `bek lint --json` to get current counts
+# =============================================================================

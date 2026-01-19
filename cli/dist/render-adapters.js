@@ -4,15 +4,50 @@ import { fileURLToPath } from 'url';
 import chalk from 'chalk';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const TOOLS = ['claude', 'cursor', 'copilot', 'codex'];
+const TOOLS = [
+    // Cloud AI Assistants
+    'aider', 'amazonq', 'augment', 'claude', 'cline',
+    'codeium', 'codex', 'cody', 'continue', 'copilot',
+    'cursor', 'devin', 'gemini', 'goose', 'junie',
+    'opencode', 'replit', 'supermaven', 'tabnine',
+    'trae', 'windsurf', 'zed',
+    // Local AI Tools (unique feature!)
+    'ollama', 'lmstudio', 'localai', 'gpt4all', 'jan', 'llm', 'llamafile'
+];
 function getToolDisplayName(tool) {
     const names = {
-        claude: 'Claude',
-        cursor: 'Cursor',
+        aider: 'Aider',
+        amazonq: 'Amazon Q',
+        augment: 'Augment Code',
+        claude: 'Claude / Anthropic',
+        cline: 'Cline',
+        codeium: 'Codeium',
+        codex: 'OpenAI Codex',
+        cody: 'Sourcegraph Cody',
+        continue: 'Continue',
         copilot: 'GitHub Copilot',
-        codex: 'Codex'
+        cursor: 'Cursor',
+        devin: 'Devin',
+        gemini: 'Google Gemini',
+        goose: 'Goose',
+        junie: 'JetBrains Junie',
+        opencode: 'OpenCode',
+        replit: 'Replit',
+        supermaven: 'Supermaven',
+        tabnine: 'Tabnine',
+        trae: 'Trae',
+        windsurf: 'Windsurf',
+        zed: 'Zed',
+        // Local AI Tools
+        ollama: 'Ollama',
+        lmstudio: 'LM Studio',
+        localai: 'LocalAI',
+        gpt4all: 'GPT4All',
+        jan: 'Jan',
+        llm: 'LLM CLI',
+        llamafile: 'llamafile'
     };
-    return names[tool] || tool;
+    return names[tool] || tool.charAt(0).toUpperCase() + tool.slice(1);
 }
 function renderTemplate(templateContent, vars) {
     let result = templateContent;
@@ -24,14 +59,65 @@ function renderTemplate(templateContent, vars) {
 }
 function getOutputFileName(tool) {
     switch (tool) {
+        case 'aider':
+            return '.aider.conventions.md';
+        case 'amazonq':
+            return 'AMAZONQ.md';
+        case 'augment':
+            return '.augment/rules/backend-kit.md';
         case 'claude':
-            return 'backend-kit-skill.md';
-        case 'cursor':
-            return 'backend-kit.mdc';
-        case 'copilot':
-            return 'copilot-instructions.md';
+            return 'CLAUDE.md';
+        case 'cline':
+            return '.clinerules';
+        case 'codeium':
+            return 'CODEIUM.md';
         case 'codex':
             return 'AGENTS.md';
+        case 'cody':
+            return 'CODY.md';
+        case 'continue':
+            return '.continue/backend-kit.md';
+        case 'copilot':
+            return '.github/copilot-instructions.md';
+        case 'cursor':
+            return '.cursorrules';
+        case 'devin':
+            return 'DEVIN.md';
+        case 'gemini':
+            return 'GEMINI.md';
+        case 'goose':
+            return '.goosehints';
+        case 'junie':
+            return '.junie/guidelines.md';
+        case 'opencode':
+            return '.opencode/guidelines.md';
+        case 'replit':
+            return 'replit.md';
+        case 'supermaven':
+            return 'SUPERMAVEN.md';
+        case 'tabnine':
+            return 'TABNINE.md';
+        case 'trae':
+            return '.traerules';
+        case 'windsurf':
+            return '.windsurfrules';
+        case 'zed':
+            return '.rules';
+        // Local AI Tools
+        case 'ollama':
+            return 'Modelfile';
+        case 'lmstudio':
+            return '.lmstudio/presets/backend-kit.json';
+        case 'localai':
+            return 'models/backend-kit.yaml';
+        case 'gpt4all':
+            return '.gpt4all/backend-kit.txt';
+        case 'jan':
+            return 'jan/assistants/backend-kit.json';
+        case 'llm':
+            return '.llm/templates/backend-kit.yaml';
+        case 'llamafile':
+            return '.llamafile/system-prompt.txt';
         default:
             return `${tool}-adapter.md`;
     }

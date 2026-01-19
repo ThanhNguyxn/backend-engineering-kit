@@ -60,7 +60,7 @@ program
     .option('-p, --preset <name>', 'Use a preset (node-express|node-fastify|node-minimal|saas-multitenant-lite)')
     .option('--target <path>', 'Target directory', '.')
     .option('--out <path>', 'Alias for --target')
-    .option('--ai <tools>', 'AI adapters to include (claude,cursor,copilot,codex,all)')
+    .option('--ai <tools>', 'AI adapters: claude,copilot,cursor,cline,zed,ollama,localai,... or "all"')
     .option('--force', 'Overwrite existing files')
     .option('--dry-run', 'Show what would be created without making changes')
     .option('-y, --yes', 'Skip prompts, use defaults')
