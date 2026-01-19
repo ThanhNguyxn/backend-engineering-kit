@@ -132,3 +132,69 @@ jobs:
       - name: Build docs-site
         working-directory: docs-site
         run: npm run build
+
+  e2e-smoke:
+    runs-on: ubuntu-latest
+    name: E2E Smoke Test
+    needs: test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: cli/package-lock.json
+
+      - name: Install and build CLI
+        working-directory: cli
+        run: |
+          npm ci --legacy-peer-deps
+          npm run build
+
+      - name: Create test project directory
+        run: mkdir -p /tmp/e2e-project
+
+      - name: E2E - Init with preset
+        working-directory: cli
+        run: |
+          node dist/index.js init --preset node-express --target /tmp/e2e-project -y
+          echo "✅ Init completed"
+
+      - name: E2E - Verify manifest exists
+        run: |
+          test -f /tmp/e2e-project/.backend-kit/.bek-manifest.json
+          echo "✅ Manifest exists"
+          cat /tmp/e2e-project/.backend-kit/.bek-manifest.json
+
+      - name: E2E - Verify patterns copied
+        run: |
+          test -d /tmp/e2e-project/.backend-kit/patterns
+          ls -la /tmp/e2e-project/.backend-kit/patterns/
+          echo "✅ Patterns directory exists"
+
+      - name: E2E - Run quality gate (JSON output)
+        working-directory: cli
+        run: |
+          node dist/index.js gate --checklist checklist-api-review --json > /tmp/gate-result.json
+          cat /tmp/gate-result.json
+          echo "✅ Quality gate passed"
+
+      - name: E2E - Sync command (dry-run)
+        working-directory: cli
+        run: |
+          node dist/index.js sync --target /tmp/e2e-project --dry-run --json
+          echo "✅ Sync dry-run completed"
+
+      - name: E2E - Remove command (dry-run)
+        working-directory: cli
+        run: |
+          node dist/index.js remove --target /tmp/e2e-project --dry-run --json
+          echo "✅ Remove dry-run completed"
+
+      - name: E2E - Verify project still intact after dry-runs
+        run: |
+          test -d /tmp/e2e-project/.backend-kit
+          echo "✅ Project intact after dry-runs"

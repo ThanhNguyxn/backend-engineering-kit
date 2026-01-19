@@ -5,7 +5,7 @@ import { createInterface } from 'readline';
 import logger from '../lib/logger.js';
 import { createConfigFile } from '../lib/config.js';
 import { CLIError } from '../lib/errors.js';
-import { getPreset, getPresetNames, copyPresetFiles } from '../lib/presets.js';
+import { getPreset, getPresetNames, copyPresetFiles, getAvailableAdapters, copyAdapterFiles, copyIndustryRules } from '../lib/presets.js';
 import { createManifest, saveManifest, getCliVersion, BACKEND_KIT_DIR } from '../lib/manifest.js';
 const TEMPLATES = {
     minimal: {
@@ -230,6 +230,34 @@ export async function initCommand(options = {}) {
         if (missing.length > 0) {
             logger.warn(`Missing source files: ${missing.join(', ')}`);
         }
+        // Handle AI adapters
+        let aiAdapters = preset.adapters || [];
+        if (options.ai) {
+            if (options.ai === 'all') {
+                aiAdapters = getAvailableAdapters();
+            }
+            else {
+                aiAdapters = options.ai.split(',').map(a => a.trim());
+            }
+        }
+        if (aiAdapters.length > 0) {
+            logger.newline();
+            logger.info('Installing AI adapters...');
+            const adapterResult = copyAdapterFiles(aiAdapters, target, dryRun);
+            for (const file of adapterResult.copied) {
+                logger.log(`  ${chalk.green('+')} ${file}`);
+            }
+            if (adapterResult.missing.length > 0) {
+                logger.warn(`Unknown adapters: ${adapterResult.missing.join(', ')}`);
+            }
+        }
+        // Copy industry rules for generate command
+        logger.newline();
+        logger.info('Installing industry rules...');
+        const rulesInstalled = copyIndustryRules(target, dryRun);
+        if (rulesInstalled) {
+            logger.log(`  ${chalk.green('+')} .backend-kit/rules/industry-rules.yaml`);
+        }
         // Create config
         const config = {
             name: path.basename(target),
@@ -265,7 +293,7 @@ export async function initCommand(options = {}) {
             logger.log(chalk.bold('Next steps:'));
             logger.log(chalk.dim('  1. Review patterns in .backend-kit/patterns/'));
             logger.log(chalk.dim('  2. Run: bek validate'));
-            logger.log(chalk.dim('  3. Run: bek gate --checklist checklist.api-review'));
+            logger.log(chalk.dim('  3. Run: bek gate --checklist checklist-api-review'));
         }
         return;
     }

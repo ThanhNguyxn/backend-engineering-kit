@@ -305,6 +305,76 @@ bek build-db
 
 ---
 
+#### `bek sync`
+
+Update BEK kit files in an existing project. Useful when the CLI is upgraded and you want the latest patterns/checklists.
+
+```bash
+# Interactive sync with backup
+bek sync
+
+# Preview changes without applying
+bek sync --dry-run
+
+# Force sync without confirmation
+bek sync --force
+
+# JSON output for CI/CD
+bek sync --json
+
+# Skip backup
+bek sync --no-backup
+```
+
+**Options:**
+| Option | Description |
+|--------|-------------|
+| `--target <path>` | Target directory (default: current) |
+| `--dry-run` | Preview changes without applying |
+| `--force` | Apply changes without confirmation |
+| `--backup` | Create backup before syncing (default: true) |
+| `--no-backup` | Skip backup |
+| `--json` | Output as JSON |
+
+**Aliases:** `bek update`
+
+---
+
+#### `bek remove`
+
+Remove BEK kit files from a project. Performs a clean uninstall based on the manifest.
+
+```bash
+# Interactive removal
+bek remove
+
+# Preview what would be removed
+bek remove --dry-run
+
+# Skip confirmation prompt
+bek remove -y
+
+# JSON output
+bek remove --json
+```
+
+**Options:**
+| Option | Description |
+|--------|-------------|
+| `--target <path>` | Target directory (default: current) |
+| `-y, --yes` | Skip confirmation prompt |
+| `--dry-run` | Preview without removing |
+| `--json` | Output as JSON |
+
+**Aliases:** `bek clean`, `bek uninstall`
+
+**What gets removed:**
+- `.backend-kit/` directory (patterns, checklists, manifest)
+- Config files (`bek.config.json`, `.bekrc`, etc.)
+- AI adapters listed in manifest
+
+---
+
 ## 🔌 Adapters
 
 | Adapter | Location | Description |

@@ -5,6 +5,7 @@ export interface SearchOptions {
     scope?: string;
     maturity?: string;
     works_with?: string;
+    domain?: string;
     limit?: number;
 }
 export interface SearchResultItem {
@@ -22,6 +23,7 @@ export interface SearchResultItem {
     snippet: string;
 }
 export declare function search(query: string, options?: SearchOptions): Promise<SearchResultItem[]>;
+export declare function listDomains(): void;
 export declare function searchCommand(query: string, options: SearchOptions): Promise<void>;
 export declare function listCommand(options: SearchOptions): Promise<void>;
 //# sourceMappingURL=search.d.ts.map

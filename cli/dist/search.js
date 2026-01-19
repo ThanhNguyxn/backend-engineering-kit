@@ -6,6 +6,18 @@ import chalk from 'chalk';
 import { buildDatabase } from './buildDb.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+// Domain mapping from pattern ID prefix
+const DOMAIN_MAP = {
+    api: { prefix: 'api-', name: 'API Design', description: 'REST/GraphQL APIs, validation, versioning' },
+    db: { prefix: 'db-', name: 'Database', description: 'SQL, NoSQL, transactions, migrations' },
+    sec: { prefix: 'sec-', name: 'Security', description: 'Auth, encryption, secrets, OWASP' },
+    rel: { prefix: 'rel-', name: 'Reliability', description: 'Circuit breakers, retries, outbox' },
+    obs: { prefix: 'obs-', name: 'Observability', description: 'Logging, metrics, tracing' },
+    msg: { prefix: 'msg-', name: 'Messaging', description: 'Queues, events, pub/sub' },
+    cache: { prefix: 'cache-', name: 'Caching', description: 'Redis, CDN, invalidation' },
+    test: { prefix: 'test-', name: 'Testing', description: 'Unit, integration, e2e tests' },
+    checklist: { prefix: 'checklist-', name: 'Checklists', description: 'Review checklists' },
+};
 // Load or build the search index
 async function loadIndex(baseDir) {
     const root = baseDir || path.resolve(__dirname, '../../.shared/production-backend-kit');
@@ -34,11 +46,27 @@ function getSnippet(doc, maxLength = 200) {
 }
 function applyFilters(results, docs, options) {
     const docsMap = new Map(docs.map(d => [d.id, d]));
+    // Parse domain filter
+    const domainPrefixes = [];
+    if (options.domain) {
+        const domains = options.domain.split(',').map(d => d.trim().toLowerCase());
+        for (const domain of domains) {
+            if (DOMAIN_MAP[domain]) {
+                domainPrefixes.push(DOMAIN_MAP[domain].prefix);
+            }
+        }
+    }
     return results
         .map(result => {
         const doc = docsMap.get(result.id);
         if (!doc)
             return null;
+        // Apply domain filter
+        if (domainPrefixes.length > 0) {
+            const matchesDomain = domainPrefixes.some(prefix => doc.id.toLowerCase().startsWith(prefix));
+            if (!matchesDomain)
+                return null;
+        }
         // Apply filters
         if (options.tag) {
             const tags = doc.tags.toLowerCase();
@@ -131,6 +159,16 @@ function getLevelBadge(level) {
             return level;
     }
 }
+// List available domains
+export function listDomains() {
+    console.log(chalk.bold('\n🏷️  Available Domains\n'));
+    Object.entries(DOMAIN_MAP).forEach(([key, domain]) => {
+        console.log(`  ${chalk.cyan(key.padEnd(8))} ${domain.name}`);
+        console.log(`           ${chalk.dim(domain.description)}\n`);
+    });
+    console.log(chalk.dim('Usage: bek search "query" --domain api,sec'));
+    console.log(chalk.dim('       bek list --domain db'));
+}
 // CLI command
 export async function searchCommand(query, options) {
     if (!query) {
@@ -155,8 +193,22 @@ export async function listCommand(options) {
         await buildDatabase(root);
     }
     const docs = JSON.parse(fs.readFileSync(docsPath, 'utf-8'));
+    // Parse domain filter
+    const domainPrefixes = [];
+    if (options.domain) {
+        const domains = options.domain.split(',').map(d => d.trim().toLowerCase());
+        for (const domain of domains) {
+            if (DOMAIN_MAP[domain]) {
+                domainPrefixes.push(DOMAIN_MAP[domain].prefix);
+            }
+        }
+    }
     // Apply filters
     let filtered = docs;
+    // Apply domain filter first
+    if (domainPrefixes.length > 0) {
+        filtered = filtered.filter(d => domainPrefixes.some(prefix => d.id.toLowerCase().startsWith(prefix)));
+    }
     if (options.tag) {
         filtered = filtered.filter(d => d.tags.toLowerCase().includes(options.tag.toLowerCase()));
     }
@@ -170,7 +222,8 @@ export async function listCommand(options) {
         filtered = filtered.filter(d => d.stacks.toLowerCase().includes(options.stack.toLowerCase()) ||
             d.stacks.toLowerCase().includes('all'));
     }
-    console.log(chalk.bold(`\n📚 Available items (${filtered.length}):\n`));
+    const domainLabel = options.domain ? ` in domain: ${options.domain}` : '';
+    console.log(chalk.bold(`\n📚 Available items (${filtered.length})${domainLabel}:\n`));
     const patterns = filtered.filter(d => d.type === 'pattern');
     const checklists = filtered.filter(d => d.type === 'checklist');
     if (patterns.length > 0) {

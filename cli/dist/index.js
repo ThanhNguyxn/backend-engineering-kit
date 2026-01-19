@@ -5,7 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { buildDbCommand, buildDatabase } from './buildDb.js';
-import { searchCommand, listCommand } from './search.js';
+import { searchCommand, listCommand, listDomains } from './search.js';
 import { validateContent } from './validate-content.js';
 import { normalizeCommand } from './normalize-content.js';
 import { doctorCommand } from './commands/doctor.js';
@@ -15,17 +15,20 @@ import { generateDocsCommand } from './commands/docs.js';
 import { syncCommand } from './commands/sync.js';
 import { removeCommand } from './commands/remove.js';
 import templatesCommand from './commands/templates.js';
+import { generateCommand, listIndustries, detectCommand } from './generate.js';
 import { setLogLevel } from './lib/logger.js';
 import { wrapCommand, CLIError } from './lib/errors.js';
 import logger from './lib/logger.js';
+import { getCliVersion } from './lib/manifest.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const program = new Command();
+const cliVersion = getCliVersion();
 // Global options
 program
     .name('bek')
     .description('Backend Engineering Kit CLI - Patterns, Checklists & AI Adapters')
-    .version('0.3.0')
+    .version(cliVersion)
     .option('--debug', 'Enable debug mode (show stack traces)')
     .option('--silent', 'Suppress all output except errors')
     .option('--verbose', 'Show verbose output')
@@ -164,6 +167,7 @@ program
     .option('-t, --tag <tag>', 'Filter by tag')
     .option('-s, --stack <stack>', 'Filter by stack (e.g., postgresql, nodejs)')
     .option('-l, --level <level>', 'Filter by level (beginner|intermediate|advanced)')
+    .option('-d, --domain <domain>', 'Filter by domain (api,db,sec,rel,obs,msg,cache,test)')
     .option('--scope <scope>', 'Filter by scope (api|database|security|reliability|observability)')
     .option('--works-with <stack>', 'Filter by works_with (nodejs|python|go|all)')
     .option('--maturity <maturity>', 'Filter by maturity (stable|beta|alpha)')
@@ -175,6 +179,7 @@ program
         stack: options.stack,
         level: options.level,
         scope: options.scope,
+        domain: options.domain,
         works_with: options.worksWith,
         maturity: options.maturity,
         limit: parseInt(options.limit, 10)
@@ -187,14 +192,21 @@ program
     .option('-t, --tag <tag>', 'Filter by tag')
     .option('-s, --stack <stack>', 'Filter by stack')
     .option('-l, --level <level>', 'Filter by level')
+    .option('-d, --domain <domain>', 'Filter by domain (api,db,sec,rel,obs)')
     .option('--scope <scope>', 'Filter by scope')
+    .option('--list-domains', 'List available domains')
     .option('--json', 'Output as JSON')
     .action(wrapCommand(async (options) => {
+    if (options.listDomains) {
+        listDomains();
+        return;
+    }
     await listCommand({
         tag: options.tag,
         stack: options.stack,
         level: options.level,
-        scope: options.scope
+        scope: options.scope,
+        domain: options.domain
     });
 }));
 // Show card/checklist details
@@ -275,6 +287,37 @@ program
 }));
 // Templates command (project scaffolding)
 program.addCommand(templatesCommand);
+// Generate command (architecture decision generator)
+const generateCmd = program
+    .command('generate')
+    .alias('gen')
+    .description('Generate backend architecture recommendations')
+    .option('-i, --industry <type>', 'Industry type (fintech|healthcare|ecommerce|saas_b2b|micro_saas|...)')
+    .option('-s, --stack <stack>', 'Tech stack (node-express|node-fastify|python-fastapi|go-stdlib)')
+    .option('-p, --project <name>', 'Project name for context')
+    .option('-f, --format <format>', 'Output format (ascii|markdown|json)', 'ascii')
+    .option('--persist', 'Save architecture to file')
+    .option('-m, --module <name>', 'Module/page name for override file')
+    .option('--target <path>', 'Target directory', '.')
+    .option('--json', 'Output as JSON')
+    .option('--list-industries', 'List available industries')
+    .action(wrapCommand(async (options) => {
+    if (options.listIndustries) {
+        listIndustries();
+        return;
+    }
+    await generateCommand(options);
+}));
+// Detect command (auto-detect industry)
+program
+    .command('detect')
+    .description('Auto-detect project industry from package.json')
+    .option('--target <path>', 'Target directory', '.')
+    .option('--suggest', 'Suggest generate command')
+    .option('--json', 'Output as JSON')
+    .action(wrapCommand(async (options) => {
+    await detectCommand(options);
+}));
 // Parse arguments
 program.parse();
 // Show help if no command provided
@@ -284,21 +327,31 @@ if (!process.argv.slice(2).length) {
     console.log('Commands:');
     console.log('  doctor             Check environment and dependencies');
     console.log('  init               Initialize a new project');
+    console.log('  sync               Update BEK files in existing project');
+    console.log('  remove             Remove BEK files from project');
     console.log('  build-db           Build the search database');
     console.log('  validate           Validate content and rebuild database');
     console.log('  normalize          Auto-fix content format issues');
+    console.log('  lint               Lint content files for issues');
     console.log('  search <query>     Search patterns and checklists');
     console.log('  list               List all available items');
     console.log('  show <id>          Show details of a specific item');
     console.log('  gate               Run quality gate checklist');
+    console.log('  generate           Generate architecture recommendations');
+    console.log('  detect             Auto-detect project industry');
+    console.log('  templates          Manage project templates');
     console.log('\nGlobal Options:');
     console.log('  --debug            Show debug output and stack traces');
     console.log('  --silent           Suppress all output except errors');
     console.log('  --verbose          Show verbose output');
     console.log('\nExamples:');
     console.log(chalk.dim('  bek doctor'));
-    console.log(chalk.dim('  bek init --template standard'));
-    console.log(chalk.dim('  bek search "error handling"'));
+    console.log(chalk.dim('  bek init --preset node-express --ai all'));
+    console.log(chalk.dim('  bek sync --dry-run'));
+    console.log(chalk.dim('  bek search "error handling" --domain api'));
+    console.log(chalk.dim('  bek list --domain sec'));
+    console.log(chalk.dim('  bek detect --suggest'));
+    console.log(chalk.dim('  bek generate --industry fintech --persist'));
     console.log(chalk.dim('  bek validate --json'));
     console.log(chalk.dim('  bek gate --checklist checklist-api-review'));
     console.log();

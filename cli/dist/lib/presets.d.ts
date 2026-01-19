@@ -16,4 +16,16 @@ export declare function copyPresetFiles(preset: Preset, targetDir: string, dryRu
     copied: string[];
     missing: string[];
 };
+export declare const AI_ADAPTERS: Record<string, {
+    name: string;
+    folder: string;
+    file: string;
+    template: string;
+}>;
+export declare function getAvailableAdapters(): string[];
+export declare function copyAdapterFiles(adapters: string[], targetDir: string, dryRun: boolean): {
+    copied: string[];
+    missing: string[];
+};
+export declare function copyIndustryRules(targetDir: string, dryRun: boolean): boolean;
 //# sourceMappingURL=presets.d.ts.map

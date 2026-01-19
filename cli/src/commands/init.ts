@@ -5,7 +5,7 @@ import { createInterface } from 'readline';
 import logger from '../lib/logger.js';
 import { createConfigFile, BekConfig } from '../lib/config.js';
 import { CLIError } from '../lib/errors.js';
-import { getPreset, getPresetNames, copyPresetFiles, PRESETS } from '../lib/presets.js';
+import { getPreset, getPresetNames, copyPresetFiles, PRESETS, AI_ADAPTERS, getAvailableAdapters, copyAdapterFiles, copyIndustryRules } from '../lib/presets.js';
 import { createManifest, saveManifest, getCliVersion, BACKEND_KIT_DIR } from '../lib/manifest.js';
 
 interface Template {
@@ -303,6 +303,38 @@ export async function initCommand(options: InitOptions = {}): Promise<void> {
             logger.warn(`Missing source files: ${missing.join(', ')}`);
         }
 
+        // Handle AI adapters
+        let aiAdapters: string[] = preset.adapters || [];
+        if (options.ai) {
+            if (options.ai === 'all') {
+                aiAdapters = getAvailableAdapters();
+            } else {
+                aiAdapters = options.ai.split(',').map(a => a.trim());
+            }
+        }
+
+        if (aiAdapters.length > 0) {
+            logger.newline();
+            logger.info('Installing AI adapters...');
+            const adapterResult = copyAdapterFiles(aiAdapters, target, dryRun);
+            
+            for (const file of adapterResult.copied) {
+                logger.log(`  ${chalk.green('+')} ${file}`);
+            }
+            
+            if (adapterResult.missing.length > 0) {
+                logger.warn(`Unknown adapters: ${adapterResult.missing.join(', ')}`);
+            }
+        }
+
+        // Copy industry rules for generate command
+        logger.newline();
+        logger.info('Installing industry rules...');
+        const rulesInstalled = copyIndustryRules(target, dryRun);
+        if (rulesInstalled) {
+            logger.log(`  ${chalk.green('+')} .backend-kit/rules/industry-rules.yaml`);
+        }
+
         // Create config
         const config: Partial<BekConfig> = {
             name: path.basename(target),
@@ -339,7 +371,7 @@ export async function initCommand(options: InitOptions = {}): Promise<void> {
             logger.log(chalk.bold('Next steps:'));
             logger.log(chalk.dim('  1. Review patterns in .backend-kit/patterns/'));
             logger.log(chalk.dim('  2. Run: bek validate'));
-            logger.log(chalk.dim('  3. Run: bek gate --checklist checklist.api-review'));
+            logger.log(chalk.dim('  3. Run: bek gate --checklist checklist-api-review'));
         }
         return;
     }
