@@ -1,103 +1,111 @@
-# GitHub Copilot Instructions - Production Backend Kit
+# GitHub Copilot Instructions
 
-## Context
+This project uses **Backend Engineering Kit (BEK)** - production-grade patterns for backend development.
 
-You are assisting with backend development. Follow these production-grade patterns and best practices.
+## CLI Commands
+
+```bash
+bek search "error handling"    # Find patterns
+bek show api-error-model       # View pattern details
+bek gate --checklist <id>      # Run quality gate
+```
 
 ## Code Generation Guidelines
 
-### API Endpoints
+### API Responses
 
-When generating API endpoints:
+Always use structured responses:
 
-1. **Always include error handling** with proper HTTP status codes
-2. **Validate all input** before processing
-3. **Use consistent response structures**
-4. **Document with JSDoc/docstrings**
-
-Example response structure:
 ```json
 {
-  "success": true,
   "data": {},
-  "meta": {
-    "requestId": "string",
-    "timestamp": "ISO8601"
-  }
+  "meta": { "requestId": "string", "timestamp": "ISO8601" }
 }
 ```
 
 ### Error Responses
 
-Generate error responses following this pattern:
 ```json
 {
-  "success": false,
   "error": {
     "code": "ERROR_CODE",
     "message": "User-friendly message",
-    "details": []
+    "details": [],
+    "requestId": "string"
   }
 }
 ```
 
+### HTTP Status Codes
+
+- `400` Bad Request - Validation errors
+- `401` Unauthorized - Missing/invalid auth
+- `403` Forbidden - Insufficient permissions
+- `404` Not Found - Resource doesn't exist
+- `409` Conflict - Duplicate resource
+- `429` Too Many Requests - Rate limited
+- `500` Internal Server Error - Server issues
+
 ### Database Operations
 
-1. **Use transactions** for multi-step operations
-2. **Implement soft deletes** when appropriate
-3. **Add created_at/updated_at timestamps**
-4. **Use UUIDs** for public-facing IDs
+- Use transactions for multi-step operations
+- Implement soft deletes when appropriate
+- Add `created_at`/`updated_at` timestamps
+- Use UUIDs for public-facing IDs
+- Use parameterized queries (prevent SQL injection)
 
 ### Security
 
-1. **Hash passwords** with bcrypt/argon2
-2. **Sanitize all inputs**
-3. **Use parameterized queries**
-4. **Validate JWTs properly**
-5. **Implement rate limiting**
+- Hash passwords with bcrypt/argon2
+- Sanitize all inputs
+- Validate JWTs properly
+- Implement rate limiting
+- Never log sensitive data
 
 ### Testing
 
 Generate tests that:
-1. Cover happy paths and error cases
-2. Mock external dependencies
-3. Use descriptive test names
-4. Follow AAA pattern (Arrange, Act, Assert)
+- Cover happy paths and error cases
+- Mock external dependencies
+- Use AAA pattern (Arrange, Act, Assert)
+- Include edge cases from pattern Pitfalls
 
-## Language-Specific Guidelines
+## Language-Specific
 
 ### TypeScript/JavaScript
-
 - Use strict TypeScript
 - Prefer `const` over `let`
-- Use async/await over callbacks
-- Define interfaces for all data structures
+- Use async/await
+- Define interfaces for data structures
 
 ### Python
-
 - Use type hints
 - Follow PEP 8
-- Use dataclasses or Pydantic models
+- Use Pydantic models
 - Handle exceptions explicitly
 
 ### Go
-
 - Handle all errors explicitly
 - Use context for cancellation
 - Follow standard project layout
-- Use interfaces for dependencies
 
-## Response Format
+## Available Checklists
 
-When explaining code:
-1. Be concise but thorough
-2. Highlight security considerations
-3. Mention performance implications
-4. Suggest tests to write
+| ID | Purpose |
+|----|---------|
+| `checklist-api-review` | API design review |
+| `checklist-db-review` | Database review |
+| `checklist-security-review` | Security audit |
+| `checklist-reliability-review` | Resilience check |
+| `checklist-prod-readiness` | Pre-deployment |
 
-## Resources
+## Pattern Categories
 
-Refer to these patterns:
+- **API**: Error model, pagination, versioning, idempotency
+- **Security**: Auth, RBAC, rate limiting, secrets
+- **Database**: Migrations, indexing, connection pools
+- **Reliability**: Circuit breaker, retries, timeouts
+- **Observability**: Logging, metrics, tracing
 - Error Model: `.shared/production-backend-kit/patterns/api.error-model.md`
 - Pagination: `.shared/production-backend-kit/patterns/api.pagination-filter-sort.md`
 - API Review: `.shared/production-backend-kit/checklists/checklist.api-review.md`

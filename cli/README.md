@@ -344,7 +344,7 @@ bek init --ai claude --target ./my-project
 
 ## 📋 Patterns & Checklists
 
-### Patterns (30+)
+### Patterns (45+)
 
 | Category | Patterns |
 |----------|----------|
@@ -354,7 +354,7 @@ bek init --ai claude --target ./my-project
 | **Reliability** | Timeouts, Retries, Circuit Breaker, Outbox Pattern, DLQ |
 | **Observability** | Correlation ID, Structured Logging, RED/USE Metrics |
 
-### Checklists
+### Checklists (6)
 
 | ID | Description |
 |----|-------------|
@@ -363,6 +363,7 @@ bek init --ai claude --target ./my-project
 | `checklist-security-review` | Security controls audit |
 | `checklist-reliability-review` | Resilience patterns check |
 | `checklist-prod-readiness` | Pre-deployment checklist |
+| `checklist-multitenancy-review` | Multi-tenant isolation audit |
 
 ---
 

@@ -12,7 +12,7 @@ Backend Engineering Kit (BEK) is a CLI tool and knowledge base designed to help 
 ## What's Included
 
 ### 📚 Pattern Library
-30+ battle-tested patterns covering:
+45+ battle-tested patterns covering:
 - API Design (REST, GraphQL, gRPC)
 - Database Operations (PostgreSQL, MongoDB, Redis)
 - Security (Authentication, Authorization, Secrets)
@@ -36,11 +36,12 @@ Backend Engineering Kit (BEK) is a CLI tool and knowledge base designed to help 
 - **go-minimal** - Standard library HTTP server
 
 ### 🤖 AI Adapter Templates
-Pre-configured prompts for AI coding assistants:
-- GitHub Copilot
-- Cursor
-- Claude
-- OpenAI Codex
+22 pre-configured prompts for AI coding assistants:
+- GitHub Copilot, Cursor, Claude, Codex
+- Windsurf, Cline, Continue, Aider
+- Zed, OpenCode, Goose, Gemini
+- Amazon Q, Tabnine, Codeium, Cody
+- Junie, Replit, Devin, TRAE, and more
 
 ## Quick Start
 

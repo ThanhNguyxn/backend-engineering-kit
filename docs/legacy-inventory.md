@@ -6,10 +6,10 @@ This document inventories all legacy assets from the original backend-engineerin
 
 | Asset Type | Location | Count | Status |
 |------------|----------|-------|--------|
-| AI Adapter Templates | `adapters/templates/` | 5 | ✅ Active |
+| AI Adapter Templates | `adapters/templates/` | 22 | ✅ Active |
 | AI Adapter Configs | `adapters/{name}/` | 4 | ✅ Active |
-| Patterns | `.shared/production-backend-kit/patterns/` | 30+ | ✅ Active |
-| Checklists | `.shared/production-backend-kit/checklists/` | 5 | ✅ Active |
+| Patterns | `.shared/production-backend-kit/patterns/` | 45+ | ✅ Active |
+| Checklists | `.shared/production-backend-kit/checklists/` | 6 | ✅ Active |
 
 ---
 

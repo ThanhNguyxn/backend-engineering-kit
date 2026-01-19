@@ -6,7 +6,7 @@
 
 ## Overview
 
-This project uses **Backend Engineering Kit (BEK)** - a production-grade knowledge base with 30+ patterns and 6 checklists for backend development.
+This project uses **Backend Engineering Kit (BEK)** - a production-grade knowledge base with 45+ patterns, 6 checklists, and 22 AI adapter templates for backend development.
 
 ## Core Workflow
 

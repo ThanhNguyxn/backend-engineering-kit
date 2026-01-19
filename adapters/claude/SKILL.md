@@ -1,99 +1,109 @@
----
-name: production-backend-kit
-description: A comprehensive backend engineering skill providing patterns, checklists, and best practices for building production-ready APIs and services.
-version: 1.0.0
-author: ThanhNguyxn
----
+# Production Backend Kit
 
-# Production Backend Kit Skill
+This project uses **Backend Engineering Kit (BEK)** - a production-grade knowledge base with 45+ patterns and 6 checklists for backend development.
 
-This skill provides you with production-grade patterns and checklists for backend engineering.
+## CLI Reference
 
-## Capabilities
+```bash
+# Install globally
+npm install -g production-backend-kit
 
-When this skill is active, you can help with:
+# Verify installation
+bek doctor
 
-### 🎯 API Design
-- RESTful API design patterns
-- Error handling and response structures
-- Pagination, filtering, and sorting
-- Versioning strategies
+# Search for patterns
+bek search "error handling"
+bek search "authentication" --scope security
 
-### 🔒 Security
-- Authentication & Authorization patterns
-- Input validation and sanitization
-- Rate limiting and throttling
-- CORS configuration
+# View pattern details
+bek show api-error-model
 
-### 📊 Database
-- Schema design best practices
-- Query optimization
-- Migration strategies
-- Connection pooling
-
-### 🚀 Performance
-- Caching strategies
-- Async processing
-- Load balancing
-- Monitoring and observability
+# Run quality gate
+bek gate --checklist checklist-api-review
+bek gate --checklist checklist-security-review
+```
 
 ## Available Patterns
 
-Access these patterns in `.shared/production-backend-kit/patterns/`:
+Access patterns in `.shared/production-backend-kit/patterns/`:
 
-| Pattern | File | Description |
-|---------|------|-------------|
-| Error Model | `api.error-model.md` | Standardized error response structure |
-| Pagination | `api.pagination-filter-sort.md` | RESTful pagination, filtering, sorting |
+### API Design
+- `api.error-model.md` - Structured error responses with codes
+- `api.pagination-filter-sort.md` - RESTful pagination patterns
+- `api.versioning.md` - API versioning strategies
+- `api.idempotency.md` - Idempotent request handling
+
+### Security
+- `sec.auth-jwt.md` - JWT authentication patterns
+- `sec.rbac.md` - Role-based access control
+- `sec.rate-limiting.md` - Rate limiting strategies
+- `sec.input-validation.md` - Input sanitization
+
+### Database
+- `db.migrations.md` - Migration strategies
+- `db.indexing.md` - Index optimization
+- `db.connection-pool.md` - Connection pooling
+- `db.transactions.md` - Transaction patterns
+
+### Reliability
+- `rel.circuit-breaker.md` - Circuit breaker pattern
+- `rel.retry-backoff.md` - Exponential backoff
+- `rel.timeouts.md` - Timeout configuration
+- `rel.health-checks.md` - Health check endpoints
+
+### Observability
+- `obs.structured-logging.md` - JSON structured logs
+- `obs.correlation-id.md` - Request tracing
+- `obs.metrics.md` - RED/USE metrics
 
 ## Available Checklists
 
-Access these checklists in `.shared/production-backend-kit/checklists/`:
+| ID | Purpose |
+|----|---------|
+| `checklist-api-review` | API design and implementation review |
+| `checklist-db-review` | Database schema and query review |
+| `checklist-security-review` | Security controls audit |
+| `checklist-reliability-review` | Resilience patterns check |
+| `checklist-multitenancy-review` | Multi-tenant isolation audit |
+| `checklist-prod-readiness` | Pre-deployment checklist |
 
-| Checklist | File | Description |
-|-----------|------|-------------|
-| API Review | `checklist.api-review.md` | Comprehensive API review checklist |
+## Workflow
 
-## Usage
+When implementing backend features:
 
-When asked about backend development, apply these principles:
+1. **Search** for relevant patterns: `bek search "<topic>"`
+2. **Read** the pattern's Solution section
+3. **Apply** all Checklist items
+4. **Avoid** documented Pitfalls
+5. **Validate** with quality gate: `bek gate --checklist <id>`
 
-1. **Always validate input** - Never trust client data
-2. **Use proper HTTP status codes** - 2xx for success, 4xx for client errors, 5xx for server errors
-3. **Implement idempotency** - Especially for POST/PUT operations
-4. **Log everything** - But sanitize sensitive data
-5. **Handle errors gracefully** - Return meaningful error messages
+## Code Standards
 
-## Example Interactions
-
-**User**: "How should I structure my API error responses?"
-
-**Response**: Apply the error model pattern from `api.error-model.md`:
-
+### Error Handling
 ```json
 {
   "error": {
     "code": "VALIDATION_ERROR",
     "message": "Invalid request parameters",
-    "details": [
-      {
-        "field": "email",
-        "message": "Must be a valid email address"
-      }
-    ],
-    "requestId": "req_abc123",
-    "timestamp": "2026-01-14T12:00:00Z"
+    "details": [{"field": "email", "message": "Must be valid email"}],
+    "requestId": "req_abc123"
   }
 }
 ```
 
-**User**: "How do I implement pagination?"
+### HTTP Status Codes
+- `400` - Validation errors
+- `401` - Authentication required
+- `403` - Permission denied
+- `404` - Resource not found
+- `409` - Conflict
+- `429` - Rate limited
+- `500` - Internal error
 
-**Response**: Follow the pagination pattern from `api.pagination-filter-sort.md` using cursor-based or offset-based pagination depending on your use case.
-
-## Integration
-
-This skill integrates with:
-- Database patterns for efficient querying
-- Security patterns for safe data handling
-- Performance patterns for optimized responses
+### Best Practices
+- Always validate input at API boundary
+- Use parameterized queries (no SQL injection)
+- Never log sensitive data (passwords, tokens, PII)
+- Include correlation IDs for tracing
+- Set appropriate timeouts for external calls
+- Use structured logging (JSON format)

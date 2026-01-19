@@ -1,62 +1,98 @@
----
-name: production-backend-kit
-description: Backend engineering patterns and checklists for production APIs
----
+# Production Backend Kit
 
-# Production Backend Kit for Codex
+This project uses **Backend Engineering Kit (BEK)** for production backend patterns.
 
-## Purpose
+## CLI
 
-Provides production-ready patterns for backend API development.
+```bash
+bek search "error handling"    # Find patterns
+bek show api-error-model       # View details
+bek gate --checklist <id>      # Quality gate
+```
 
 ## Core Patterns
 
 ### Error Handling
 
-Use structured error responses:
-- Include error code, message, and details
-- Map to appropriate HTTP status codes
-- Add request ID for tracing
+```json
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid request",
+    "details": [{"field": "email", "message": "Invalid format"}],
+    "requestId": "req_abc123"
+  }
+}
+```
+
+HTTP status codes:
+- `400` Validation errors
+- `401` Auth required
+- `403` Permission denied
+- `404` Not found
+- `409` Conflict
+- `429` Rate limited
+- `500` Server error
 
 ### Pagination
 
-Support both cursor-based and offset-based:
-- Cursor for real-time data
-- Offset for static lists
-- Always return total count and hasMore flag
+Cursor-based (real-time data):
+```json
+{"data": [], "pagination": {"cursor": "abc", "hasMore": true}}
+```
 
-### Validation
+Offset-based (static lists):
+```json
+{"data": [], "pagination": {"total": 100, "page": 1, "hasMore": true}}
+```
+
+### Input Validation
 
 - Validate at API boundary
-- Use schema validation libraries
-- Return field-level error details
+- Use schema validation (Zod, Pydantic, etc.)
+- Return field-level errors
+- Sanitize before database ops
 
-## Quick Reference
+## Security
 
-| Pattern | File |
-|---------|------|
-| Error Model | `patterns/api.error-model.md` |
-| Pagination | `patterns/api.pagination-filter-sort.md` |
+- Never log sensitive data
+- Use parameterized queries
+- Hash passwords (bcrypt/argon2)
+- Implement rate limiting
+- Validate all inputs
 
-| Checklist | File |
-|-----------|------|
-| API Review | `checklists/checklist.api-review.md` |
+## Database
 
-## Usage
+- Use connection pooling
+- Add proper indexes
+- Use transactions for multi-step ops
+- Include timestamps
 
-When generating backend code:
-1. Apply error handling patterns
-2. Include input validation  
-3. Use proper HTTP methods and status codes
-4. Add appropriate logging
-5. Consider security implications
+## Reliability
+
+- Set timeouts for external calls
+- Use circuit breakers
+- Implement retries with backoff
+- Add health checks
+
+## Checklists
+
+| ID | Purpose |
+|----|---------|
+| `checklist-api-review` | API review |
+| `checklist-db-review` | Database review |
+| `checklist-security-review` | Security audit |
+| `checklist-reliability-review` | Resilience |
+| `checklist-prod-readiness` | Pre-deploy |
 
 ## Best Practices
 
-- ✅ Use consistent naming conventions
-- ✅ Document all endpoints
-- ✅ Write tests for all paths
-- ✅ Handle edge cases
-- ❌ Never log sensitive data
-- ❌ Never trust client input
-- ❌ Never expose internal errors
+✅ Validate all inputs
+✅ Use structured logging
+✅ Include correlation IDs
+✅ Document with OpenAPI
+✅ Write tests for edge cases
+
+❌ Never log passwords/tokens
+❌ Never trust client input
+❌ Never expose internal errors

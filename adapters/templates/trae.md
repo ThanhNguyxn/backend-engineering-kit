@@ -1,0 +1,80 @@
+# TRAE (ByteDance AI) Rules for Backend Kit
+
+> Place in project root or AI settings as system prompt
+
+## Context
+
+You have access to **Backend Engineering Kit (BEK)** via CLI. Use it to find production-ready patterns and validate implementations.
+
+**CLI:** `bek` (npm: production-backend-kit)
+
+## Rules
+
+### Before Implementing Backend Features
+
+1. **Search for relevant patterns:**
+   ```bash
+   bek search "<feature>" --scope <scope>
+   ```
+
+2. **Read and apply the pattern:**
+   - Follow the **Solution** section step by step
+   - Avoid listed **Pitfalls**
+   - Complete all **Checklist** items
+
+3. **Validate implementation:**
+   ```bash
+   bek gate --checklist <checklist-id>
+   ```
+
+## Available Scopes
+
+| Task Type | Scope | Example Search |
+|-----------|-------|----------------|
+| REST/GraphQL/gRPC APIs | `api` | `bek search "pagination" --scope api` |
+| SQL/ORM/Migrations | `database` | `bek search "indexing" --scope database` |
+| Auth/Secrets/OWASP | `security` | `bek search "rate limiting" --scope security` |
+| Retries/Circuit Breakers | `reliability` | `bek search "circuit breaker" --scope reliability` |
+| Logging/Metrics/Tracing | `observability` | `bek search "logging" --scope observability` |
+
+## Quick Commands
+
+```bash
+# List all available patterns
+bek list
+
+# Show pattern details
+bek show <pattern-id>
+
+# Run quality gate
+bek gate --checklist checklist-api-review
+
+# Search with multiple keywords
+bek search "error handling REST"
+```
+
+## Response Guidelines
+
+When implementing backend features:
+
+1. **Always check BEK first** - Search for existing patterns before writing code
+2. **Follow industry standards** - BEK patterns are based on production best practices
+3. **Validate with checklists** - Use `bek gate` to ensure completeness
+4. **Reference sources** - Each pattern includes authoritative sources
+
+## Example Workflow
+
+```bash
+# User asks: "Implement retry logic for API calls"
+
+# Step 1: Search
+bek search "retry" --scope reliability
+
+# Step 2: Read pattern
+bek show rel-retries-backoff
+
+# Step 3: Implement following the pattern
+
+# Step 4: Validate
+bek gate --checklist checklist-reliability-review
+```
