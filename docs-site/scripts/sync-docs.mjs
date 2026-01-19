@@ -12,7 +12,6 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync, unlinkSync, rmSync } from 'fs';
 import { join, dirname, basename, relative, extname } from 'path';
 import { fileURLToPath } from 'url';
-import { globSync } from 'fs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '../..');
