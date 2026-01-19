@@ -1,0 +1,1 @@
+{"version":3,"file":"remove.d.ts","sourceRoot":"","sources":["../../src/commands/remove.ts"],"names":[],"mappings":"AAgBA,MAAM,WAAW,aAAa;IAC1B,MAAM,CAAC,EAAE,MAAM,CAAC;IAChB,GAAG,CAAC,EAAE,OAAO,CAAC;IACd,MAAM,CAAC,EAAE,OAAO,CAAC;IACjB,IAAI,CAAC,EAAE,OAAO,CAAC;CAClB;AAiBD;;GAEG;AACH,wBAAsB,aAAa,CAAC,OAAO,GAAE,aAAkB,GAAG,OAAO,CAAC,IAAI,CAAC,CA8I9E"}

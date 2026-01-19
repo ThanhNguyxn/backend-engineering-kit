@@ -13,6 +13,8 @@ import { doctorCommand } from './commands/doctor.js';
 import { initCommand } from './commands/init.js';
 import { lintCommand } from './commands/lint.js';
 import { generateDocsCommand } from './commands/docs.js';
+import { syncCommand } from './commands/sync.js';
+import { removeCommand } from './commands/remove.js';
 import templatesCommand from './commands/templates.js';
 import { setLogLevel } from './lib/logger.js';
 import { wrapCommand, handleError, CLIError } from './lib/errors.js';
@@ -73,6 +75,36 @@ program
     .action(wrapCommand(async (options) => {
         await lintCommand(options);
     }));
+
+// Sync command (update kit files)
+program
+    .command('sync')
+    .alias('update')
+    .description('Update BEK kit files in existing project')
+    .option('--target <path>', 'Target directory', '.')
+    .option('--dry-run', 'Show what would change without applying')
+    .option('--force', 'Apply changes without confirmation')
+    .option('--backup', 'Create backup before syncing (default: true)')
+    .option('--no-backup', 'Skip backup')
+    .option('--json', 'Output as JSON')
+    .action(wrapCommand(async (options) => {
+        await syncCommand(options);
+    }));
+
+// Remove command (clean uninstall)
+program
+    .command('remove')
+    .alias('clean')
+    .alias('uninstall')
+    .description('Remove BEK kit files from project')
+    .option('--target <path>', 'Target directory', '.')
+    .option('-y, --yes', 'Skip confirmation prompt')
+    .option('--dry-run', 'Show what would be removed without applying')
+    .option('--json', 'Output as JSON')
+    .action(wrapCommand(async (options) => {
+        await removeCommand(options);
+    }));
+
 
 // Build database command
 program
