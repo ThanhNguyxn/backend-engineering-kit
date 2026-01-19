@@ -236,7 +236,10 @@ function syncDocs(options = {}) {
             if (check) {
                 if (existsSync(destPath)) {
                     const existing = readFileSync(destPath, 'utf-8');
-                    if (existing !== content) {
+                    // Normalize line endings for cross-platform comparison
+                    const normalizedExisting = existing.replace(/\r\n/g, '\n');
+                    const normalizedContent = content.replace(/\r\n/g, '\n');
+                    if (normalizedExisting !== normalizedContent) {
                         changes.push({ file: destRelative, status: 'modified' });
                     }
                 } else {
