@@ -5,6 +5,10 @@ on:
     branches: [main]
     paths:
       - "docs-site/**"
+      - "docs/**"
+      - "CONTRIBUTING.md"
+      - "SECURITY.md"
+      - "CHANGELOG.md"
       - ".github/workflows/docs.yml"
   workflow_dispatch:
 
@@ -32,6 +36,10 @@ jobs:
       - name: Install dependencies
         working-directory: docs-site
         run: npm install
+
+      - name: Sync docs from source
+        working-directory: docs-site
+        run: npm run sync:docs
 
       - name: Build site
         working-directory: docs-site

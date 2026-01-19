@@ -1,0 +1,43 @@
+{
+    "sources": [
+        {
+            "glob": "docs/*.md",
+            "dest": "reference",
+            "description": "Architecture and design docs"
+        },
+        {
+            "glob": "CONTRIBUTING.md",
+            "dest": "guides",
+            "rename": "contributing.md",
+            "description": "Contributing guide"
+        },
+        {
+            "glob": "SECURITY.md",
+            "dest": "guides",
+            "rename": "security.md",
+            "description": "Security policy"
+        },
+        {
+            "glob": "CHANGELOG.md",
+            "dest": "reference",
+            "rename": "changelog.md",
+            "description": "Release changelog"
+        }
+    ],
+    "generatedMarker": "<!-- AUTO-GENERATED: Do not edit directly. Source: {source} -->",
+    "preserveManual": [
+        "index.mdx",
+        "guides/introduction.md",
+        "guides/installation.md",
+        "guides/quickstart.md",
+        "guides/how-it-works.md",
+        "guides/add-template.md",
+        "cli/commands.md",
+        "patterns/gallery.md",
+        "templates/gallery.md",
+        "templates/node-minimal.md",
+        "templates/node-standard.md",
+        "templates/python-fastapi.md",
+        "templates/go-minimal.md"
+    ]
+}
