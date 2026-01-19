@@ -11,6 +11,7 @@ import { normalizeCommand } from './normalize-content.js';
 import { doctorCommand } from './commands/doctor.js';
 import { initCommand } from './commands/init.js';
 import { lintCommand } from './commands/lint.js';
+import { generateDocsCommand } from './commands/docs.js';
 import templatesCommand from './commands/templates.js';
 import { setLogLevel } from './lib/logger.js';
 import { wrapCommand, CLIError } from './lib/errors.js';
@@ -75,6 +76,21 @@ program
     .description('Build the search database from markdown files')
     .action(wrapCommand(async () => {
     await buildDbCommand();
+}));
+// Docs command - generate docs from registry
+const docsCmd = program
+    .command('docs')
+    .description('Documentation tools');
+docsCmd
+    .command('generate')
+    .description('Generate docs from registry.yaml')
+    .option('-o, --output <path>', 'Output directory')
+    .option('--json', 'Output as JSON summary')
+    .action(wrapCommand(async (options) => {
+    await generateDocsCommand({
+        output: options.output,
+        format: options.json ? 'json' : 'markdown',
+    });
 }));
 // Validate command
 program
