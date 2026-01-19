@@ -49,7 +49,7 @@ program
     .command('init')
     .description('Initialize a new Backend Kit project')
     .option('-t, --template <name>', 'Template to use (minimal|standard|advanced)')
-    .option('-p, --preset <name>', 'Use a preset (node-express|node-fastify|node-minimal)')
+    .option('-p, --preset <name>', 'Use a preset (node-express|node-fastify|node-minimal|saas-multitenant-lite)')
     .option('--target <path>', 'Target directory', '.')
     .option('--out <path>', 'Alias for --target')
     .option('--ai <tools>', 'AI adapters to include (claude,cursor,copilot,codex,all)')
