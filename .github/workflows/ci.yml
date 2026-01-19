@@ -57,6 +57,14 @@ jobs:
         working-directory: cli
         run: node dist/index.js doctor || true
 
+      - name: Quality gate - API Review
+        working-directory: cli
+        run: node dist/index.js gate --checklist checklist-api-review || true
+
+      - name: Quality gate - Production Readiness
+        working-directory: cli
+        run: node dist/index.js gate --checklist checklist-prod-readiness || true
+
   package-sanity:
     runs-on: ubuntu-latest
     needs: test
