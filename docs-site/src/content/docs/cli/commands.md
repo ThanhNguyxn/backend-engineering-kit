@@ -129,6 +129,56 @@ bek lint --fix
 bek lint --json
 ```
 
+### `bek sync`
+
+Update kit files in existing project.
+
+```bash
+# Update kit files from current CLI version
+bek sync
+
+# Preview changes without applying
+bek sync --dry-run
+
+# Force update without confirmation
+bek sync --force
+
+# Options
+bek sync [options]
+  --target <path>    Target directory (default: .)
+  --dry-run          Show changes without applying
+  --force            Skip confirmation prompt
+  --backup           Create backup before sync (default: true)
+  --no-backup        Skip backup
+  --json             Output as JSON
+```
+
+Aliases: `bek update`
+
+### `bek remove`
+
+Remove kit files from project.
+
+```bash
+# Remove kit (with confirmation)
+bek remove
+
+# Remove without confirmation
+bek remove --yes
+
+# Preview what would be removed
+bek remove --dry-run
+
+# Options
+bek remove [options]
+  --target <path>    Target directory (default: .)
+  -y, --yes          Skip confirmation prompt
+  --dry-run          Show what would be removed
+  --json             Output as JSON
+```
+
+Aliases: `bek clean`, `bek uninstall`
+
 ## Exit Codes
 
 | Code | Meaning |
