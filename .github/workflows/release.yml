@@ -100,9 +100,8 @@ jobs:
             echo "::warning::Version ${{ steps.version.outputs.version }} already published to npm, skipping"
             exit 0
           fi
-          npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # Uses OIDC Trusted Publisher - no NPM_TOKEN needed
+          npm publish --access public --provenance
 
       - name: Dry run summary
         if: github.event.inputs.dry_run == 'true'
