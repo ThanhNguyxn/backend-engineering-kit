@@ -344,7 +344,7 @@ bek init --ai claude --target ./my-project
 
 ## 📋 Patterns & Checklists
 
-### Patterns (25+)
+### Patterns (30+)
 
 | Category | Patterns |
 |----------|----------|

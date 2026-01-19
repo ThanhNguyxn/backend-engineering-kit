@@ -1,6 +1,7 @@
 ---
 title: "Legacy Assets Inventory"
-description: "This document inventories all legacy assets from the original backend-engineering-kit that are preserved for backward compatibility."
+description: "This document inventories all legacy assets from the original backend-engineering-kit that are preserved for backward compatibility.
+"
 generated: true
 ---
 
@@ -21,7 +22,7 @@ This document inventories all legacy assets from the original backend-engineerin
 |------------|----------|-------|--------|
 | AI Adapter Templates | `adapters/templates/` | 5 | ✅ Active |
 | AI Adapter Configs | `adapters/{name}/` | 4 | ✅ Active |
-| Patterns | `.shared/production-backend-kit/patterns/` | 25+ | ✅ Active |
+| Patterns | `.shared/production-backend-kit/patterns/` | 30+ | ✅ Active |
 | Checklists | `.shared/production-backend-kit/checklists/` | 5 | ✅ Active |
 
 ---

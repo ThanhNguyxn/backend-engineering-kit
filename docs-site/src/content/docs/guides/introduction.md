@@ -12,7 +12,7 @@ Backend Engineering Kit (BEK) is a CLI tool and knowledge base designed to help 
 ## What's Included
 
 ### 📚 Pattern Library
-25+ battle-tested patterns covering:
+30+ battle-tested patterns covering:
 - API Design (REST, GraphQL, gRPC)
 - Database Operations (PostgreSQL, MongoDB, Redis)
 - Security (Authentication, Authorization, Secrets)
@@ -20,11 +20,12 @@ Backend Engineering Kit (BEK) is a CLI tool and knowledge base designed to help 
 - Observability (Logging, Metrics, Tracing)
 
 ### ✅ Production Checklists
-5 comprehensive checklists to ensure your service is production-ready:
+6 comprehensive checklists to ensure your service is production-ready:
 - API Review Checklist
 - Database Review Checklist
 - Security Review Checklist
 - Reliability Review Checklist
+- Multitenancy Review Checklist
 - Production Readiness Checklist
 
 ### 🚀 Project Templates

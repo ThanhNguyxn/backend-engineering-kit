@@ -5,7 +5,7 @@
 ## Knowledge Base
 
 This project has **Backend Engineering Kit (BEK)** with:
-- 25+ production patterns
+- 30+ production patterns
 - 5 quality checklists
 - Project templates
 
