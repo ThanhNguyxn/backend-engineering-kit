@@ -6,6 +6,7 @@ import logger from '../lib/logger.js';
 import { createConfigFile, BekConfig } from '../lib/config.js';
 import { CLIError } from '../lib/errors.js';
 import { getPreset, getPresetNames, copyPresetFiles, PRESETS } from '../lib/presets.js';
+import { createManifest, saveManifest, getCliVersion, BACKEND_KIT_DIR } from '../lib/manifest.js';
 
 interface Template {
     name: string;
@@ -316,8 +317,17 @@ export async function initCommand(options: InitOptions = {}): Promise<void> {
         if (!dryRun) {
             const configPath = createConfigFile(target, config, 'json');
             logger.log(`  ${chalk.green('+')} ${path.relative(target, configPath)}`);
+
+            // Write manifest for sync/remove support
+            const manifest = createManifest(getCliVersion(), {
+                preset: options.preset,
+                files: [...copied, 'bek.config.json'],
+            });
+            saveManifest(target, manifest);
+            logger.log(`  ${chalk.green('+')} ${BACKEND_KIT_DIR}/.bek-manifest.json`);
         } else {
             logger.log(`  ${chalk.green('+')} bek.config.json`);
+            logger.log(`  ${chalk.green('+')} ${BACKEND_KIT_DIR}/.bek-manifest.json`);
         }
 
         logger.newline();
