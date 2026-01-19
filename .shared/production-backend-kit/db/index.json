@@ -1,37 +1,58 @@
 {
-  "documentCount": 30,
-  "nextId": 30,
+  "documentCount": 51,
+  "nextId": 51,
   "documentIds": {
     "0": "api-error-model",
     "1": "api-idempotency-keys",
-    "2": "api-pagination-filter-sort",
-    "3": "api-request-validation",
-    "4": "api-versioning",
-    "5": "api-webhooks-signatures",
-    "6": "db-indexing-basics",
-    "7": "db-migrations-strategy",
-    "8": "db-n-plus-1-avoid",
-    "9": "db-schema-constraints",
-    "10": "db-soft-delete-audit",
-    "11": "db-transactions-boundaries",
-    "12": "obs-correlation-id",
-    "13": "obs-metrics-red-use",
-    "14": "obs-structured-logging",
-    "15": "rel-circuit-breaker",
-    "16": "rel-dlq-basics",
-    "17": "rel-outbox-pattern",
-    "18": "rel-retries-backoff",
-    "19": "rel-timeouts",
-    "20": "sec-authn-authz-boundary",
-    "21": "sec-password-storage",
-    "22": "sec-rate-limiting",
-    "23": "sec-secrets-management",
-    "24": "sec-threat-checklist",
-    "25": "checklist-api-review",
-    "26": "checklist-db-review",
-    "27": "checklist-prod-readiness",
-    "28": "checklist-reliability-review",
-    "29": "checklist-security-review"
+    "2": "api-idempotency",
+    "3": "api-pagination-filter-sort",
+    "4": "api-pagination",
+    "5": "api-request-validation",
+    "6": "api-versioning",
+    "7": "api-webhooks-signatures",
+    "8": "db-connection-pooling",
+    "9": "db-indexing-basics",
+    "10": "db-migrations-strategy",
+    "11": "db-n-plus-1-avoid",
+    "12": "db-schema-constraints",
+    "13": "db-soft-delete-audit",
+    "14": "db-transactions-boundaries",
+    "15": "obs-alerting-strategies",
+    "16": "obs-correlation-id",
+    "17": "obs-distributed-tracing",
+    "18": "obs-metrics-red-use",
+    "19": "obs-structured-logging",
+    "20": "rel-bulkhead-pattern",
+    "21": "rel-caching-strategies",
+    "22": "rel-circuit-breaker",
+    "23": "rel-dlq-basics",
+    "24": "rel-graceful-shutdown",
+    "25": "rel-health-checks",
+    "26": "rel-load-shedding",
+    "27": "rel-outbox-pattern",
+    "28": "rel-retries-backoff",
+    "29": "rel-timeout-strategies",
+    "30": "rel-timeouts",
+    "31": "sec-api-security-headers",
+    "32": "sec-authn-authz-boundary",
+    "33": "sec.billing-integration",
+    "34": "sec.data-isolation",
+    "35": "api-graphql-security",
+    "36": "sec-input-validation",
+    "37": "sec-jwt-best-practices",
+    "38": "sec.multitenancy-basics",
+    "39": "sec-password-storage",
+    "40": "sec-rate-limiting",
+    "41": "sec.rbac-boundaries",
+    "42": "sec-secrets-management",
+    "43": "sec.tenant-context",
+    "44": "sec-threat-checklist",
+    "45": "checklist-api-review",
+    "46": "checklist-db-review",
+    "47": "checklist-multitenancy-review",
+    "48": "checklist-prod-readiness",
+    "49": "checklist-reliability-review",
+    "50": "checklist-security-review"
   },
   "fieldIds": {
     "title": 0,
@@ -43,8 +64,8 @@
   },
   "fieldLength": {
     "0": [
-      3,
-      5,
+      6,
+      6,
       1,
       1,
       1,
@@ -52,54 +73,54 @@
     ],
     "1": [
       2,
-      4,
+      6,
       1,
       1,
       1,
       1
     ],
     "2": [
-      4,
+      3,
       5,
-      1,
+      3,
       1,
       1,
       1
     ],
     "3": [
-      2,
       4,
+      6,
       1,
       1,
       1,
       1
     ],
     "4": [
-      2,
+      3,
       5,
-      1,
+      3,
       1,
       1,
       1
     ],
     "5": [
-      2,
-      4,
+      3,
+      5,
       1,
       1,
       1,
       1
     ],
     "6": [
-      3,
-      5,
-      4,
+      2,
+      6,
+      1,
       1,
       1,
       1
     ],
     "7": [
-      3,
+      2,
       4,
       1,
       1,
@@ -107,48 +128,48 @@
       1
     ],
     "8": [
-      4,
-      4,
-      1,
+      3,
+      6,
+      3,
       1,
       1,
       1
     ],
     "9": [
       3,
+      6,
       4,
-      3,
       1,
       1,
       1
     ],
     "10": [
-      4,
-      5,
+      3,
+      6,
       1,
       1,
       1,
       1
     ],
     "11": [
-      2,
       4,
-      1,
-      1,
-      1,
-      1
-    ],
-    "12": [
-      2,
       5,
       1,
       1,
       1,
       1
     ],
-    "13": [
+    "12": [
       3,
       4,
+      3,
+      1,
+      1,
+      1
+    ],
+    "13": [
+      4,
+      5,
       1,
       1,
       1,
@@ -156,14 +177,14 @@
     ],
     "14": [
       2,
-      4,
+      5,
       1,
       1,
       1,
       1
     ],
     "15": [
-      2,
+      4,
       6,
       1,
       1,
@@ -172,14 +193,14 @@
     ],
     "16": [
       4,
-      5,
+      6,
       1,
       1,
       1,
       1
     ],
     "17": [
-      2,
+      4,
       5,
       1,
       1,
@@ -188,37 +209,13 @@
     ],
     "18": [
       3,
-      4,
+      5,
       1,
       1,
       1,
       1
     ],
     "19": [
-      1,
-      4,
-      1,
-      1,
-      1,
-      1
-    ],
-    "20": [
-      4,
-      6,
-      1,
-      1,
-      1,
-      1
-    ],
-    "21": [
-      2,
-      4,
-      1,
-      1,
-      1,
-      1
-    ],
-    "22": [
       2,
       5,
       1,
@@ -226,17 +223,41 @@
       1,
       1
     ],
-    "23": [
+    "20": [
       2,
+      6,
+      1,
+      1,
+      1,
+      1
+    ],
+    "21": [
+      3,
+      6,
+      1,
+      1,
+      1,
+      1
+    ],
+    "22": [
+      2,
+      7,
+      1,
+      1,
+      1,
+      1
+    ],
+    "23": [
       4,
+      5,
       1,
       1,
       1,
       1
     ],
     "24": [
-      3,
-      4,
+      2,
+      5,
       1,
       1,
       1,
@@ -244,29 +265,157 @@
     ],
     "25": [
       3,
-      4,
+      6,
       1,
       1,
       1,
       1
     ],
     "26": [
+      5,
+      7,
       3,
-      4,
-      1,
       1,
       1,
       1
     ],
     "27": [
-      3,
-      4,
+      2,
+      5,
       1,
       1,
       1,
       1
     ],
     "28": [
+      4,
+      5,
+      1,
+      1,
+      1,
+      1
+    ],
+    "29": [
+      5,
+      5,
+      3,
+      1,
+      1,
+      1
+    ],
+    "30": [
+      1,
+      5,
+      1,
+      1,
+      1,
+      1
+    ],
+    "31": [
+      3,
+      5,
+      1,
+      1,
+      1,
+      1
+    ],
+    "32": [
+      4,
+      6,
+      1,
+      1,
+      1,
+      1
+    ],
+    "33": [
+      4,
+      4,
+      4,
+      1,
+      1,
+      1
+    ],
+    "34": [
+      3,
+      4,
+      4,
+      1,
+      1,
+      1
+    ],
+    "35": [
+      4,
+      7,
+      3,
+      1,
+      1,
+      1
+    ],
+    "36": [
+      4,
+      5,
+      3,
+      1,
+      1,
+      1
+    ],
+    "37": [
+      4,
+      5,
+      1,
+      1,
+      1,
+      1
+    ],
+    "38": [
+      3,
+      4,
+      4,
+      1,
+      1,
+      1
+    ],
+    "39": [
+      2,
+      6,
+      1,
+      1,
+      1,
+      1
+    ],
+    "40": [
+      2,
+      6,
+      1,
+      1,
+      1,
+      1
+    ],
+    "41": [
+      3,
+      4,
+      4,
+      1,
+      1,
+      1
+    ],
+    "42": [
+      2,
+      5,
+      1,
+      1,
+      1,
+      1
+    ],
+    "43": [
+      3,
+      4,
+      4,
+      1,
+      1,
+      1
+    ],
+    "44": [
       3,
       4,
       1,
@@ -274,9 +423,49 @@
       1,
       1
     ],
-    "29": [
+    "45": [
       3,
+      5,
+      1,
+      1,
+      1,
+      1
+    ],
+    "46": [
+      3,
+      6,
+      1,
+      1,
+      1,
+      1
+    ],
+    "47": [
       4,
+      5,
+      1,
+      1,
+      1,
+      1
+    ],
+    "48": [
+      3,
+      5,
+      1,
+      1,
+      1,
+      1
+    ],
+    "49": [
+      3,
+      6,
+      1,
+      1,
+      1,
+      1
+    ],
+    "50": [
+      3,
+      5,
       1,
       1,
       1,
@@ -284,9 +473,9 @@
     ]
   },
   "averageFieldLength": [
-    2.6999999999999997,
-    4.433333333333332,
-    1.1666666666666667,
+    3.1372549019607843,
+    5.294117647058826,
+    1.6666666666666667,
     1,
     1,
     1
@@ -294,11 +483,11 @@
   "storedFields": {
     "0": {
       "id": "api-error-model",
-      "title": "API Error Model",
+      "title": "API Error Model (RFC 7807)",
       "type": "pattern",
       "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/api.error-model.md",
       "level": "beginner",
-      "tags": "api error-handling rest http",
+      "tags": "api error-handling rest http rfc7807",
       "stacks": "all"
     },
     "1": {
@@ -307,37 +496,55 @@
       "type": "pattern",
       "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/api.idempotency-keys.md",
       "level": "intermediate",
-      "tags": "api idempotency reliability payments",
+      "tags": "api idempotency reliability payments distributed-systems",
       "stacks": "all"
     },
     "2": {
+      "id": "api-idempotency",
+      "title": "Idempotent API Design",
+      "type": "pattern",
+      "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/api.idempotency.md",
+      "level": "intermediate",
+      "tags": "api idempotency reliability retry consistency",
+      "stacks": "nodejs python go"
+    },
+    "3": {
       "id": "api-pagination-filter-sort",
-      "title": "API Pagination, Filter & Sort",
+      "title": "API Pagination, Filtering & Sorting",
       "type": "pattern",
       "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/api.pagination-filter-sort.md",
       "level": "intermediate",
-      "tags": "api pagination filtering sorting rest",
-      "stacks": "all"
-    },
-    "3": {
-      "id": "api-request-validation",
-      "title": "Request Validation",
-      "type": "pattern",
-      "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/api.request-validation.md",
-      "level": "beginner",
-      "tags": "api validation security input",
+      "tags": "api pagination filtering sorting rest cursor",
       "stacks": "all"
     },
     "4": {
+      "id": "api-pagination",
+      "title": "API Pagination Patterns",
+      "type": "pattern",
+      "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/api.pagination.md",
+      "level": "intermediate",
+      "tags": "api pagination performance cursor offset",
+      "stacks": "nodejs python go"
+    },
+    "5": {
+      "id": "api-request-validation",
+      "title": "Request Validation & Sanitization",
+      "type": "pattern",
+      "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/api.request-validation.md",
+      "level": "beginner",
+      "tags": "api validation security input owasp",
+      "stacks": "all"
+    },
+    "6": {
       "id": "api-versioning",
       "title": "API Versioning",
       "type": "pattern",
       "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/api.versioning.md",
       "level": "intermediate",
-      "tags": "api versioning rest backward-compatibility",
+      "tags": "api versioning rest backward-compatibility evolution",
       "stacks": "all"
     },
-    "5": {
+    "7": {
       "id": "api-webhooks-signatures",
       "title": "Webhook Signatures",
       "type": "pattern",
@@ -346,34 +553,43 @@
       "tags": "api webhooks security signatures",
       "stacks": "all"
     },
-    "6": {
+    "8": {
+      "id": "db-connection-pooling",
+      "title": "Database Connection Pooling",
+      "type": "pattern",
+      "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/db.connection-pooling.md",
+      "level": "intermediate",
+      "tags": "database connection-pool performance postgresql mysql",
+      "stacks": "postgresql mysql sqlserver"
+    },
+    "9": {
       "id": "db-indexing-basics",
       "title": "Database Indexing Basics",
       "type": "pattern",
       "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/db.indexing-basics.md",
       "level": "intermediate",
-      "tags": "database indexing performance query-optimization",
+      "tags": "database indexing performance query-optimization explain",
       "stacks": "postgresql mysql sqlserver mongodb"
     },
-    "7": {
+    "10": {
       "id": "db-migrations-strategy",
       "title": "Database Migrations Strategy",
       "type": "pattern",
       "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/db.migrations-strategy.md",
       "level": "intermediate",
-      "tags": "database migrations schema devops",
+      "tags": "database migrations schema devops zero-downtime",
       "stacks": "all"
     },
-    "8": {
+    "11": {
       "id": "db-n-plus-1-avoid",
       "title": "Avoiding N+1 Query Problem",
       "type": "pattern",
       "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/db.n-plus-1-avoid.md",
       "level": "intermediate",
-      "tags": "database performance orm optimization",
+      "tags": "database performance orm optimization dataloader",
       "stacks": "all"
     },
-    "9": {
+    "12": {
       "id": "db-schema-constraints",
       "title": "Database Schema Constraints",
       "type": "pattern",
@@ -382,7 +598,7 @@
       "tags": "database schema constraints integrity",
       "stacks": "postgresql mysql sqlserver"
     },
-    "10": {
+    "13": {
       "id": "db-soft-delete-audit",
       "title": "Soft Delete & Audit Trail",
       "type": "pattern",
@@ -391,52 +607,88 @@
       "tags": "database soft-delete auditing compliance",
       "stacks": "all"
     },
-    "11": {
+    "14": {
       "id": "db-transactions-boundaries",
       "title": "Transaction Boundaries",
       "type": "pattern",
       "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/db.transactions-boundaries.md",
       "level": "intermediate",
-      "tags": "database transactions acid consistency",
+      "tags": "database transactions acid consistency isolation",
       "stacks": "all"
     },
-    "12": {
+    "15": {
+      "id": "obs-alerting-strategies",
+      "title": "Alerting Strategies & Best Practices",
+      "type": "pattern",
+      "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/obs.alerting-strategies.md",
+      "level": "intermediate",
+      "tags": "observability alerting monitoring sre on-call",
+      "stacks": "all"
+    },
+    "16": {
       "id": "obs-correlation-id",
-      "title": "Correlation ID",
+      "title": "Correlation ID & Distributed Tracing",
       "type": "pattern",
       "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/obs.correlation-id.md",
       "level": "beginner",
-      "tags": "observability tracing debugging distributed-systems",
+      "tags": "observability tracing debugging distributed-systems opentelemetry",
       "stacks": "all"
     },
-    "13": {
+    "17": {
+      "id": "obs-distributed-tracing",
+      "title": "Distributed Tracing with OpenTelemetry",
+      "type": "pattern",
+      "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/obs.distributed-tracing.md",
+      "level": "intermediate",
+      "tags": "observability tracing opentelemetry debugging microservices",
+      "stacks": "all"
+    },
+    "18": {
       "id": "obs-metrics-red-use",
       "title": "RED & USE Metrics",
       "type": "pattern",
       "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/obs.metrics-red-use.md",
       "level": "intermediate",
-      "tags": "observability metrics monitoring sre",
+      "tags": "observability metrics monitoring sre prometheus",
       "stacks": "all"
     },
-    "14": {
+    "19": {
       "id": "obs-structured-logging",
       "title": "Structured Logging",
       "type": "pattern",
       "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/obs.structured-logging.md",
       "level": "beginner",
-      "tags": "observability logging json debugging",
+      "tags": "observability logging json debugging elk",
       "stacks": "all"
     },
-    "15": {
+    "20": {
+      "id": "rel-bulkhead-pattern",
+      "title": "Bulkhead Pattern",
+      "type": "pattern",
+      "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/rel.bulkhead-pattern.md",
+      "level": "intermediate",
+      "tags": "reliability bulkhead isolation fault-tolerance resilience",
+      "stacks": "all"
+    },
+    "21": {
+      "id": "rel-caching-strategies",
+      "title": "Caching Strategies & Patterns",
+      "type": "pattern",
+      "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/rel.caching-strategies.md",
+      "level": "intermediate",
+      "tags": "reliability caching performance redis distributed-systems",
+      "stacks": "all"
+    },
+    "22": {
       "id": "rel-circuit-breaker",
       "title": "Circuit Breaker",
       "type": "pattern",
       "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/rel.circuit-breaker.md",
       "level": "advanced",
-      "tags": "reliability circuit-breaker resilience fault-tolerance",
+      "tags": "reliability circuit-breaker resilience fault-tolerance bulkhead",
       "stacks": "all"
     },
-    "16": {
+    "23": {
       "id": "rel-dlq-basics",
       "title": "Dead Letter Queue Basics",
       "type": "pattern",
@@ -445,7 +697,34 @@
       "tags": "reliability dlq messaging error-handling",
       "stacks": "all"
     },
-    "17": {
+    "24": {
+      "id": "rel-graceful-shutdown",
+      "title": "Graceful Shutdown",
+      "type": "pattern",
+      "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/rel.graceful-shutdown.md",
+      "level": "intermediate",
+      "tags": "reliability shutdown kubernetes devops deployment",
+      "stacks": "all"
+    },
+    "25": {
+      "id": "rel-health-checks",
+      "title": "Health Check Endpoints",
+      "type": "pattern",
+      "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/rel.health-checks.md",
+      "level": "intermediate",
+      "tags": "reliability health-check monitoring kubernetes devops",
+      "stacks": "all"
+    },
+    "26": {
+      "id": "rel-load-shedding",
+      "title": "Load Shedding and Graceful Degradation",
+      "type": "pattern",
+      "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/rel.load-shedding.md",
+      "level": "advanced",
+      "tags": "reliability load-shedding graceful-degradation resilience overload",
+      "stacks": "nodejs python go"
+    },
+    "27": {
       "id": "rel-outbox-pattern",
       "title": "Outbox Pattern",
       "type": "pattern",
@@ -454,25 +733,43 @@
       "tags": "reliability outbox eventual-consistency distributed",
       "stacks": "all"
     },
-    "18": {
+    "28": {
       "id": "rel-retries-backoff",
-      "title": "Retries with Backoff",
+      "title": "Retries with Exponential Backoff",
       "type": "pattern",
       "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/rel.retries-backoff.md",
       "level": "intermediate",
-      "tags": "reliability retries backoff resilience",
+      "tags": "reliability retries backoff resilience jitter",
       "stacks": "all"
     },
-    "19": {
+    "29": {
+      "id": "rel-timeout-strategies",
+      "title": "Timeout Strategies and Deadline Propagation",
+      "type": "pattern",
+      "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/rel.timeout-strategies.md",
+      "level": "intermediate",
+      "tags": "reliability timeout deadline resilience latency",
+      "stacks": "nodejs python go"
+    },
+    "30": {
       "id": "rel-timeouts",
       "title": "Timeouts",
       "type": "pattern",
       "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/rel.timeouts.md",
       "level": "intermediate",
-      "tags": "reliability timeouts resilience latency",
+      "tags": "reliability timeouts resilience latency sla",
       "stacks": "all"
     },
-    "20": {
+    "31": {
+      "id": "sec-api-security-headers",
+      "title": "HTTP Security Headers",
+      "type": "pattern",
+      "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/sec.api-security-headers.md",
+      "level": "beginner",
+      "tags": "security http headers csp cors",
+      "stacks": "all"
+    },
+    "32": {
       "id": "sec-authn-authz-boundary",
       "title": "Authentication vs Authorization Boundary",
       "type": "pattern",
@@ -481,34 +778,106 @@
       "tags": "security authentication authorization rbac access-control",
       "stacks": "all"
     },
-    "21": {
+    "33": {
+      "id": "sec.billing-integration",
+      "title": "Billing/Stripe Integration Lite",
+      "type": "pattern",
+      "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/sec.billing-integration.md",
+      "level": "intermediate",
+      "tags": "security billing stripe webhooks",
+      "stacks": "nodejs python go all"
+    },
+    "34": {
+      "id": "sec.data-isolation",
+      "title": "Data Isolation Strategies",
+      "type": "pattern",
+      "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/sec.data-isolation.md",
+      "level": "advanced",
+      "tags": "security multitenancy database rls",
+      "stacks": "nodejs python go all"
+    },
+    "35": {
+      "id": "api-graphql-security",
+      "title": "GraphQL Security Best Practices",
+      "type": "pattern",
+      "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/sec.graphql-security.md",
+      "level": "intermediate",
+      "tags": "security graphql api query-complexity depth-limit",
+      "stacks": "graphql apollo nodejs"
+    },
+    "36": {
+      "id": "sec-input-validation",
+      "title": "Input Validation and Sanitization",
+      "type": "pattern",
+      "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/sec.input-validation.md",
+      "level": "intermediate",
+      "tags": "security validation sanitization xss injection",
+      "stacks": "nodejs python go"
+    },
+    "37": {
+      "id": "sec-jwt-best-practices",
+      "title": "JWT Security Best Practices",
+      "type": "pattern",
+      "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/sec.jwt-best-practices.md",
+      "level": "intermediate",
+      "tags": "security jwt authentication tokens oauth",
+      "stacks": "all"
+    },
+    "38": {
+      "id": "sec.multitenancy-basics",
+      "title": "Multi-Tenancy Basics",
+      "type": "pattern",
+      "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/sec.multitenancy-basics.md",
+      "level": "intermediate",
+      "tags": "security multitenancy saas tenant",
+      "stacks": "nodejs python go all"
+    },
+    "39": {
       "id": "sec-password-storage",
       "title": "Password Storage",
       "type": "pattern",
       "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/sec.password-storage.md",
       "level": "intermediate",
-      "tags": "security passwords hashing authentication",
+      "tags": "security passwords hashing authentication argon2 bcrypt",
       "stacks": "all"
     },
-    "22": {
+    "40": {
       "id": "sec-rate-limiting",
       "title": "Rate Limiting",
       "type": "pattern",
       "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/sec.rate-limiting.md",
       "level": "intermediate",
-      "tags": "security rate-limiting ddos availability",
+      "tags": "security rate-limiting ddos availability redis",
       "stacks": "all"
     },
-    "23": {
+    "41": {
+      "id": "sec.rbac-boundaries",
+      "title": "RBAC & Authorization Boundaries",
+      "type": "pattern",
+      "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/sec.rbac-boundaries.md",
+      "level": "intermediate",
+      "tags": "security rbac authorization permissions",
+      "stacks": "nodejs python go all"
+    },
+    "42": {
       "id": "sec-secrets-management",
       "title": "Secrets Management",
       "type": "pattern",
       "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/sec.secrets-management.md",
       "level": "intermediate",
-      "tags": "security secrets configuration devops",
+      "tags": "security secrets configuration devops vault",
       "stacks": "all"
     },
-    "24": {
+    "43": {
+      "id": "sec.tenant-context",
+      "title": "Tenant Context Propagation",
+      "type": "pattern",
+      "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/patterns/sec.tenant-context.md",
+      "level": "intermediate",
+      "tags": "security multitenancy context async",
+      "stacks": "nodejs python go all"
+    },
+    "44": {
       "id": "sec-threat-checklist",
       "title": "Security Threat Checklist",
       "type": "pattern",
@@ -517,49 +886,58 @@
       "tags": "security owasp threats assessment",
       "stacks": "all"
     },
-    "25": {
+    "45": {
       "id": "checklist-api-review",
       "title": "API Review Checklist",
       "type": "checklist",
       "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/checklists/checklist.api-review.md",
       "level": "intermediate",
-      "tags": "api rest review quality",
+      "tags": "api rest review quality design",
       "stacks": "all"
     },
-    "26": {
+    "46": {
       "id": "checklist-db-review",
       "title": "Database Review Checklist",
       "type": "checklist",
       "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/checklists/checklist.db-review.md",
       "level": "intermediate",
-      "tags": "database schema performance review",
+      "tags": "database schema performance review postgres mysql",
       "stacks": "all"
     },
-    "27": {
+    "47": {
+      "id": "checklist-multitenancy-review",
+      "title": "Multi-Tenancy Review Checklist",
+      "type": "checklist",
+      "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/checklists/checklist.multitenancy-review.md",
+      "level": "advanced",
+      "tags": "checklist multitenancy security saas isolation",
+      "stacks": "all"
+    },
+    "48": {
       "id": "checklist-prod-readiness",
       "title": "Production Readiness Checklist",
       "type": "checklist",
       "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/checklists/checklist.prod-readiness.md",
       "level": "intermediate",
-      "tags": "production deployment readiness launch",
+      "tags": "production deployment readiness launch sre",
       "stacks": "all"
     },
-    "28": {
+    "49": {
       "id": "checklist-reliability-review",
       "title": "Reliability Review Checklist",
       "type": "checklist",
       "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/checklists/checklist.reliability-review.md",
-      "level": "intermediate",
-      "tags": "reliability resilience sre review",
+      "level": "advanced",
+      "tags": "reliability resilience sre review fault-tolerance",
       "stacks": "all"
     },
-    "29": {
+    "50": {
       "id": "checklist-security-review",
       "title": "Security Review Checklist",
       "type": "checklist",
       "path": "D:/Code/backend-engineering-kit/.shared/production-backend-kit/checklists/checklist.security-review.md",
       "level": "intermediate",
-      "tags": "security owasp review vulnerabilities",
+      "tags": "security owasp review vulnerabilities appsec",
       "stacks": "all"
     }
   },
@@ -569,7 +947,7 @@
       "quality",
       {
         "1": {
-          "25": 1
+          "45": 1
         }
       }
     ],
@@ -577,7 +955,7 @@
       "queue",
       {
         "0": {
-          "16": 1
+          "23": 1
         }
       }
     ],
@@ -585,388 +963,38 @@
       "query",
       {
         "0": {
-          "8": 1
-        },
-        "1": {
-          "6": 1
-        }
-      }
-    ],
-    [
-      "rate",
-      {
-        "0": {
-          "22": 1
-        },
-        "1": {
-          "22": 1
-        }
-      }
-    ],
-    [
-      "rbac",
-      {
-        "1": {
-          "20": 1
-        }
-      }
-    ],
-    [
-      "readiness",
-      {
-        "0": {
-          "27": 1
-        },
-        "1": {
-          "27": 1
-        }
-      }
-    ],
-    [
-      "review",
-      {
-        "0": {
-          "25": 1,
-          "26": 1,
-          "28": 1,
-          "29": 1
-        },
-        "1": {
-          "25": 1,
-          "26": 1,
-          "28": 1,
-          "29": 1
-        }
-      }
-    ],
-    [
-      "retries",
-      {
-        "0": {
-          "18": 1
-        },
-        "1": {
-          "18": 1
-        }
-      }
-    ],
-    [
-      "resilience",
-      {
-        "1": {
-          "15": 1,
-          "18": 1,
-          "19": 1,
-          "28": 1
-        }
-      }
-    ],
-    [
-      "rest",
-      {
-        "1": {
-          "0": 1,
-          "2": 1,
-          "4": 1,
-          "25": 1
-        }
-      }
-    ],
-    [
-      "red",
-      {
-        "0": {
-          "13": 1
-        }
-      }
-    ],
-    [
-      "request",
-      {
-        "0": {
-          "3": 1
-        }
-      }
-    ],
-    [
-      "reliability",
-      {
-        "0": {
-          "28": 1
-        },
-        "1": {
-          "1": 1,
-          "15": 1,
-          "16": 1,
-          "17": 1,
-          "18": 1,
-          "19": 1,
-          "28": 1
-        }
-      }
-    ],
-    [
-      "with",
-      {
-        "0": {
-          "18": 1
-        }
-      }
-    ],
-    [
-      "webhooks",
-      {
-        "1": {
-          "5": 1
-        }
-      }
-    ],
-    [
-      "webhook",
-      {
-        "0": {
-          "5": 1
-        }
-      }
-    ],
-    [
-      "eventual",
-      {
-        "1": {
-          "17": 1
-        }
-      }
-    ],
-    [
-      "error",
-      {
-        "0": {
-          "0": 1
-        },
-        "1": {
-          "0": 1,
-          "16": 1
-        }
-      }
-    ],
-    [
-      "launch",
-      {
-        "1": {
-          "27": 1
-        }
-      }
-    ],
-    [
-      "latency",
-      {
-        "1": {
-          "19": 1
-        }
-      }
-    ],
-    [
-      "limiting",
-      {
-        "0": {
-          "22": 1
-        },
-        "1": {
-          "22": 1
-        }
-      }
-    ],
-    [
-      "letter",
-      {
-        "0": {
-          "16": 1
-        }
-      }
-    ],
-    [
-      "logging",
-      {
-        "0": {
-          "14": 1
-        },
-        "1": {
-          "14": 1
-        }
-      }
-    ],
-    [
-      "threats",
-      {
-        "1": {
-          "24": 1
-        }
-      }
-    ],
-    [
-      "threat",
-      {
-        "0": {
-          "24": 1
-        }
-      }
-    ],
-    [
-      "timeouts",
-      {
-        "0": {
-          "19": 1
-        },
-        "1": {
-          "19": 1
-        }
-      }
-    ],
-    [
-      "tolerance",
-      {
-        "1": {
-          "15": 1
-        }
-      }
-    ],
-    [
-      "tracing",
-      {
-        "1": {
-          "12": 1
-        }
-      }
-    ],
-    [
-      "transactions",
-      {
-        "1": {
           "11": 1
-        }
-      }
-    ],
-    [
-      "transaction",
-      {
-        "0": {
-          "11": 1
-        }
-      }
-    ],
-    [
-      "trail",
-      {
-        "0": {
-          "10": 1
-        }
-      }
-    ],
-    [
-      "fault",
-      {
-        "1": {
-          "15": 1
-        }
-      }
-    ],
-    [
-      "filtering",
-      {
-        "1": {
-          "2": 1
-        }
-      }
-    ],
-    [
-      "filter",
-      {
-        "0": {
-          "2": 1
-        }
-      }
-    ],
-    [
-      "checklist",
-      {
-        "0": {
-          "24": 1,
-          "25": 1,
-          "26": 1,
-          "27": 1,
-          "28": 1,
-          "29": 1
-        }
-      }
-    ],
-    [
-      "circuit",
-      {
-        "0": {
-          "15": 1
         },
         "1": {
-          "15": 1
+          "9": 1,
+          "35": 1
         }
       }
     ],
     [
-      "configuration",
+      "xss",
       {
         "1": {
-          "23": 1
+          "36": 1
         }
       }
     ],
     [
-      "control",
-      {
-        "1": {
-          "20": 1
-        }
-      }
-    ],
-    [
-      "consistency",
-      {
-        "1": {
-          "11": 1,
-          "17": 1
-        }
-      }
-    ],
-    [
-      "constraints",
+      "jwt",
       {
         "0": {
-          "9": 1
+          "37": 1
         },
         "1": {
-          "9": 1
+          "37": 1
         }
       }
     ],
     [
-      "correlation",
-      {
-        "0": {
-          "12": 1
-        }
-      }
-    ],
-    [
-      "compliance",
+      "jitter",
       {
         "1": {
-          "10": 1
-        }
-      }
-    ],
-    [
-      "compatibility",
-      {
-        "1": {
-          "4": 1
+          "28": 1
         }
       }
     ],
@@ -974,7 +1002,275 @@
       "json",
       {
         "1": {
+          "19": 1
+        }
+      }
+    ],
+    [
+      "kubernetes",
+      {
+        "1": {
+          "24": 1,
+          "25": 1
+        }
+      }
+    ],
+    [
+      "keys",
+      {
+        "0": {
+          "1": 1
+        }
+      }
+    ],
+    [
+      "graphql",
+      {
+        "0": {
+          "35": 1
+        },
+        "1": {
+          "35": 1
+        },
+        "2": {
+          "35": 1
+        }
+      }
+    ],
+    [
+      "graceful",
+      {
+        "0": {
+          "24": 1,
+          "26": 1
+        },
+        "1": {
+          "26": 1
+        }
+      }
+    ],
+    [
+      "go",
+      {
+        "2": {
+          "2": 1,
+          "4": 1,
+          "26": 1,
+          "29": 1,
+          "33": 1,
+          "34": 1,
+          "36": 1,
+          "38": 1,
+          "41": 1,
+          "43": 1
+        }
+      }
+    ],
+    [
+      "launch",
+      {
+        "1": {
+          "48": 1
+        }
+      }
+    ],
+    [
+      "latency",
+      {
+        "1": {
+          "29": 1,
+          "30": 1
+        }
+      }
+    ],
+    [
+      "limiting",
+      {
+        "0": {
+          "40": 1
+        },
+        "1": {
+          "40": 1
+        }
+      }
+    ],
+    [
+      "limit",
+      {
+        "1": {
+          "35": 1
+        }
+      }
+    ],
+    [
+      "lite",
+      {
+        "0": {
+          "33": 1
+        }
+      }
+    ],
+    [
+      "load",
+      {
+        "0": {
+          "26": 1
+        },
+        "1": {
+          "26": 1
+        }
+      }
+    ],
+    [
+      "logging",
+      {
+        "0": {
+          "19": 1
+        },
+        "1": {
+          "19": 1
+        }
+      }
+    ],
+    [
+      "letter",
+      {
+        "0": {
+          "23": 1
+        }
+      }
+    ],
+    [
+      "threats",
+      {
+        "1": {
+          "44": 1
+        }
+      }
+    ],
+    [
+      "threat",
+      {
+        "0": {
+          "44": 1
+        }
+      }
+    ],
+    [
+      "tenant",
+      {
+        "0": {
+          "43": 1
+        },
+        "1": {
+          "38": 1
+        }
+      }
+    ],
+    [
+      "tenancy",
+      {
+        "0": {
+          "38": 1,
+          "47": 1
+        }
+      }
+    ],
+    [
+      "tokens",
+      {
+        "1": {
+          "37": 1
+        }
+      }
+    ],
+    [
+      "tolerance",
+      {
+        "1": {
+          "20": 1,
+          "22": 1,
+          "49": 1
+        }
+      }
+    ],
+    [
+      "timeouts",
+      {
+        "0": {
+          "30": 1
+        },
+        "1": {
+          "30": 1
+        }
+      }
+    ],
+    [
+      "timeout",
+      {
+        "0": {
+          "29": 1
+        },
+        "1": {
+          "29": 1
+        }
+      }
+    ],
+    [
+      "tracing",
+      {
+        "0": {
+          "16": 1,
+          "17": 1
+        },
+        "1": {
+          "16": 1,
+          "17": 1
+        }
+      }
+    ],
+    [
+      "transactions",
+      {
+        "1": {
           "14": 1
+        }
+      }
+    ],
+    [
+      "transaction",
+      {
+        "0": {
+          "14": 1
+        }
+      }
+    ],
+    [
+      "trail",
+      {
+        "0": {
+          "13": 1
+        }
+      }
+    ],
+    [
+      "fault",
+      {
+        "1": {
+          "20": 1,
+          "22": 1,
+          "49": 1
+        }
+      }
+    ],
+    [
+      "filtering",
+      {
+        "0": {
+          "3": 1
+        },
+        "1": {
+          "3": 1
         }
       }
     ],
@@ -982,7 +1278,52 @@
       "use",
       {
         "0": {
-          "13": 1
+          "18": 1
+        }
+      }
+    ],
+    [
+      "with",
+      {
+        "0": {
+          "17": 1,
+          "28": 1
+        }
+      }
+    ],
+    [
+      "webhooks",
+      {
+        "1": {
+          "7": 1,
+          "33": 1
+        }
+      }
+    ],
+    [
+      "webhook",
+      {
+        "0": {
+          "7": 1
+        }
+      }
+    ],
+    [
+      "bcrypt",
+      {
+        "1": {
+          "39": 1
+        }
+      }
+    ],
+    [
+      "billing",
+      {
+        "0": {
+          "33": 1
+        },
+        "1": {
+          "33": 1
         }
       }
     ],
@@ -990,7 +1331,7 @@
       "boundary",
       {
         "0": {
-          "20": 1
+          "32": 1
         }
       }
     ],
@@ -998,7 +1339,8 @@
       "boundaries",
       {
         "0": {
-          "11": 1
+          "14": 1,
+          "41": 1
         }
       }
     ],
@@ -1006,10 +1348,32 @@
       "breaker",
       {
         "0": {
-          "15": 1
+          "22": 1
         },
         "1": {
-          "15": 1
+          "22": 1
+        }
+      }
+    ],
+    [
+      "bulkhead",
+      {
+        "0": {
+          "20": 1
+        },
+        "1": {
+          "20": 1,
+          "22": 1
+        }
+      }
+    ],
+    [
+      "best",
+      {
+        "0": {
+          "15": 1,
+          "35": 1,
+          "37": 1
         }
       }
     ],
@@ -1017,10 +1381,10 @@
       "backoff",
       {
         "0": {
-          "18": 1
+          "28": 1
         },
         "1": {
-          "18": 1
+          "28": 1
         }
       }
     ],
@@ -1028,7 +1392,7 @@
       "backward",
       {
         "1": {
-          "4": 1
+          "6": 1
         }
       }
     ],
@@ -1036,55 +1400,9 @@
       "basics",
       {
         "0": {
-          "6": 1,
-          "16": 1
-        }
-      }
-    ],
-    [
-      "owasp",
-      {
-        "1": {
-          "24": 1,
-          "29": 1
-        }
-      }
-    ],
-    [
-      "outbox",
-      {
-        "0": {
-          "17": 1
-        },
-        "1": {
-          "17": 1
-        }
-      }
-    ],
-    [
-      "observability",
-      {
-        "1": {
-          "12": 1,
-          "13": 1,
-          "14": 1
-        }
-      }
-    ],
-    [
-      "orm",
-      {
-        "1": {
-          "8": 1
-        }
-      }
-    ],
-    [
-      "optimization",
-      {
-        "1": {
-          "6": 1,
-          "8": 1
+          "9": 1,
+          "23": 1,
+          "38": 1
         }
       }
     ],
@@ -1092,97 +1410,33 @@
       "n+1",
       {
         "0": {
-          "8": 1
+          "11": 1
         }
       }
     ],
     [
-      "ddos",
+      "nodejs",
       {
-        "1": {
-          "22": 1
+        "2": {
+          "2": 1,
+          "4": 1,
+          "26": 1,
+          "29": 1,
+          "33": 1,
+          "34": 1,
+          "35": 1,
+          "36": 1,
+          "38": 1,
+          "41": 1,
+          "43": 1
         }
       }
     ],
     [
-      "dlq",
+      "zero",
       {
-        "1": {
-          "16": 1
-        }
-      }
-    ],
-    [
-      "distributed",
-      {
-        "1": {
-          "12": 1,
-          "17": 1
-        }
-      }
-    ],
-    [
-      "deployment",
-      {
-        "1": {
-          "27": 1
-        }
-      }
-    ],
-    [
-      "dead",
-      {
-        "0": {
-          "16": 1
-        }
-      }
-    ],
-    [
-      "debugging",
-      {
-        "1": {
-          "12": 1,
-          "14": 1
-        }
-      }
-    ],
-    [
-      "delete",
-      {
-        "0": {
-          "10": 1
-        },
         "1": {
           "10": 1
-        }
-      }
-    ],
-    [
-      "devops",
-      {
-        "1": {
-          "7": 1,
-          "23": 1
-        }
-      }
-    ],
-    [
-      "database",
-      {
-        "0": {
-          "6": 1,
-          "7": 1,
-          "9": 1,
-          "26": 1
-        },
-        "1": {
-          "6": 1,
-          "7": 1,
-          "8": 1,
-          "9": 1,
-          "10": 1,
-          "11": 1,
-          "26": 1
         }
       }
     ],
@@ -1190,7 +1444,27 @@
       "management",
       {
         "0": {
-          "23": 1
+          "42": 1
+        }
+      }
+    ],
+    [
+      "multi",
+      {
+        "0": {
+          "38": 1,
+          "47": 1
+        }
+      }
+    ],
+    [
+      "multitenancy",
+      {
+        "1": {
+          "34": 1,
+          "38": 1,
+          "43": 1,
+          "47": 1
         }
       }
     ],
@@ -1198,7 +1472,7 @@
       "messaging",
       {
         "1": {
-          "16": 1
+          "23": 1
         }
       }
     ],
@@ -1206,10 +1480,18 @@
       "metrics",
       {
         "0": {
-          "13": 1
+          "18": 1
         },
         "1": {
-          "13": 1
+          "18": 1
+        }
+      }
+    ],
+    [
+      "microservices",
+      {
+        "1": {
+          "17": 1
         }
       }
     ],
@@ -1217,10 +1499,10 @@
       "migrations",
       {
         "0": {
-          "7": 1
+          "10": 1
         },
         "1": {
-          "7": 1
+          "10": 1
         }
       }
     ],
@@ -1228,7 +1510,9 @@
       "monitoring",
       {
         "1": {
-          "13": 1
+          "15": 1,
+          "18": 1,
+          "25": 1
         }
       }
     ],
@@ -1236,7 +1520,7 @@
       "mongodb",
       {
         "2": {
-          "6": 1
+          "9": 1
         }
       }
     ],
@@ -1251,14 +1535,135 @@
     [
       "mysql",
       {
+        "1": {
+          "8": 1,
+          "46": 1
+        },
         "2": {
-          "6": 1,
+          "8": 1,
+          "9": 1,
+          "12": 1
+        }
+      }
+    ],
+    [
+      "exponential",
+      {
+        "0": {
+          "28": 1
+        }
+      }
+    ],
+    [
+      "explain",
+      {
+        "1": {
           "9": 1
         }
       }
     ],
     [
-      "production",
+      "eventual",
+      {
+        "1": {
+          "27": 1
+        }
+      }
+    ],
+    [
+      "evolution",
+      {
+        "1": {
+          "6": 1
+        }
+      }
+    ],
+    [
+      "endpoints",
+      {
+        "0": {
+          "25": 1
+        }
+      }
+    ],
+    [
+      "elk",
+      {
+        "1": {
+          "19": 1
+        }
+      }
+    ],
+    [
+      "error",
+      {
+        "0": {
+          "0": 1
+        },
+        "1": {
+          "0": 1,
+          "23": 1
+        }
+      }
+    ],
+    [
+      "vulnerabilities",
+      {
+        "1": {
+          "50": 1
+        }
+      }
+    ],
+    [
+      "vault",
+      {
+        "1": {
+          "42": 1
+        }
+      }
+    ],
+    [
+      "validation",
+      {
+        "0": {
+          "5": 1,
+          "36": 1
+        },
+        "1": {
+          "5": 1,
+          "36": 1
+        }
+      }
+    ],
+    [
+      "vs",
+      {
+        "0": {
+          "32": 1
+        }
+      }
+    ],
+    [
+      "versioning",
+      {
+        "0": {
+          "6": 1
+        },
+        "1": {
+          "6": 1
+        }
+      }
+    ],
+    [
+      "oauth",
+      {
+        "1": {
+          "37": 1
+        }
+      }
+    ],
+    [
+      "outbox",
       {
         "0": {
           "27": 1
@@ -1269,19 +1674,563 @@
       }
     ],
     [
-      "problem",
+      "overload",
+      {
+        "1": {
+          "26": 1
+        }
+      }
+    ],
+    [
+      "opentelemetry",
       {
         "0": {
+          "17": 1
+        },
+        "1": {
+          "16": 1,
+          "17": 1
+        }
+      }
+    ],
+    [
+      "optimization",
+      {
+        "1": {
+          "9": 1,
+          "11": 1
+        }
+      }
+    ],
+    [
+      "on",
+      {
+        "1": {
+          "15": 1
+        }
+      }
+    ],
+    [
+      "observability",
+      {
+        "1": {
+          "15": 1,
+          "16": 1,
+          "17": 1,
+          "18": 1,
+          "19": 1
+        }
+      }
+    ],
+    [
+      "orm",
+      {
+        "1": {
+          "11": 1
+        }
+      }
+    ],
+    [
+      "owasp",
+      {
+        "1": {
+          "5": 1,
+          "44": 1,
+          "50": 1
+        }
+      }
+    ],
+    [
+      "offset",
+      {
+        "1": {
+          "4": 1
+        }
+      }
+    ],
+    [
+      "id",
+      {
+        "0": {
+          "16": 1
+        }
+      }
+    ],
+    [
+      "idempotent",
+      {
+        "0": {
+          "2": 1
+        }
+      }
+    ],
+    [
+      "idempotency",
+      {
+        "0": {
+          "1": 1
+        },
+        "1": {
+          "1": 1,
+          "2": 1
+        }
+      }
+    ],
+    [
+      "isolation",
+      {
+        "0": {
+          "34": 1
+        },
+        "1": {
+          "14": 1,
+          "20": 1,
+          "47": 1
+        }
+      }
+    ],
+    [
+      "injection",
+      {
+        "1": {
+          "36": 1
+        }
+      }
+    ],
+    [
+      "integration",
+      {
+        "0": {
+          "33": 1
+        }
+      }
+    ],
+    [
+      "integrity",
+      {
+        "1": {
+          "12": 1
+        }
+      }
+    ],
+    [
+      "indexing",
+      {
+        "0": {
+          "9": 1
+        },
+        "1": {
+          "9": 1
+        }
+      }
+    ],
+    [
+      "input",
+      {
+        "0": {
+          "36": 1
+        },
+        "1": {
+          "5": 1
+        }
+      }
+    ],
+    [
+      "csp",
+      {
+        "1": {
+          "31": 1
+        }
+      }
+    ],
+    [
+      "checklist",
+      {
+        "0": {
+          "44": 1,
+          "45": 1,
+          "46": 1,
+          "47": 1,
+          "48": 1,
+          "49": 1,
+          "50": 1
+        },
+        "1": {
+          "47": 1
+        }
+      }
+    ],
+    [
+      "check",
+      {
+        "0": {
+          "25": 1
+        },
+        "1": {
+          "25": 1
+        }
+      }
+    ],
+    [
+      "circuit",
+      {
+        "0": {
+          "22": 1
+        },
+        "1": {
+          "22": 1
+        }
+      }
+    ],
+    [
+      "caching",
+      {
+        "0": {
+          "21": 1
+        },
+        "1": {
+          "21": 1
+        }
+      }
+    ],
+    [
+      "call",
+      {
+        "1": {
+          "15": 1
+        }
+      }
+    ],
+    [
+      "cors",
+      {
+        "1": {
+          "31": 1
+        }
+      }
+    ],
+    [
+      "correlation",
+      {
+        "0": {
+          "16": 1
+        }
+      }
+    ],
+    [
+      "complexity",
+      {
+        "1": {
+          "35": 1
+        }
+      }
+    ],
+    [
+      "compliance",
+      {
+        "1": {
+          "13": 1
+        }
+      }
+    ],
+    [
+      "compatibility",
+      {
+        "1": {
+          "6": 1
+        }
+      }
+    ],
+    [
+      "context",
+      {
+        "0": {
+          "43": 1
+        },
+        "1": {
+          "43": 1
+        }
+      }
+    ],
+    [
+      "control",
+      {
+        "1": {
+          "32": 1
+        }
+      }
+    ],
+    [
+      "configuration",
+      {
+        "1": {
+          "42": 1
+        }
+      }
+    ],
+    [
+      "constraints",
+      {
+        "0": {
+          "12": 1
+        },
+        "1": {
+          "12": 1
+        }
+      }
+    ],
+    [
+      "consistency",
+      {
+        "1": {
+          "2": 1,
+          "14": 1,
+          "27": 1
+        }
+      }
+    ],
+    [
+      "connection",
+      {
+        "0": {
+          "8": 1
+        },
+        "1": {
           "8": 1
         }
       }
     ],
     [
-      "postgresql",
+      "cursor",
+      {
+        "1": {
+          "3": 1,
+          "4": 1
+        }
+      }
+    ],
+    [
+      "secrets",
+      {
+        "0": {
+          "42": 1
+        },
+        "1": {
+          "42": 1
+        }
+      }
+    ],
+    [
+      "security",
+      {
+        "0": {
+          "31": 1,
+          "35": 1,
+          "37": 1,
+          "44": 1,
+          "50": 1
+        },
+        "1": {
+          "5": 1,
+          "7": 1,
+          "31": 1,
+          "32": 1,
+          "33": 1,
+          "34": 1,
+          "35": 1,
+          "36": 1,
+          "37": 1,
+          "38": 1,
+          "39": 1,
+          "40": 1,
+          "41": 1,
+          "42": 1,
+          "43": 1,
+          "44": 1,
+          "47": 1,
+          "50": 1
+        }
+      }
+    ],
+    [
+      "storage",
+      {
+        "0": {
+          "39": 1
+        }
+      }
+    ],
+    [
+      "stripe",
+      {
+        "0": {
+          "33": 1
+        },
+        "1": {
+          "33": 1
+        }
+      }
+    ],
+    [
+      "structured",
+      {
+        "0": {
+          "19": 1
+        }
+      }
+    ],
+    [
+      "strategies",
+      {
+        "0": {
+          "15": 1,
+          "21": 1,
+          "29": 1,
+          "34": 1
+        }
+      }
+    ],
+    [
+      "strategy",
+      {
+        "0": {
+          "10": 1
+        }
+      }
+    ],
+    [
+      "saas",
+      {
+        "1": {
+          "38": 1,
+          "47": 1
+        }
+      }
+    ],
+    [
+      "sanitization",
+      {
+        "0": {
+          "5": 1,
+          "36": 1
+        },
+        "1": {
+          "36": 1
+        }
+      }
+    ],
+    [
+      "sla",
+      {
+        "1": {
+          "30": 1
+        }
+      }
+    ],
+    [
+      "shedding",
+      {
+        "0": {
+          "26": 1
+        },
+        "1": {
+          "26": 1
+        }
+      }
+    ],
+    [
+      "shutdown",
+      {
+        "0": {
+          "24": 1
+        },
+        "1": {
+          "24": 1
+        }
+      }
+    ],
+    [
+      "sre",
+      {
+        "1": {
+          "15": 1,
+          "18": 1,
+          "48": 1,
+          "49": 1
+        }
+      }
+    ],
+    [
+      "soft",
+      {
+        "0": {
+          "13": 1
+        },
+        "1": {
+          "13": 1
+        }
+      }
+    ],
+    [
+      "sorting",
+      {
+        "0": {
+          "3": 1
+        },
+        "1": {
+          "3": 1
+        }
+      }
+    ],
+    [
+      "schema",
+      {
+        "0": {
+          "12": 1
+        },
+        "1": {
+          "10": 1,
+          "12": 1,
+          "46": 1
+        }
+      }
+    ],
+    [
+      "sqlserver",
       {
         "2": {
-          "6": 1,
-          "9": 1
+          "8": 1,
+          "9": 1,
+          "12": 1
+        }
+      }
+    ],
+    [
+      "signatures",
+      {
+        "0": {
+          "7": 1
+        },
+        "1": {
+          "7": 1
+        }
+      }
+    ],
+    [
+      "systems",
+      {
+        "1": {
+          "1": 1,
+          "16": 1,
+          "21": 1
+        }
+      }
+    ],
+    [
+      "permissions",
+      {
+        "1": {
+          "41": 1
         }
       }
     ],
@@ -1289,9 +2238,95 @@
       "performance",
       {
         "1": {
-          "6": 1,
+          "4": 1,
           "8": 1,
-          "26": 1
+          "9": 1,
+          "11": 1,
+          "21": 1,
+          "46": 1
+        }
+      }
+    ],
+    [
+      "production",
+      {
+        "0": {
+          "48": 1
+        },
+        "1": {
+          "48": 1
+        }
+      }
+    ],
+    [
+      "propagation",
+      {
+        "0": {
+          "29": 1,
+          "43": 1
+        }
+      }
+    ],
+    [
+      "prometheus",
+      {
+        "1": {
+          "18": 1
+        }
+      }
+    ],
+    [
+      "problem",
+      {
+        "0": {
+          "11": 1
+        }
+      }
+    ],
+    [
+      "practices",
+      {
+        "0": {
+          "15": 1,
+          "35": 1,
+          "37": 1
+        }
+      }
+    ],
+    [
+      "postgres",
+      {
+        "1": {
+          "46": 1
+        }
+      }
+    ],
+    [
+      "postgresql",
+      {
+        "1": {
+          "8": 1
+        },
+        "2": {
+          "8": 1,
+          "9": 1,
+          "12": 1
+        }
+      }
+    ],
+    [
+      "pool",
+      {
+        "1": {
+          "8": 1
+        }
+      }
+    ],
+    [
+      "pooling",
+      {
+        "0": {
+          "8": 1
         }
       }
     ],
@@ -1299,7 +2334,7 @@
       "passwords",
       {
         "1": {
-          "21": 1
+          "39": 1
         }
       }
     ],
@@ -1307,7 +2342,7 @@
       "password",
       {
         "0": {
-          "21": 1
+          "39": 1
         }
       }
     ],
@@ -1315,7 +2350,17 @@
       "pattern",
       {
         "0": {
-          "17": 1
+          "20": 1,
+          "27": 1
+        }
+      }
+    ],
+    [
+      "patterns",
+      {
+        "0": {
+          "4": 1,
+          "21": 1
         }
       }
     ],
@@ -1323,10 +2368,12 @@
       "pagination",
       {
         "0": {
-          "2": 1
+          "3": 1,
+          "4": 1
         },
         "1": {
-          "2": 1
+          "3": 1,
+          "4": 1
         }
       }
     ],
@@ -1339,262 +2386,48 @@
       }
     ],
     [
-      "vulnerabilities",
-      {
-        "1": {
-          "29": 1
-        }
-      }
-    ],
-    [
-      "vs",
-      {
-        "0": {
-          "20": 1
-        }
-      }
-    ],
-    [
-      "versioning",
-      {
-        "0": {
-          "4": 1
-        },
-        "1": {
-          "4": 1
-        }
-      }
-    ],
-    [
-      "validation",
-      {
-        "0": {
-          "3": 1
-        },
-        "1": {
-          "3": 1
-        }
-      }
-    ],
-    [
-      "id",
-      {
-        "0": {
-          "12": 1
-        }
-      }
-    ],
-    [
-      "idempotency",
-      {
-        "0": {
-          "1": 1
-        },
-        "1": {
-          "1": 1
-        }
-      }
-    ],
-    [
-      "integrity",
-      {
-        "1": {
-          "9": 1
-        }
-      }
-    ],
-    [
-      "indexing",
-      {
-        "0": {
-          "6": 1
-        },
-        "1": {
-          "6": 1
-        }
-      }
-    ],
-    [
-      "input",
-      {
-        "1": {
-          "3": 1
-        }
-      }
-    ],
-    [
-      "secrets",
-      {
-        "0": {
-          "23": 1
-        },
-        "1": {
-          "23": 1
-        }
-      }
-    ],
-    [
-      "security",
-      {
-        "0": {
-          "24": 1,
-          "29": 1
-        },
-        "1": {
-          "3": 1,
-          "5": 1,
-          "20": 1,
-          "21": 1,
-          "22": 1,
-          "23": 1,
-          "24": 1,
-          "29": 1
-        }
-      }
-    ],
-    [
-      "storage",
-      {
-        "0": {
-          "21": 1
-        }
-      }
-    ],
-    [
-      "structured",
-      {
-        "0": {
-          "14": 1
-        }
-      }
-    ],
-    [
-      "strategy",
-      {
-        "0": {
-          "7": 1
-        }
-      }
-    ],
-    [
-      "sre",
-      {
-        "1": {
-          "13": 1,
-          "28": 1
-        }
-      }
-    ],
-    [
-      "systems",
-      {
-        "1": {
-          "12": 1
-        }
-      }
-    ],
-    [
-      "soft",
-      {
-        "0": {
-          "10": 1
-        },
-        "1": {
-          "10": 1
-        }
-      }
-    ],
-    [
-      "sorting",
-      {
-        "1": {
-          "2": 1
-        }
-      }
-    ],
-    [
-      "sort",
-      {
-        "0": {
-          "2": 1
-        }
-      }
-    ],
-    [
-      "schema",
-      {
-        "0": {
-          "9": 1
-        },
-        "1": {
-          "7": 1,
-          "9": 1,
-          "26": 1
-        }
-      }
-    ],
-    [
-      "sqlserver",
+      "python",
       {
         "2": {
-          "6": 1,
-          "9": 1
+          "2": 1,
+          "4": 1,
+          "26": 1,
+          "29": 1,
+          "33": 1,
+          "34": 1,
+          "36": 1,
+          "38": 1,
+          "41": 1,
+          "43": 1
         }
       }
     ],
     [
-      "signatures",
+      "ddos",
+      {
+        "1": {
+          "40": 1
+        }
+      }
+    ],
+    [
+      "dlq",
+      {
+        "1": {
+          "23": 1
+        }
+      }
+    ],
+    [
+      "data",
       {
         "0": {
-          "5": 1
-        },
-        "1": {
-          "5": 1
+          "34": 1
         }
       }
     ],
     [
-      "keys",
-      {
-        "0": {
-          "1": 1
-        }
-      }
-    ],
-    [
-      "assessment",
-      {
-        "1": {
-          "24": 1
-        }
-      }
-    ],
-    [
-      "availability",
-      {
-        "1": {
-          "22": 1
-        }
-      }
-    ],
-    [
-      "avoiding",
-      {
-        "0": {
-          "8": 1
-        }
-      }
-    ],
-    [
-      "access",
-      {
-        "1": {
-          "20": 1
-        }
-      }
-    ],
-    [
-      "acid",
+      "dataloader",
       {
         "1": {
           "11": 1
@@ -1602,13 +2435,248 @@
       }
     ],
     [
+      "database",
+      {
+        "0": {
+          "8": 1,
+          "9": 1,
+          "10": 1,
+          "12": 1,
+          "46": 1
+        },
+        "1": {
+          "8": 1,
+          "9": 1,
+          "10": 1,
+          "11": 1,
+          "12": 1,
+          "13": 1,
+          "14": 1,
+          "34": 1,
+          "46": 1
+        }
+      }
+    ],
+    [
+      "downtime",
+      {
+        "1": {
+          "10": 1
+        }
+      }
+    ],
+    [
+      "depth",
+      {
+        "1": {
+          "35": 1
+        }
+      }
+    ],
+    [
+      "deployment",
+      {
+        "1": {
+          "24": 1,
+          "48": 1
+        }
+      }
+    ],
+    [
+      "degradation",
+      {
+        "0": {
+          "26": 1
+        },
+        "1": {
+          "26": 1
+        }
+      }
+    ],
+    [
+      "deadline",
+      {
+        "0": {
+          "29": 1
+        },
+        "1": {
+          "29": 1
+        }
+      }
+    ],
+    [
+      "dead",
+      {
+        "0": {
+          "23": 1
+        }
+      }
+    ],
+    [
+      "debugging",
+      {
+        "1": {
+          "16": 1,
+          "17": 1,
+          "19": 1
+        }
+      }
+    ],
+    [
+      "delete",
+      {
+        "0": {
+          "13": 1
+        },
+        "1": {
+          "13": 1
+        }
+      }
+    ],
+    [
+      "devops",
+      {
+        "1": {
+          "10": 1,
+          "24": 1,
+          "25": 1,
+          "42": 1
+        }
+      }
+    ],
+    [
+      "design",
+      {
+        "0": {
+          "2": 1
+        },
+        "1": {
+          "45": 1
+        }
+      }
+    ],
+    [
+      "distributed",
+      {
+        "0": {
+          "16": 1,
+          "17": 1
+        },
+        "1": {
+          "1": 1,
+          "16": 1,
+          "21": 1,
+          "27": 1
+        }
+      }
+    ],
+    [
+      "assessment",
+      {
+        "1": {
+          "44": 1
+        }
+      }
+    ],
+    [
+      "async",
+      {
+        "1": {
+          "43": 1
+        }
+      }
+    ],
+    [
+      "availability",
+      {
+        "1": {
+          "40": 1
+        }
+      }
+    ],
+    [
+      "avoiding",
+      {
+        "0": {
+          "11": 1
+        }
+      }
+    ],
+    [
+      "argon2",
+      {
+        "1": {
+          "39": 1
+        }
+      }
+    ],
+    [
+      "appsec",
+      {
+        "1": {
+          "50": 1
+        }
+      }
+    ],
+    [
+      "apollo",
+      {
+        "2": {
+          "35": 1
+        }
+      }
+    ],
+    [
+      "api",
+      {
+        "0": {
+          "0": 1,
+          "2": 1,
+          "3": 1,
+          "4": 1,
+          "6": 1,
+          "45": 1
+        },
+        "1": {
+          "0": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1,
+          "4": 1,
+          "5": 1,
+          "6": 1,
+          "7": 1,
+          "35": 1,
+          "45": 1
+        }
+      }
+    ],
+    [
+      "access",
+      {
+        "1": {
+          "32": 1
+        }
+      }
+    ],
+    [
+      "acid",
+      {
+        "1": {
+          "14": 1
+        }
+      }
+    ],
+    [
       "authorization",
       {
         "0": {
-          "20": 1
+          "32": 1,
+          "41": 1
         },
         "1": {
-          "20": 1
+          "32": 1,
+          "41": 1
         }
       }
     ],
@@ -1616,11 +2684,12 @@
       "authentication",
       {
         "0": {
-          "20": 1
+          "32": 1
         },
         "1": {
-          "20": 1,
-          "21": 1
+          "32": 1,
+          "37": 1,
+          "39": 1
         }
       }
     ],
@@ -1628,7 +2697,7 @@
       "auditing",
       {
         "1": {
-          "10": 1
+          "13": 1
         }
       }
     ],
@@ -1636,7 +2705,28 @@
       "audit",
       {
         "0": {
-          "10": 1
+          "13": 1
+        }
+      }
+    ],
+    [
+      "and",
+      {
+        "0": {
+          "26": 1,
+          "29": 1,
+          "36": 1
+        }
+      }
+    ],
+    [
+      "alerting",
+      {
+        "0": {
+          "15": 1
+        },
+        "1": {
+          "15": 1
         }
       }
     ],
@@ -1646,15 +2736,12 @@
         "2": {
           "0": 1,
           "1": 1,
-          "2": 1,
           "3": 1,
-          "4": 1,
           "5": 1,
+          "6": 1,
           "7": 1,
-          "8": 1,
           "10": 1,
           "11": 1,
-          "12": 1,
           "13": 1,
           "14": 1,
           "15": 1,
@@ -1668,30 +2755,27 @@
           "23": 1,
           "24": 1,
           "25": 1,
-          "26": 1,
           "27": 1,
           "28": 1,
-          "29": 1
-        }
-      }
-    ],
-    [
-      "api",
-      {
-        "0": {
-          "0": 1,
-          "2": 1,
-          "4": 1,
-          "25": 1
-        },
-        "1": {
-          "0": 1,
-          "1": 1,
-          "2": 1,
-          "3": 1,
-          "4": 1,
-          "5": 1,
-          "25": 1
+          "30": 1,
+          "31": 1,
+          "32": 1,
+          "33": 1,
+          "34": 1,
+          "37": 1,
+          "38": 1,
+          "39": 1,
+          "40": 1,
+          "41": 1,
+          "42": 1,
+          "43": 1,
+          "44": 1,
+          "45": 1,
+          "46": 1,
+          "47": 1,
+          "48": 1,
+          "49": 1,
+          "50": 1
         }
       }
     ],
@@ -1699,7 +2783,7 @@
       "hashing",
       {
         "1": {
-          "21": 1
+          "39": 1
         }
       }
     ],
@@ -1708,14 +2792,217 @@
       {
         "1": {
           "0": 1,
-          "16": 1
+          "23": 1
+        }
+      }
+    ],
+    [
+      "headers",
+      {
+        "0": {
+          "31": 1
+        },
+        "1": {
+          "31": 1
+        }
+      }
+    ],
+    [
+      "health",
+      {
+        "0": {
+          "25": 1
+        },
+        "1": {
+          "25": 1
         }
       }
     ],
     [
       "http",
       {
+        "0": {
+          "31": 1
+        },
         "1": {
+          "0": 1,
+          "31": 1
+        }
+      }
+    ],
+    [
+      "rate",
+      {
+        "0": {
+          "40": 1
+        },
+        "1": {
+          "40": 1
+        }
+      }
+    ],
+    [
+      "rls",
+      {
+        "1": {
+          "34": 1
+        }
+      }
+    ],
+    [
+      "rbac",
+      {
+        "0": {
+          "41": 1
+        },
+        "1": {
+          "32": 1,
+          "41": 1
+        }
+      }
+    ],
+    [
+      "readiness",
+      {
+        "0": {
+          "48": 1
+        },
+        "1": {
+          "48": 1
+        }
+      }
+    ],
+    [
+      "review",
+      {
+        "0": {
+          "45": 1,
+          "46": 1,
+          "47": 1,
+          "49": 1,
+          "50": 1
+        },
+        "1": {
+          "45": 1,
+          "46": 1,
+          "49": 1,
+          "50": 1
+        }
+      }
+    ],
+    [
+      "retries",
+      {
+        "0": {
+          "28": 1
+        },
+        "1": {
+          "28": 1
+        }
+      }
+    ],
+    [
+      "retry",
+      {
+        "1": {
+          "2": 1
+        }
+      }
+    ],
+    [
+      "resilience",
+      {
+        "1": {
+          "20": 1,
+          "22": 1,
+          "26": 1,
+          "28": 1,
+          "29": 1,
+          "30": 1,
+          "49": 1
+        }
+      }
+    ],
+    [
+      "rest",
+      {
+        "1": {
+          "0": 1,
+          "3": 1,
+          "6": 1,
+          "45": 1
+        }
+      }
+    ],
+    [
+      "redis",
+      {
+        "1": {
+          "21": 1,
+          "40": 1
+        }
+      }
+    ],
+    [
+      "red",
+      {
+        "0": {
+          "18": 1
+        }
+      }
+    ],
+    [
+      "request",
+      {
+        "0": {
+          "5": 1
+        }
+      }
+    ],
+    [
+      "reliability",
+      {
+        "0": {
+          "49": 1
+        },
+        "1": {
+          "1": 1,
+          "2": 1,
+          "20": 1,
+          "21": 1,
+          "22": 1,
+          "23": 1,
+          "24": 1,
+          "25": 1,
+          "26": 1,
+          "27": 1,
+          "28": 1,
+          "29": 1,
+          "30": 1,
+          "49": 1
+        }
+      }
+    ],
+    [
+      "rfc7807",
+      {
+        "1": {
+          "0": 1
+        }
+      }
+    ],
+    [
+      "rfc",
+      {
+        "0": {
+          "0": 1
+        }
+      }
+    ],
+    [
+      "7807",
+      {
+        "0": {
           "0": 1
         }
       }
