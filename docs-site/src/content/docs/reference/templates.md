@@ -5,10 +5,10 @@ generated: true
 ---
 
 <!-- AUTO-GENERATED -->
-<!-- Source: docs\templates.md -->
+<!-- Source: docs/templates.md -->
 
 :::caution[Auto-generated]
-This file is auto-generated from `docs\templates.md`. Do not edit directly.
+This file is auto-generated from `docs/templates.md`. Do not edit directly.
 :::
 
 

@@ -5,10 +5,10 @@ generated: true
 ---
 
 <!-- AUTO-GENERATED -->
-<!-- Source: docs\content-spec-v1.md -->
+<!-- Source: docs/content-spec-v1.md -->
 
 :::caution[Auto-generated]
-This file is auto-generated from `docs\content-spec-v1.md`. Do not edit directly.
+This file is auto-generated from `docs/content-spec-v1.md`. Do not edit directly.
 :::
 
 

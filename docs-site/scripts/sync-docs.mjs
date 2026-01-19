@@ -13,10 +13,18 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSy
 import { join, dirname, basename, relative, extname } from 'path';
 import { fileURLToPath } from 'url';
 
+/**
+ * Normalize path to use forward slashes (cross-platform consistency)
+ */
+function normalizePath(p) {
+    return p.replace(/\\/g, '/');
+}
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '../..');
 const DOCS_SITE = join(__dirname, '..');
 const CONTENT_DIR = join(DOCS_SITE, 'src/content/docs');
+
 
 // Load config
 const config = JSON.parse(readFileSync(join(DOCS_SITE, 'docs-sync.config.json'), 'utf-8'));
@@ -90,10 +98,12 @@ function matchPattern(name, pattern) {
  * Extract or generate frontmatter with generated:true flag
  */
 function ensureFrontmatter(content, source, filename) {
+    // Normalize path for cross-platform consistency
+    const normalizedSource = normalizePath(source);
     const hasFrontmatter = content.startsWith('---');
     const editWarning = `
 :::caution[Auto-generated]
-This file is auto-generated from \`${source}\`. Do not edit directly.
+This file is auto-generated from \`${normalizedSource}\`. Do not edit directly.
 :::
 `;
 
@@ -105,7 +115,7 @@ This file is auto-generated from \`${source}\`. Do not edit directly.
             const body = content.slice(endIndex + 3);
             // Add generated: true to existing frontmatter
             frontmatter = frontmatter.trim() + '\ngenerated: true\n---';
-            return frontmatter + `\n${GENERATED_MARKER}\n<!-- Source: ${source} -->${editWarning}` + body;
+            return frontmatter + `\n${GENERATED_MARKER}\n<!-- Source: ${normalizedSource} -->${editWarning}` + body;
         }
     }
 
@@ -124,7 +134,7 @@ generated: true
 ---
 
 ${GENERATED_MARKER}
-<!-- Source: ${source} -->
+<!-- Source: ${normalizedSource} -->
 ${editWarning}
 `;
 

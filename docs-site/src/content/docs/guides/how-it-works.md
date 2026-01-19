@@ -32,7 +32,7 @@ Backend Engineering Kit is a CLI-first knowledge base that helps AI coding assis
 │                          │                                      │
 ├──────────────────────────┼──────────────────────────────────────┤
 │                          │                                      │
-│  ┌───────────┐  ┌───────▼───────┐  ┌───────────┐                │
+│  ┌───────────┐  ┌────────▼──────┐  ┌───────────┐                │
 │  │  Claude   │  │   Copilot     │  │  Cursor   │  AI Adapters   │
 │  │  CLAUDE.md│  │  .github/...  │  │.cursorrules                │
 │  └───────────┘  └───────────────┘  └───────────┘                │

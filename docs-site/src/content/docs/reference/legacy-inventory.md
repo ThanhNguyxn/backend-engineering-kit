@@ -5,10 +5,10 @@ generated: true
 ---
 
 <!-- AUTO-GENERATED -->
-<!-- Source: docs\legacy-inventory.md -->
+<!-- Source: docs/legacy-inventory.md -->
 
 :::caution[Auto-generated]
-This file is auto-generated from `docs\legacy-inventory.md`. Do not edit directly.
+This file is auto-generated from `docs/legacy-inventory.md`. Do not edit directly.
 :::
 
 

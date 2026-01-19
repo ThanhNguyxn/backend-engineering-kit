@@ -5,10 +5,10 @@ generated: true
 ---
 
 <!-- AUTO-GENERATED -->
-<!-- Source: docs\architecture.md -->
+<!-- Source: docs/architecture.md -->
 
 :::caution[Auto-generated]
-This file is auto-generated from `docs\architecture.md`. Do not edit directly.
+This file is auto-generated from `docs/architecture.md`. Do not edit directly.
 :::
 
 

@@ -5,10 +5,10 @@ generated: true
 ---
 
 <!-- AUTO-GENERATED -->
-<!-- Source: docs\release.md -->
+<!-- Source: docs/release.md -->
 
 :::caution[Auto-generated]
-This file is auto-generated from `docs\release.md`. Do not edit directly.
+This file is auto-generated from `docs/release.md`. Do not edit directly.
 :::
 
 
