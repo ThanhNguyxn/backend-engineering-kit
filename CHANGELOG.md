@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **12 new AI adapters**: amazonq, augment, codeium, cody, devin, goose, junie, opencode, replit, supermaven, tabnine, trae
+- **6 new adapter templates**: TRAE (ByteDance), Augment Code, Supermaven, Replit AI, Junie (JetBrains), Devin
+- **count-stats.js script**: Dynamic counting of patterns, checklists, adapters
+- **Multitenancy checklist**: Added `checklist-multitenancy-review`
+
+### Changed
+- Updated adapter data files with comprehensive content matching official formats
+- CLI now supports 25 AI adapters (up from 13)
+- Documentation updated with accurate counts: 45+ patterns, 6 checklists, 22 adapter templates
+
+### Fixed
+- Renamed `jetbrains.md` to `junie.md` for accuracy (JetBrains Junie AI Agent)
+- Removed duplicate/obsolete adapters (sourcegraph-cody, codegpt, blackbox, etc.)
+
 ## [0.3.0] - 2026-01-16
 
 ### Added
