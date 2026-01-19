@@ -11,6 +11,12 @@ stacks:
   - all
 scope: reliability
 maturity: stable
+version: 2.0.0
+sources:
+  - https://microservices.io/patterns/data/transactional-outbox.html
+  - https://debezium.io/documentation/reference/transformations/outbox-event-router.html
+  - https://aws.amazon.com/event-driven-architecture/
+  - https://dataintensive.net/
 ---
 
 # Outbox Pattern

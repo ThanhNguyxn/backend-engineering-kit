@@ -6,47 +6,105 @@ tags:
   - metrics
   - monitoring
   - sre
+  - prometheus
 level: intermediate
 stacks:
   - all
 scope: observability
 maturity: stable
+version: 2.0.0
+sources:
+  - https://www.weave.works/blog/the-red-method-key-metrics-for-microservices-architecture/
+  - https://www.brendangregg.com/usemethod.html
+  - https://sre.google/sre-book/monitoring-distributed-systems/
+  - https://prometheus.io/docs/practices/naming/
 ---
 
 # RED & USE Metrics
 
 ## Problem
 
-Without standardized metrics, teams measure random things and miss critical signals. You need a consistent framework to monitor service health and diagnose issues quickly.
+Without standardized metrics, teams measure random things and miss critical signals. You need a consistent framework to monitor service health and diagnose issues quickly. The challenge is knowing what to measure.
 
 ## When to use
 
-- All production services
-- API endpoints monitoring
-- Infrastructure monitoring
+- All production services (RED)
+- Infrastructure monitoring (USE)
 - SLO/SLA tracking
 - Capacity planning
+- On-call dashboards
+- Performance debugging
 
 ## Solution
 
-1. **RED Method (for services/endpoints)**
-   - **R**ate: Requests per second
-   - **E**rrors: Failed requests per second
-   - **D**uration: Latency distribution (p50, p95, p99)
+### 1. RED Method (Services/Endpoints)
 
-2. **USE Method (for resources)**
-   - **U**tilization: How busy is the resource
-   - **S**aturation: How much queued/waiting work
-   - **E**rrors: Error count for the resource
+For every service/endpoint, track:
 
-3. **Implement at right layers**
-   - RED: API routes, service methods
-   - USE: CPU, memory, disk, network, queues, pools
+| Metric | What | Why |
+|--------|------|-----|
+| **R**ate | Requests per second | Traffic volume, scaling needs |
+| **E**rrors | Failed requests per second (or %) | Reliability, user impact |
+| **D**uration | Latency (p50, p95, p99) | User experience, SLO |
 
-4. **Set up dashboards & alerts**
-   - Primary dashboard with RED metrics
-   - Infrastructure dashboard with USE
-   - Alert on error rate and latency spikes
+**Prometheus Implementation:**
+```prometheus
+# Counter - total requests
+http_requests_total{method="GET", endpoint="/api/users", status="200"}
+http_requests_total{method="GET", endpoint="/api/users", status="500"}
+
+# Histogram - latency distribution
+http_request_duration_seconds_bucket{method="GET", endpoint="/api/users", le="0.1"}
+http_request_duration_seconds_bucket{method="GET", endpoint="/api/users", le="0.5"}
+http_request_duration_seconds_bucket{method="GET", endpoint="/api/users", le="1.0"}
+http_request_duration_seconds_bucket{method="GET", endpoint="/api/users", le="+Inf"}
+
+# PromQL Queries
+# Request rate
+rate(http_requests_total[5m])
+
+# Error rate
+sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m]))
+
+# P99 latency
+histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))
+```
+
+### 2. USE Method (Resources)
+
+For every resource (CPU, memory, disk, network, queues, pools):
+
+| Metric | What | Example |
+|--------|------|--------|
+| **U**tilization | % time resource is busy | CPU 75%, Disk 40% |
+| **S**aturation | Work waiting (queue length) | 50 pending requests |
+| **E**rrors | Error count | Disk errors, OOM events |
+
+**Key Resources to Monitor:**
+
+| Resource | Utilization | Saturation | Errors |
+|----------|-------------|------------|--------|
+| CPU | `cpu_usage_percent` | Run queue length | - |
+| Memory | `memory_used_percent` | Swap usage, OOM | OOM kills |
+| Disk | `disk_used_percent`, IOPS | I/O wait | Read/write errors |
+| Network | Bandwidth % | Socket queue | Packet drops |
+| DB Pool | `active_connections / max` | Pending acquisitions | Timeouts |
+| Thread Pool | `active_threads / max` | Queue depth | Rejections |
+
+### 3. Connecting to SLOs
+
+```yaml
+# Example SLOs
+availability:
+  target: 99.9%
+  metric: 1 - (error_rate)
+  window: 30 days
+
+latency:
+  target: 95% of requests < 200ms
+  metric: histogram_quantile(0.95, latency) < 0.2
+  window: 30 days
+```
 
 ## Pitfalls
 

@@ -11,6 +11,12 @@ stacks:
   - all
 scope: database
 maturity: stable
+version: 2.0.0
+sources:
+  - https://brandur.org/soft-deletion
+  - https://wiki.postgresql.org/wiki/Audit_trigger
+  - https://django-simple-history.readthedocs.io/
+  - https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html
 ---
 
 # Soft Delete & Audit Trail

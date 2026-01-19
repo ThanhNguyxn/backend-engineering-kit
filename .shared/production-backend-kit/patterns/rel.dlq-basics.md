@@ -11,6 +11,12 @@ stacks:
   - all
 scope: reliability
 maturity: stable
+version: 2.0.0
+sources:
+  - https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html
+  - https://www.rabbitmq.com/docs/dlx
+  - https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dead-letter-queues
+  - https://www.confluent.io/blog/error-handling-patterns-in-kafka/
 ---
 
 # Dead Letter Queue Basics

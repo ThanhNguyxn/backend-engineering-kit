@@ -7,6 +7,11 @@ level: intermediate
 maturity: stable
 stacks: [nodejs, python, go, all]
 description: Tenant resolution strategies for SaaS applications
+version: 2.0.0
+sources:
+  - https://docs.microsoft.com/en-us/azure/architecture/guide/multitenant/considerations
+  - https://aws.amazon.com/blogs/apn/multi-tenant-saas-database-isolation-strategies/
+  - https://supabase.com/docs/guides/auth/row-level-security
 ---
 
 # Multi-Tenancy Basics

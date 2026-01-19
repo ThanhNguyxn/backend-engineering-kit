@@ -7,6 +7,11 @@ level: intermediate
 maturity: stable
 stacks: [nodejs, python, go, all]
 description: Role-based access control for multi-tenant SaaS
+version: 2.0.0
+sources:
+  - https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html
+  - https://csrc.nist.gov/projects/role-based-access-control
+  - https://research.google/pubs/pub48190/
 ---
 
 # RBAC & Authorization Boundaries

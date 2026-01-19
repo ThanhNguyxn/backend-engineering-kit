@@ -13,6 +13,12 @@ stacks:
   - sqlserver
 scope: database
 maturity: stable
+version: 2.0.0
+sources:
+  - https://www.postgresql.org/docs/current/ddl-constraints.html
+  - https://dev.mysql.com/doc/refman/8.0/en/create-table-foreign-keys.html
+  - https://use-the-index-luke.com/
+  - https://vertabelo.com/blog/database-design-best-practices/
 ---
 
 # Database Schema Constraints

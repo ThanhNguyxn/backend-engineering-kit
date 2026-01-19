@@ -6,22 +6,28 @@ tags:
   - performance
   - orm
   - optimization
+  - dataloader
 level: intermediate
 stacks:
   - all
 scope: database
 maturity: stable
+version: 2.0.0
+sources:
+  - https://github.com/graphql/dataloader
+  - https://docs.sqlalchemy.org/en/20/orm/queryguide/relationships.html
+  - https://guides.rubyonrails.org/active_record_querying.html#eager-loading-associations
 ---
 
 # Avoiding N+1 Query Problem
 
 ## Problem
 
-N+1 queries occur when code fetches a list, then executes one query per item to get related data. This causes 1 + N database roundtrips instead of 2, destroying performance.
+N+1 queries occur when code fetches a list, then executes one query per item to get related data. This causes 1 + N database roundtrips instead of 2, destroying performance. With 1000 items, you make 1001 queries instead of 2.
 
 ## When to use
 
-- Using any ORM (ActiveRecord, Hibernate, SQLAlchemy)
+- Using any ORM (Prisma, Drizzle, TypeORM, SQLAlchemy, Hibernate)
 - Fetching collections with relationships
 - API endpoints returning nested data
 - GraphQL resolvers
@@ -29,25 +35,85 @@ N+1 queries occur when code fetches a list, then executes one query per item to 
 
 ## Solution
 
-1. **Identify N+1 patterns**
-   - Enable query logging in development
-   - Use APM or profiling tools
-   - Look for loops that trigger queries
+### 1. Identify N+1 Patterns
 
-2. **Use eager loading**
-   - Load relationships in initial query
-   - JOIN or separate IN query
-   - Specify includes/joins upfront
+**Symptoms**:
+- Endpoint latency scales linearly with result size
+- Query log shows repeated similar queries
+- APM shows high query count per request
 
-3. **Use DataLoader pattern**
-   - Batch and dedupe requests
-   - Especially for GraphQL
-   - Works across single request
+**Detection Tools**:
+- PostgreSQL: `pg_stat_statements`
+- Node.js: `DEBUG=knex:query`
+- Python: SQLAlchemy echo mode
+- Ruby: Bullet gem
+- Java: Hibernate statistics
 
-4. **Optimize query patterns**
-   - Fetch only needed fields
-   - Use subqueries or CTEs
-   - Consider denormalization for reads
+### 2. Eager Loading (ORM)
+
+```typescript
+// Prisma - Bad (N+1)
+const users = await prisma.user.findMany();
+for (const user of users) {
+  const orders = await prisma.order.findMany({ where: { userId: user.id } });
+}
+
+// Prisma - Good (2 queries)
+const users = await prisma.user.findMany({
+  include: { orders: true }
+});
+```
+
+```python
+# SQLAlchemy - Bad (N+1)
+users = session.query(User).all()
+for user in users:
+    print(user.orders)  # Triggers query each time!
+
+# SQLAlchemy - Good (eager load)
+users = session.query(User).options(joinedload(User.orders)).all()
+```
+
+### 3. DataLoader Pattern (GraphQL)
+
+Batch and dedupe requests within a single tick:
+
+```typescript
+// DataLoader batches all user.id lookups
+const userLoader = new DataLoader(async (userIds: string[]) => {
+  const users = await db.user.findMany({
+    where: { id: { in: userIds } }
+  });
+  // Return in same order as input
+  const userMap = new Map(users.map(u => [u.id, u]));
+  return userIds.map(id => userMap.get(id));
+});
+
+// In resolver
+const resolvers = {
+  Order: {
+    user: (order, _, { loaders }) => loaders.user.load(order.userId)
+  }
+};
+```
+
+### 4. Raw SQL Solutions
+
+```sql
+-- Instead of N+1:
+SELECT * FROM users;  -- 1 query
+SELECT * FROM orders WHERE user_id = 1;  -- N queries
+SELECT * FROM orders WHERE user_id = 2;
+...
+
+-- Use JOIN (1 query, may duplicate user data):
+SELECT u.*, o.* FROM users u
+LEFT JOIN orders o ON o.user_id = u.id;
+
+-- Or IN clause (2 queries, cleaner):
+SELECT * FROM users;
+SELECT * FROM orders WHERE user_id IN (1, 2, 3, ...);
+```
 
 ## Pitfalls
 

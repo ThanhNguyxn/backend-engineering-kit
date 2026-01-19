@@ -7,6 +7,11 @@ level: intermediate
 maturity: stable
 stacks: [nodejs, python, go, all]
 description: Propagating tenant context through request lifecycle
+version: 2.0.0
+sources:
+  - https://nodejs.org/api/async_context.html
+  - https://docs.python.org/3/library/contextvars.html
+  - https://opentelemetry.io/docs/concepts/context-propagation/
 ---
 
 # Tenant Context Propagation

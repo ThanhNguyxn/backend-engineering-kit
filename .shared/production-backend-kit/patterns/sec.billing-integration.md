@@ -7,6 +7,11 @@ level: intermediate
 maturity: stable
 stacks: [nodejs, python, go, all]
 description: Secure Stripe integration with webhook handling for SaaS
+version: 2.0.0
+sources:
+  - https://stripe.com/docs/webhooks
+  - https://stripe.com/docs/billing/subscriptions/overview
+  - https://stripe.com/docs/api/idempotent_requests
 ---
 
 # Billing/Stripe Integration Lite

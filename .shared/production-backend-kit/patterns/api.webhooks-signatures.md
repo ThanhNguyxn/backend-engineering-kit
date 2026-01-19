@@ -11,6 +11,12 @@ stacks:
   - all
 scope: api
 maturity: stable
+version: 2.0.0
+sources:
+  - https://stripe.com/docs/webhooks/signatures
+  - https://docs.github.com/en/webhooks/securing
+  - https://www.twilio.com/docs/usage/security
+  - https://cheatsheetseries.owasp.org/cheatsheets/Webhook_Security_Cheat_Sheet.html
 ---
 
 # Webhook Signatures

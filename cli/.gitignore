@@ -1,3 +1,10 @@
 
 # npm pack artifacts
 *.tgz
+
+# Build output (keep in git for distribution)
+# dist/
+
+# Coverage
+coverage/
+.nyc_output/

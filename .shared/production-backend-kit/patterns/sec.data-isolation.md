@@ -7,6 +7,11 @@ level: advanced
 maturity: stable
 stacks: [nodejs, python, go, all]
 description: Row-level security and data isolation for multi-tenant databases
+version: 2.0.0
+sources:
+  - https://www.postgresql.org/docs/current/ddl-rowsecurity.html
+  - https://aws.amazon.com/blogs/database/multi-tenant-data-isolation-with-postgresql-row-level-security/
+  - https://supabase.com/docs/guides/auth/row-level-security
 ---
 
 # Data Isolation Strategies

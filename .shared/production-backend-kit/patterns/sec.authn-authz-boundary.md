@@ -12,6 +12,12 @@ stacks:
   - all
 scope: security
 maturity: stable
+version: 2.0.0
+sources:
+  - https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html
+  - https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html
+  - https://csrc.nist.gov/projects/role-based-access-control
+  - https://research.google/pubs/pub48190/
 ---
 
 # Authentication vs Authorization Boundary

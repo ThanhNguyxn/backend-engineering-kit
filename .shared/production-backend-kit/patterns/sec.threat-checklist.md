@@ -11,6 +11,12 @@ stacks:
   - all
 scope: security
 maturity: stable
+version: 2.0.0
+sources:
+  - https://owasp.org/www-project-top-ten/
+  - https://cheatsheetseries.owasp.org/
+  - https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool-threats
+  - https://www.nist.gov/cyberframework
 ---
 
 # Security Threat Checklist

@@ -6,49 +6,119 @@ tags:
   - circuit-breaker
   - resilience
   - fault-tolerance
+  - bulkhead
 level: advanced
 stacks:
   - all
 scope: reliability
 maturity: stable
+version: 2.0.0
+sources:
+  - https://martinfowler.com/bliki/CircuitBreaker.html
+  - https://resilience4j.readme.io/docs/circuitbreaker
+  - https://github.com/Netflix/Hystrix/wiki
+  - https://learn.microsoft.com/en-us/azure/architecture/patterns/circuit-breaker
 ---
 
 # Circuit Breaker
 
 ## Problem
 
-When a downstream service fails, continuing to send requests wastes resources, increases latency, and can cause cascading failures. You need to fail fast and allow time for recovery.
+When a downstream service fails, continuing to send requests wastes resources, increases latency, and can cause cascading failures. Without circuit breakers, a single failing dependency can bring down your entire system.
 
 ## When to use
 
-- Calls to external services
-- Database connections under load
-- Any dependency that can fail
+- Calls to external services (APIs, databases)
+- Microservice-to-microservice communication
+- Any dependency that can fail or be slow
 - Preventing cascade failures
-- Protecting shared resources
+- Protecting shared resources (connection pools, threads)
 
 ## Solution
 
-1. **Understand circuit states**
-   - **Closed**: Normal operation, requests pass through
-   - **Open**: Failures exceeded threshold, fail fast
-   - **Half-Open**: Testing if service recovered
+### 1. Understand Circuit States
 
-2. **Configure thresholds**
-   - Failure count/percentage to open
-   - Timeout duration for open state
-   - Success count to close from half-open
+```
+     ┌───────────────────────────────────────────┐
+     │                                           │
+     ▼                                           │
+  CLOSED ──(failure rate > threshold)──► OPEN   │
+     ▲                                    │      │
+     │                              (wait time)  │
+     │                                    │      │
+     │                                    ▼      │
+     └──(N successes)────────────── HALF-OPEN ──┘
+                                          │
+                                    (any failure)
+                                          │
+                                          └──► OPEN
+```
 
-3. **Define failure criteria**
-   - HTTP 5xx errors
-   - Timeouts
-   - Connection failures
-   - Exception types
+| State | Behavior | Transitions |
+|-------|----------|-------------|
+| **CLOSED** | Normal operation, requests pass through | → OPEN when failure threshold breached |
+| **OPEN** | All requests fail fast immediately | → HALF-OPEN after wait duration |
+| **HALF-OPEN** | Limited probe requests allowed | → CLOSED if probes succeed, → OPEN if probe fails |
 
-4. **Handle open circuit**
-   - Return cached data if available
-   - Return degraded response
-   - Fail fast with clear error
+### 2. Configuration Parameters
+
+| Parameter | Typical Value | Description |
+|-----------|---------------|-------------|
+| Failure Rate Threshold | 50% | % of failures to open circuit |
+| Slow Call Rate Threshold | 100% | % of slow calls to open |
+| Slow Call Duration | 2-5s | What counts as "slow" |
+| Minimum Calls | 10-20 | Min calls before calculating rate |
+| Wait Duration (Open) | 30-60s | Time before trying half-open |
+| Permitted Calls (Half-Open) | 3-5 | Probe requests in half-open |
+| Sliding Window Size | 10-100 | Calls to consider for rate |
+
+### 3. Implementation Examples
+
+**Resilience4j (Java/Kotlin):**
+```java
+CircuitBreakerConfig config = CircuitBreakerConfig.custom()
+    .failureRateThreshold(50)
+    .slowCallRateThreshold(100)
+    .slowCallDurationThreshold(Duration.ofSeconds(2))
+    .waitDurationInOpenState(Duration.ofSeconds(30))
+    .permittedNumberOfCallsInHalfOpenState(3)
+    .minimumNumberOfCalls(10)
+    .slidingWindowSize(20)
+    .build();
+
+CircuitBreaker circuitBreaker = CircuitBreaker.of("backendService", config);
+
+Supplier<String> decoratedSupplier = CircuitBreaker
+    .decorateSupplier(circuitBreaker, backendService::call);
+```
+
+**Polly (.NET):**
+```csharp
+var circuitBreakerPolicy = Policy
+    .Handle<HttpRequestException>()
+    .CircuitBreakerAsync(
+        exceptionsAllowedBeforeBreaking: 5,
+        durationOfBreak: TimeSpan.FromSeconds(30),
+        onBreak: (ex, breakDelay) => Log.Warn("Circuit opened"),
+        onReset: () => Log.Info("Circuit closed"),
+        onHalfOpen: () => Log.Info("Circuit half-open")
+    );
+```
+
+**Node.js (opossum):**
+```typescript
+import CircuitBreaker from 'opossum';
+
+const breaker = new CircuitBreaker(asyncFunction, {
+  timeout: 3000,           // 3s timeout
+  errorThresholdPercentage: 50,
+  resetTimeout: 30000,     // 30s before half-open
+  volumeThreshold: 10,     // Min calls before tripping
+});
+
+breaker.fallback(() => cachedResponse);
+breaker.on('open', () => console.log('Circuit opened'));
+```
 
 ## Pitfalls
 

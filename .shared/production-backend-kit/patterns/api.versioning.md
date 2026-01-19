@@ -6,18 +6,24 @@ tags:
   - versioning
   - rest
   - backward-compatibility
+  - evolution
 level: intermediate
 stacks:
   - all
 scope: api
 maturity: stable
+version: 2.0.0
+sources:
+  - https://cloud.google.com/apis/design/versioning
+  - https://opensource.zalando.com/restful-api-guidelines/#compatible-extensions
+  - https://github.com/microsoft/api-guidelines/blob/vNext/Guidelines.md
 ---
 
 # API Versioning
 
 ## Problem
 
-APIs evolve over time. Without versioning, breaking changes disrupt existing clients. Poor versioning strategy leads to maintenance burden and client frustration.
+APIs evolve over time. Without versioning, breaking changes disrupt existing clients. Poor versioning strategy leads to maintenance burden and client frustration. The challenge is balancing evolution with stability.
 
 ## When to use
 
@@ -26,28 +32,63 @@ APIs evolve over time. Without versioning, breaking changes disrupt existing cli
 - When breaking changes are anticipated
 - Long-lived APIs requiring evolution
 - Microservices with independent deployment
+- APIs with SLA/contract requirements
 
 ## Solution
 
-1. **Choose versioning strategy**
-   - **URL path** (recommended): `/v1/users` - most explicit, cacheable
-   - **Header**: `Accept: application/vnd.api+json;version=1`
-   - **Query param**: `?version=1` - easy but less clean
+### 1. Choose Versioning Strategy
 
-2. **Define version lifecycle**
-   - Alpha/Beta → Stable → Deprecated → Sunset
-   - Communicate deprecation timeline (e.g., 6-12 months)
-   - Use `Deprecation` and `Sunset` headers
+| Strategy | Example | Pros | Cons |
+|----------|---------|------|------|
+| **URL Path** | `/v1/users` | Explicit, cacheable, easy routing | URL changes, not RESTful purist |
+| **Header** | `Accept: application/vnd.api+json;version=1` | Clean URLs, content negotiation | Hidden, harder to test |
+| **Query Param** | `/users?version=1` | Easy to add | Caching issues, less clean |
+| **Media Type** | `Accept: application/vnd.company.v1+json` | Full content negotiation | Complex, verbose |
 
-3. **Minimize breaking changes**
-   - Add fields, don't remove
-   - Make new fields optional
-   - Use feature flags for gradual rollout
+**Recommendation**: URL path versioning (`/v1/`) for most cases - explicit and cache-friendly.
 
-4. **Document migration paths**
-   - Changelog for each version
-   - Migration guides for breaking changes
-   - SDK updates aligned with API versions
+### 2. Define What's Breaking vs Non-Breaking
+
+**Non-Breaking (Safe)**:
+- Adding new endpoints
+- Adding optional request fields
+- Adding response fields
+- Adding new enum values (if client handles unknown)
+- Relaxing validation (accepting more)
+
+**Breaking (Requires New Version)**:
+- Removing/renaming endpoints
+- Removing/renaming fields
+- Changing field types
+- Changing required/optional
+- Tightening validation (rejecting previously valid)
+- Changing error formats
+- Changing authentication
+
+### 3. Version Lifecycle Management
+
+```
+Alpha (v1-alpha) → Beta (v1-beta) → GA (v1) → Deprecated → Sunset
+    ↓                   ↓              ↓           ↓           ↓
+  Unstable          Breaking OK    Stable    6-12 months    Removed
+```
+
+### 4. Deprecation Headers (RFC 8594)
+
+```http
+Deprecation: true
+Deprecation: @1735689600
+Sunset: Sat, 01 Jan 2028 00:00:00 GMT
+Link: </v2/users>; rel="successor-version"
+```
+
+### 5. Minimize Breaking Changes
+
+- **Add, don't remove**: New fields, new endpoints
+- **Make new fields optional**: Backward compatible
+- **Use feature flags**: Gradual rollout
+- **Nullable over removal**: Mark deprecated, return null
+- **Expand-contract pattern**: Add new → migrate → remove old
 
 ## Pitfalls
 

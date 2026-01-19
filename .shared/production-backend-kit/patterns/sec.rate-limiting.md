@@ -6,51 +6,193 @@ tags:
   - rate-limiting
   - ddos
   - availability
+  - redis
 level: intermediate
 stacks:
   - all
 scope: security
 maturity: stable
+version: 2.0.0
+sources:
+  - https://stripe.com/blog/rate-limiters
+  - https://cloud.google.com/architecture/rate-limiting-strategies-techniques
+  - https://redis.io/commands/incr/#pattern-rate-limiter
 ---
 
 # Rate Limiting
 
 ## Problem
 
-Without rate limiting, malicious users or buggy clients can overwhelm your API with requests, causing denial of service, increased costs, and degraded experience for legitimate users.
+Without rate limiting, malicious users or buggy clients can overwhelm your API with requests, causing denial of service, increased costs, and degraded experience for legitimate users. It's also a key defense against credential stuffing and brute force attacks.
 
 ## When to use
 
 - All public APIs
-- Authentication endpoints (login, password reset)
-- Resource-intensive operations
+- Authentication endpoints (login, password reset, MFA)
+- Resource-intensive operations (search, export)
 - Paid API tiers with quotas
-- Protecting against scraping
+- Protecting against scraping and abuse
 
 ## Solution
 
-1. **Choose rate limiting algorithm**
-   - **Token bucket**: Smooth traffic, allows bursts
-   - **Sliding window**: Fair distribution over time
-   - **Fixed window**: Simple but has boundary issues
-   - **Leaky bucket**: Constant output rate
+### 1. Rate Limiting Algorithms
 
-2. **Define limits by scope**
-   - Global: Overall API protection
-   - Per user/API key: Fair usage
-   - Per IP: Anonymous rate limiting
-   - Per endpoint: Protect expensive operations
+| Algorithm | Pros | Cons | Best For |
+|-----------|------|------|----------|
+| **Token Bucket** | Allows bursts, smooth | Slightly complex | APIs with burst traffic |
+| **Sliding Window** | Fair distribution | Memory overhead | General use |
+| **Fixed Window** | Simple | Boundary burst problem | Simple use cases |
+| **Leaky Bucket** | Smooth output rate | No burst handling | Strict rate control |
 
-3. **Implement response headers**
-   - `X-RateLimit-Limit`: Max requests allowed
-   - `X-RateLimit-Remaining`: Requests left
-   - `X-RateLimit-Reset`: When limit resets
-   - Return 429 Too Many Requests
+### 2. Token Bucket Implementation
 
-4. **Use distributed storage**
-   - Redis for distributed rate limiting
-   - Consistent across instances
-   - Handle storage failures gracefully
+```typescript
+import Redis from 'ioredis';
+
+const redis = new Redis();
+
+interface RateLimitResult {
+  allowed: boolean;
+  remaining: number;
+  resetAt: number;
+}
+
+async function tokenBucketRateLimit(
+  key: string,
+  capacity: number,      // Max tokens (burst size)
+  refillRate: number,    // Tokens per second
+  tokensRequired: number = 1
+): Promise<RateLimitResult> {
+  const now = Date.now();
+  const bucketKey = `ratelimit:${key}`;
+  
+  // Lua script for atomic operation
+  const result = await redis.eval(`
+    local bucket = redis.call('HMGET', KEYS[1], 'tokens', 'lastRefill')
+    local tokens = tonumber(bucket[1]) or ARGV[1]
+    local lastRefill = tonumber(bucket[2]) or ARGV[4]
+    
+    -- Refill tokens based on time passed
+    local elapsed = (ARGV[4] - lastRefill) / 1000
+    local refill = elapsed * ARGV[2]
+    tokens = math.min(ARGV[1], tokens + refill)
+    
+    -- Try to consume tokens
+    local allowed = 0
+    if tokens >= ARGV[3] then
+      tokens = tokens - ARGV[3]
+      allowed = 1
+    end
+    
+    -- Update bucket
+    redis.call('HMSET', KEYS[1], 'tokens', tokens, 'lastRefill', ARGV[4])
+    redis.call('EXPIRE', KEYS[1], ARGV[5])
+    
+    return {allowed, tokens}
+  `, 1, bucketKey, capacity, refillRate, tokensRequired, now, 3600) as [number, number];
+  
+  return {
+    allowed: result[0] === 1,
+    remaining: Math.floor(result[1]),
+    resetAt: now + Math.ceil((capacity - result[1]) / refillRate) * 1000,
+  };
+}
+```
+
+### 3. Sliding Window Counter (Simpler)
+
+```typescript
+async function slidingWindowRateLimit(
+  key: string,
+  limit: number,
+  windowSeconds: number
+): Promise<RateLimitResult> {
+  const now = Date.now();
+  const windowKey = `ratelimit:${key}:${Math.floor(now / 1000 / windowSeconds)}`;
+  const prevWindowKey = `ratelimit:${key}:${Math.floor(now / 1000 / windowSeconds) - 1}`;
+  
+  const [current, previous] = await redis.mget(windowKey, prevWindowKey);
+  
+  // Weight previous window by remaining time
+  const windowStart = Math.floor(now / 1000 / windowSeconds) * windowSeconds * 1000;
+  const elapsed = (now - windowStart) / (windowSeconds * 1000);
+  const weightedCount = (parseInt(current || '0') + 
+    parseInt(previous || '0') * (1 - elapsed));
+  
+  if (weightedCount >= limit) {
+    return {
+      allowed: false,
+      remaining: 0,
+      resetAt: windowStart + windowSeconds * 1000,
+    };
+  }
+  
+  await redis.incr(windowKey);
+  await redis.expire(windowKey, windowSeconds * 2);
+  
+  return {
+    allowed: true,
+    remaining: Math.floor(limit - weightedCount - 1),
+    resetAt: windowStart + windowSeconds * 1000,
+  };
+}
+```
+
+### 4. Rate Limit Middleware
+
+```typescript
+import { RateLimiterRedis } from 'rate-limiter-flexible';
+
+const rateLimiter = new RateLimiterRedis({
+  storeClient: redis,
+  keyPrefix: 'rl',
+  points: 100,        // 100 requests
+  duration: 60,       // per 60 seconds
+  blockDuration: 60,  // Block for 60s if exceeded
+});
+
+const strictLimiter = new RateLimiterRedis({
+  storeClient: redis,
+  keyPrefix: 'rl:auth',
+  points: 5,          // 5 attempts
+  duration: 60,       // per minute
+  blockDuration: 300, // Block for 5 minutes
+});
+
+function rateLimitMiddleware(limiter: RateLimiterRedis) {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const key = req.user?.id || req.ip; // User ID or IP
+    
+    try {
+      const result = await limiter.consume(key);
+      
+      res.set({
+        'X-RateLimit-Limit': limiter.points,
+        'X-RateLimit-Remaining': result.remainingPoints,
+        'X-RateLimit-Reset': new Date(Date.now() + result.msBeforeNext).toISOString(),
+      });
+      
+      next();
+    } catch (rateLimitRes) {
+      res.set({
+        'X-RateLimit-Limit': limiter.points,
+        'X-RateLimit-Remaining': 0,
+        'X-RateLimit-Reset': new Date(Date.now() + rateLimitRes.msBeforeNext).toISOString(),
+        'Retry-After': Math.ceil(rateLimitRes.msBeforeNext / 1000),
+      });
+      
+      res.status(429).json({
+        error: 'Too Many Requests',
+        retryAfter: Math.ceil(rateLimitRes.msBeforeNext / 1000),
+      });
+    }
+  };
+}
+
+// Usage
+app.use('/api', rateLimitMiddleware(rateLimiter));
+app.post('/api/login', rateLimitMiddleware(strictLimiter), loginHandler);
+```
 
 ## Pitfalls
 

@@ -9,13 +9,9 @@ __pycache__/
 
 # Build outputs
 dist/
-!cli/dist/
 build/
 *.egg-info/
 target/
-
-# Generated DB (can commit for better search UX)
-# .shared/**/db/
 
 # IDE
 .idea/
@@ -40,5 +36,5 @@ htmlcov/
 .nyc_output/
 test-output.txt
 
-# Lock files (optional - uncomment if needed)
-# package-lock.json
+# NPM pack artifacts
+*.tgz

@@ -6,18 +6,25 @@ tags:
   - passwords
   - hashing
   - authentication
+  - argon2
+  - bcrypt
 level: intermediate
 stacks:
   - all
 scope: security
 maturity: stable
+version: 2.0.0
+sources:
+  - https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
+  - https://www.password-hashing.net/
+  - https://github.com/P-H-C/phc-winner-argon2
 ---
 
 # Password Storage
 
 ## Problem
 
-Weak password storage leads to credential theft and account compromise. Plaintext or poorly hashed passwords, once leaked, expose users across multiple sites due to password reuse.
+Weak password storage leads to credential theft and account compromise. Plaintext or poorly hashed passwords, once leaked, expose users across multiple sites due to password reuse. This is consistently in OWASP Top 10.
 
 ## When to use
 
@@ -25,31 +32,133 @@ Weak password storage leads to credential theft and account compromise. Plaintex
 - Any password-based authentication
 - Migrating legacy password systems
 - Internal admin accounts
-- Service account credentials
+- API key/secret storage (hash if one-way needed)
 
 ## Solution
 
-1. **Use modern hashing algorithms**
-   - **Argon2id**: Recommended (winner of PHC)
-   - **bcrypt**: Widely supported, proven
-   - **scrypt**: Memory-hard alternative
-   - Never: MD5, SHA1, SHA256 alone
+### 1. Algorithm Selection (in order of preference)
 
-2. **Configure work factors**
-   - Target ~250ms hash time
-   - Increase as hardware improves
-   - Balance security vs UX
+| Algorithm | Recommendation | Notes |
+|-----------|----------------|-------|
+| **Argon2id** | ✅ Best | PHC winner, memory-hard, resists GPU/ASIC |
+| **bcrypt** | ✅ Good | Proven, wide support, 72-byte limit |
+| **scrypt** | ✅ Good | Memory-hard, more complex to tune |
+| PBKDF2-SHA256 | ⚠️ Legacy | Only if required (FIPS), needs high iterations |
+| SHA-256/512 | ❌ Never | Too fast, even with salt |
+| MD5/SHA1 | ❌ Never | Cryptographically broken |
 
-3. **Implement properly**
-   - Generate unique salt per password
-   - Store algorithm parameters with hash
-   - Upgrade hashes on login
+### 2. Argon2id Configuration (OWASP Recommended)
 
-4. **Add complementary controls**
-   - Password strength requirements
-   - Breach detection (HaveIBeenPwned)
-   - Rate limiting on login attempts
-   - Multi-factor authentication
+```typescript
+// Recommended: tune to take ~250-500ms on your hardware
+const argon2Config = {
+  type: argon2.argon2id,      // Hybrid mode (recommended)
+  memoryCost: 65536,          // 64 MB (minimum 47104 KB per OWASP)
+  timeCost: 3,                // 3 iterations (minimum 1)
+  parallelism: 4,             // 4 parallel threads
+  hashLength: 32,             // 32 bytes output
+  saltLength: 16,             // 16 bytes salt (auto-generated)
+};
+
+// Node.js with argon2
+import * as argon2 from 'argon2';
+
+async function hashPassword(password: string): Promise<string> {
+  return argon2.hash(password, argon2Config);
+}
+
+async function verifyPassword(password: string, hash: string): Promise<boolean> {
+  return argon2.verify(hash, password);
+}
+```
+
+### 3. bcrypt Configuration
+
+```typescript
+import * as bcrypt from 'bcrypt';
+
+// Cost factor: 2^cost iterations. Target 250ms+
+// 10 = ~100ms, 12 = ~300ms, 14 = ~1s (tune for your hardware)
+const BCRYPT_COST = 12;
+
+async function hashPassword(password: string): Promise<string> {
+  // Salt is auto-generated and embedded in hash
+  return bcrypt.hash(password, BCRYPT_COST);
+}
+
+async function verifyPassword(password: string, hash: string): Promise<boolean> {
+  return bcrypt.compare(password, hash);
+}
+
+// Note: bcrypt truncates passwords > 72 bytes
+// Pre-hash with SHA-256 if longer passwords needed:
+async function hashLongPassword(password: string): Promise<string> {
+  const preHash = crypto.createHash('sha256').update(password).digest('base64');
+  return bcrypt.hash(preHash, BCRYPT_COST);
+}
+```
+
+### 4. Password Strength & Breach Detection
+
+```typescript
+import { pwnedPassword } from 'hibp';
+
+async function validatePassword(password: string): Promise<void> {
+  // Length requirement (NIST recommends 8 min, we prefer 12)
+  if (password.length < 12) {
+    throw new ValidationError('Password must be at least 12 characters');
+  }
+  
+  // Maximum length (prevent DoS via very long passwords)
+  if (password.length > 128) {
+    throw new ValidationError('Password must be at most 128 characters');
+  }
+  
+  // Check against breached passwords (HaveIBeenPwned)
+  const breachCount = await pwnedPassword(password);
+  if (breachCount > 0) {
+    throw new ValidationError(
+      'This password has appeared in data breaches. Please choose a different password.'
+    );
+  }
+}
+```
+
+### 5. Hash Upgrade on Login
+
+```typescript
+async function login(email: string, password: string): Promise<User> {
+  const user = await db.users.findByEmail(email);
+  if (!user) throw new AuthError('Invalid credentials');
+  
+  const valid = await verifyPassword(password, user.passwordHash);
+  if (!valid) {
+    await recordFailedLogin(user.id);
+    throw new AuthError('Invalid credentials');
+  }
+  
+  // Upgrade legacy hash if needed
+  if (needsRehash(user.passwordHash)) {
+    const newHash = await hashPassword(password);
+    await db.users.update(user.id, { passwordHash: newHash });
+    logger.info({ event: 'PASSWORD_HASH_UPGRADED', userId: user.id });
+  }
+  
+  return user;
+}
+
+function needsRehash(hash: string): boolean {
+  // Check if using old algorithm or low cost factor
+  if (hash.startsWith('$2a$') || hash.startsWith('$2b$')) {
+    const cost = parseInt(hash.split('$')[2], 10);
+    return cost < BCRYPT_COST; // Upgrade if cost too low
+  }
+  if (!hash.startsWith('$argon2id$')) {
+    return true; // Not Argon2id, needs upgrade
+  }
+  return false;
+}
+```
 
 ## Pitfalls
 
