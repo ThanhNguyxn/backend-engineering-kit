@@ -1,10 +1,15 @@
 ---
 title: "Legacy Assets Inventory"
 description: "This document inventories all legacy assets from the original backend-engineering-kit that are preserved for backward compatibility."
+generated: true
 ---
 
 <!-- AUTO-GENERATED -->
 <!-- Source: docs\legacy-inventory.md -->
+
+:::caution[Auto-generated]
+This file is auto-generated from `docs\legacy-inventory.md`. Do not edit directly.
+:::
 
 
 

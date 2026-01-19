@@ -1,10 +1,15 @@
 ---
 title: "CLI Architecture"
 description: "> Technical documentation for the Backend Engineering Kit CLI."
+generated: true
 ---
 
 <!-- AUTO-GENERATED -->
 <!-- Source: docs\architecture.md -->
+
+:::caution[Auto-generated]
+This file is auto-generated from `docs\architecture.md`. Do not edit directly.
+:::
 
 
 

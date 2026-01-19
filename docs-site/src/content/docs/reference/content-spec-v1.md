@@ -1,10 +1,15 @@
 ---
 title: "Content Spec v1"
 description: "> Specification for patterns and checklists in Backend Engineering Kit"
+generated: true
 ---
 
 <!-- AUTO-GENERATED -->
 <!-- Source: docs\content-spec-v1.md -->
+
+:::caution[Auto-generated]
+This file is auto-generated from `docs\content-spec-v1.md`. Do not edit directly.
+:::
 
 
 

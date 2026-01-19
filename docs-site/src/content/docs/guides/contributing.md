@@ -1,10 +1,15 @@
 ---
 title: "Contributing to Production Backend Kit"
 description: "First off, thanks for taking the time to contribute! 🎉"
+generated: true
 ---
 
 <!-- AUTO-GENERATED -->
 <!-- Source: CONTRIBUTING.md -->
+
+:::caution[Auto-generated]
+This file is auto-generated from `CONTRIBUTING.md`. Do not edit directly.
+:::
 
 
 

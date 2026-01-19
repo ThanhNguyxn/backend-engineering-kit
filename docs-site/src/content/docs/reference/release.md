@@ -1,10 +1,15 @@
 ---
 title: "Release Guide"
 description: "> How to cut a release for Production Backend Kit."
+generated: true
 ---
 
 <!-- AUTO-GENERATED -->
 <!-- Source: docs\release.md -->
+
+:::caution[Auto-generated]
+This file is auto-generated from `docs\release.md`. Do not edit directly.
+:::
 
 
 

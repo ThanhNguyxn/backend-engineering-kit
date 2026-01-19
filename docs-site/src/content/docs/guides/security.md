@@ -1,10 +1,15 @@
 ---
 title: "Security Policy"
 description: "| Version | Supported          |"
+generated: true
 ---
 
 <!-- AUTO-GENERATED -->
 <!-- Source: SECURITY.md -->
+
+:::caution[Auto-generated]
+This file is auto-generated from `SECURITY.md`. Do not edit directly.
+:::
 
 
 

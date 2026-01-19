@@ -1,10 +1,15 @@
 ---
 title: "Changelog"
 description: "All notable changes to this project will be documented in this file."
+generated: true
 ---
 
 <!-- AUTO-GENERATED -->
 <!-- Source: CHANGELOG.md -->
+
+:::caution[Auto-generated]
+This file is auto-generated from `CHANGELOG.md`. Do not edit directly.
+:::
 
 
 

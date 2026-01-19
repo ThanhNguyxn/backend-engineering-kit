@@ -1,10 +1,15 @@
 ---
 title: "Templates 2.0 Design Specification"
 description: "> **Status:** Draft  "
+generated: true
 ---
 
 <!-- AUTO-GENERATED -->
 <!-- Source: docs\templates-2.0-design.md -->
+
+:::caution[Auto-generated]
+This file is auto-generated from `docs\templates-2.0-design.md`. Do not edit directly.
+:::
 
 
 

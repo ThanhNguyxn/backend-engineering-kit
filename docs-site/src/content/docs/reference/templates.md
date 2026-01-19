@@ -1,10 +1,15 @@
 ---
 title: "Templates"
 description: "> Guide to the template system for `bek init`."
+generated: true
 ---
 
 <!-- AUTO-GENERATED -->
 <!-- Source: docs\templates.md -->
+
+:::caution[Auto-generated]
+This file is auto-generated from `docs\templates.md`. Do not edit directly.
+:::
 
 
 

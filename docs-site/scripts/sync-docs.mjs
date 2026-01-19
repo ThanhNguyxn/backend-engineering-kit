@@ -87,19 +87,25 @@ function matchPattern(name, pattern) {
 }
 
 /**
- * Extract or generate frontmatter
+ * Extract or generate frontmatter with generated:true flag
  */
 function ensureFrontmatter(content, source, filename) {
     const hasFrontmatter = content.startsWith('---');
+    const editWarning = `
+:::caution[Auto-generated]
+This file is auto-generated from \`${source}\`. Do not edit directly.
+:::
+`;
 
     if (hasFrontmatter) {
-        // Add generated marker after existing frontmatter
+        // Parse existing frontmatter and add generated flag
         const endIndex = content.indexOf('---', 3);
         if (endIndex > 0) {
-            const frontmatter = content.slice(0, endIndex + 3);
+            let frontmatter = content.slice(0, endIndex);
             const body = content.slice(endIndex + 3);
-            const marker = `\n${GENERATED_MARKER}\n<!-- Source: ${source} -->\n`;
-            return frontmatter + marker + body;
+            // Add generated: true to existing frontmatter
+            frontmatter = frontmatter.trim() + '\ngenerated: true\n---';
+            return frontmatter + `\n${GENERATED_MARKER}\n<!-- Source: ${source} -->${editWarning}` + body;
         }
     }
 
@@ -114,11 +120,12 @@ function ensureFrontmatter(content, source, filename) {
     const frontmatter = `---
 title: "${title}"
 description: "${description.replace(/"/g, '\\"')}"
+generated: true
 ---
 
 ${GENERATED_MARKER}
 <!-- Source: ${source} -->
-
+${editWarning}
 `;
 
     // Remove the H1 if we extracted it for the title
